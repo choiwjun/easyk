@@ -96,15 +96,23 @@
 
 ### TASK-004: 데이터베이스 초기 스키마 생성
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: Users 테이블 생성
 - **상세**:
   - Database Design 섹션 1의 Users 테이블 SQL을 SQLAlchemy 모델로 변환
   - `src/models/user.py` 생성
   - Alembic 마이그레이션 초기화
   - 첫 마이그레이션 생성 및 적용
-- **검증**: Supabase에서 `users` 테이블 확인
+- **검증**: Supabase에서 `users` 테이블 확인 (마이그레이션 적용 전 대기)
 - **의존성**: TASK-003
+- **완료 내용**:
+  - ✅ src/models/user.py 생성 (User 모델: id, email, password_hash, role, profile 등 전체 필드)
+  - ✅ src/models/__init__.py 업데이트 (User 모델 export)
+  - ✅ Alembic 초기화 완료 (alembic/ 폴더, alembic.ini 생성)
+  - ✅ alembic/env.py 수정 (config.py에서 DATABASE_URL 가져오기, Base.metadata 설정)
+  - ✅ 첫 마이그레이션 파일 생성 (352b2bc8f04d_create_users_table.py)
+  - ✅ upgrade() / downgrade() 함수 작성 (users 테이블 생성/삭제, 인덱스 생성/삭제)
+  - ⏸️  실제 DB 적용은 Supabase 연결 후 `alembic upgrade head` 실행 필요
 
 ---
 
