@@ -166,7 +166,7 @@
 
 ### TASK-007: 회원가입 API - 리팩토링
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 중복 제거 및 구조 개선 (REFACTOR)
 - **상세**:
   - 비밀번호 해싱 로직을 `src/utils/auth.py`로 추출
@@ -174,6 +174,14 @@
   - 중복 제거
 - **검증**: 테스트 여전히 모두 통과, 동작 변경 없음
 - **의존성**: TASK-006
+- **완료 내용**:
+  - ✅ src/utils/auth.py 생성 (hash_password() 함수 추출)
+  - ✅ src/utils/__init__.py 업데이트 (hash_password export)
+  - ✅ src/services/auth_service.py 생성 (create_user() 함수)
+  - ✅ src/services/__init__.py 업데이트 (auth_service export)
+  - ✅ src/routers/auth.py 리팩토링 (비즈니스 로직 제거, 서비스 레이어 호출로 변경)
+  - ✅ 모든 테스트 통과 (5 passed): 동작 변경 없이 코드 구조만 개선
+  - ✅ TDD REFACTOR 단계 완료
 
 ### TASK-008: 로그인 API - 테스트 작성
 - **타입**: BEHAVIORAL
