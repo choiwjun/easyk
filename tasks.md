@@ -73,7 +73,7 @@
 
 ### TASK-003: 백엔드 개발 환경 설정
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: FastAPI, SQLAlchemy, PostgreSQL 연결 설정
 - **상세**:
   - `requirements.txt` 생성 (FastAPI, SQLAlchemy, asyncpg, pydantic, python-jose)
@@ -82,6 +82,17 @@
   - `src/database.py` DB 연결 설정
 - **검증**: `uvicorn src.main:app --reload` 실행 성공
 - **의존성**: TASK-001
+- **완료 내용**:
+  - ✅ requirements.txt 생성 (FastAPI 0.115.6, SQLAlchemy 2.0.36, asyncpg, pydantic, python-jose 등)
+  - ✅ .env.example 생성 (DATABASE_URL, SECRET_KEY, SMTP, TOSS 설정)
+  - ✅ src/main.py 생성 (FastAPI 앱, CORS 설정, Health check 엔드포인트)
+  - ✅ src/config.py 생성 (pydantic-settings 기반 설정 관리)
+  - ✅ src/database.py 생성 (SQLAlchemy 엔진, 세션, get_db 의존성)
+  - ✅ 모든 서브 패키지에 __init__.py 생성
+  - ✅ Python 가상환경 생성 (venv)
+  - ✅ 패키지 설치 완료
+  - ✅ uvicorn 서버 실행 성공 (http://127.0.0.1:8000)
+  - ✅ API 문서 자동 생성 확인 가능 (/docs)
 
 ### TASK-004: 데이터베이스 초기 스키마 생성
 - **타입**: STRUCTURAL
