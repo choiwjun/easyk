@@ -65,3 +65,19 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
+
+
+def verify_access_token(token: str) -> Optional[dict]:
+    """JWT 액세스 토큰 검증
+
+    Args:
+        token: JWT 토큰
+
+    Returns:
+        dict: 토큰 페이로드 또는 None (검증 실패 시)
+    """
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        return payload
+    except jwt.JWTError:
+        return None
