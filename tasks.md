@@ -49,7 +49,7 @@
 
 ### TASK-002: 프론트엔드 개발 환경 설정
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: Next.js, TypeScript, Tailwind CSS 설정
 - **상세**:
   - `npx create-next-app@latest` 실행
@@ -58,6 +58,18 @@
   - ESLint, Prettier 설정
 - **검증**: `npm run dev` 실행 성공, TypeScript 컴파일 에러 없음
 - **의존성**: TASK-001
+- **완료 내용**:
+  - ✅ Next.js 16, React 19, TypeScript 5 설치
+  - ✅ Tailwind CSS 4 설치 및 설정 (Design System 색상 팔레트 적용)
+  - ✅ tsconfig.json 생성 (strict mode, path aliases 설정)
+  - ✅ next.config.js 생성 (React strict mode 활성화)
+  - ✅ ESLint 설정 (.eslintrc.json)
+  - ✅ PostCSS 설정 (Tailwind, Autoprefixer)
+  - ✅ 기본 레이아웃 및 페이지 생성 (layout.tsx, page.tsx)
+  - ✅ globals.css 생성 (Design System 타이포그래피 적용)
+  - ✅ .env.example 생성
+  - ✅ npm run dev 실행 성공 확인
+  - ✅ TypeScript 컴파일 에러 없음 확인
 
 ### TASK-003: 백엔드 개발 환경 설정
 - **타입**: STRUCTURAL
