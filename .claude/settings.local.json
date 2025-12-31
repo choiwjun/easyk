@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nchore: initialize project structure\n\n[STRUCTURAL]\n\n- Create frontend/ and backend/ directory structure\n- Add complete folder structure for Next.js frontend \\(app, components, lib, styles, types, context\\)\n- Add complete folder structure for FastAPI backend \\(routers, models, schemas, services, middleware, utils, tests\\)\n- Create .gitignore with Node.js, Python, IDE, and environment variable exclusions\n- Create README.md with project overview, tech stack, and setup guide\n\nTask: TASK-001\nEOF\n\\)\")"
+    ]
+  }
+}
