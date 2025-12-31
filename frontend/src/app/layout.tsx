@@ -1,5 +1,13 @@
 import type { Metadata } from 'next'
+import { Nanum_Gothic } from 'next/font/google'
 import './globals.css'
+
+const nanumGothic = Nanum_Gothic({
+  weight: ['400', '700', '800'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-nanum-gothic',
+})
 
 export const metadata: Metadata = {
   title: 'easyK - 외국인 정착 지원 플랫폼',
@@ -13,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body className={nanumGothic.className}>{children}</body>
     </html>
   )
 }

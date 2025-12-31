@@ -275,7 +275,7 @@
 
 ### TASK-012: 프론트엔드 회원가입 폼 - UI 컴포넌트
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: Design System 기반 회원가입 폼 컴포넌트 생성
 - **상세**:
   - `src/components/ui/Input.tsx`: Design System 섹션 4.2 명세 구현
@@ -283,6 +283,21 @@
   - TypeScript Props 타입 정의
 - **검증**: Storybook 또는 수동 테스트로 디자인 확인
 - **의존성**: TASK-002
+- **완료 내용**:
+  - ✅ src/components/ui/Input.tsx 생성 (label, error, icon, fullWidth props 지원)
+  - ✅ src/components/ui/Button.tsx 생성 (variant, size, fullWidth, loading props 지원)
+  - ✅ src/components/ui/index.ts 생성 (컴포넌트 및 타입 export)
+  - ✅ src/app/(auth)/signup/page.tsx 생성 (회원가입 페이지 UI 구현)
+  - ✅ 제공된 디자인과 매칭:
+    - 사용자 유형 선택 (외국인 회원/지원 기관) 탭 버튼
+    - 이메일 입력 (메일 아이콘)
+    - 비밀번호 입력 (눈 아이콘으로 표시/숨김 토글)
+    - 비밀번호 확인 입력
+    - 이용약관 동의 체크박스
+    - 회원가입 버튼 (파란색, 전체 너비)
+    - 로그인 링크
+  - ✅ 빌드 성공 확인
+  - ✅ 개발 서버 실행 확인 (http://localhost:3000/signup)
 
 ### TASK-013: 프론트엔드 회원가입 페이지 - 테스트 작성
 - **타입**: BEHAVIORAL

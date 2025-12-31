@@ -19,7 +19,7 @@ module.exports = {
         info: '#3B82F6', // 정보 파랑
       },
       fontFamily: {
-        sans: ['Pretendard', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-nanum-gothic)', 'Nanum Gothic', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
       },
     },
   },
