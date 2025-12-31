@@ -61,7 +61,6 @@ def upgrade() -> None:
 
         # 제약조건
         sa.CheckConstraint("role IN ('foreign', 'consultant', 'admin')", name='check_role'),
-        sa.CheckConstraint("email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$'", name='check_email_format'),
     )
 
     # 인덱스 생성

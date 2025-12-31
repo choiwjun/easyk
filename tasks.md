@@ -142,7 +142,7 @@
 
 ### TASK-006: 회원가입 API - 최소 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 테스트를 통과시키는 최소 코드 작성 (GREEN)
 - **상세**:
   - `src/schemas/user.py`: UserCreateSchema, UserResponseSchema 정의
@@ -151,6 +151,18 @@
   - DB에 사용자 저장
 - **검증**: TASK-005의 모든 테스트 통과
 - **의존성**: TASK-005
+- **완료 내용**:
+  - ✅ src/schemas/user.py 생성 (UserCreate, UserResponse Pydantic 스키마)
+  - ✅ src/schemas/__init__.py 업데이트 (schemas export)
+  - ✅ src/routers/auth.py 생성 (POST /api/auth/signup 엔드포인트)
+  - ✅ hash_password() 함수 구현 (bcrypt 직접 사용, 72바이트 제한 처리)
+  - ✅ 사용자 생성 로직 구현 (DB 저장, IntegrityError 처리)
+  - ✅ src/routers/__init__.py 업데이트 (routers export)
+  - ✅ src/main.py 업데이트 (auth router 등록)
+  - ✅ models/user.py 수정 (SQLite 호환성을 위해 email CHECK 제약 제거)
+  - ✅ email-validator 패키지 설치 (EmailStr 지원)
+  - ✅ 모든 테스트 통과 (5 passed): test_signup_success, test_signup_invalid_email, test_signup_duplicate_email, test_signup_missing_required_fields, test_signup_weak_password
+  - ✅ TDD GREEN 단계 완료
 
 ### TASK-007: 회원가입 API - 리팩토링
 - **타입**: STRUCTURAL

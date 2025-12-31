@@ -85,10 +85,6 @@ class User(Base):
             "role IN ('foreign', 'consultant', 'admin')",
             name="check_role",
         ),
-        CheckConstraint(
-            "email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$'",
-            name="check_email_format",
-        ),
     )
 
     def __repr__(self):

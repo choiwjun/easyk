@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
+from .routers import auth
+
 # 환경 변수 로드
 load_dotenv()
 
@@ -23,6 +25,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 라우터 등록
+app.include_router(auth.router)
 
 
 # Health Check 엔드포인트
