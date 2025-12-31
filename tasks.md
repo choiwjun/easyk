@@ -229,7 +229,7 @@
 
 ### TASK-010: JWT 인증 미들웨어 - 테스트 작성
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: JWT 토큰 검증 미들웨어 테스트 작성 (RED)
 - **상세**:
   - `test_protected_route_with_valid_token()`: 유효한 토큰으로 보호된 라우트 접근 성공
@@ -237,6 +237,16 @@
   - `test_protected_route_with_invalid_token()`: 잘못된 토큰으로 접근 시 401 에러
 - **검증**: 테스트 실행 시 모두 실패
 - **의존성**: TASK-009
+- **완료 내용**:
+  - ✅ src/tests/test_middleware.py 생성 (6개 테스트 케이스)
+  - ✅ test_protected_route_with_valid_token(): 유효한 JWT 토큰으로 GET /api/users/me 접근 성공 테스트
+  - ✅ test_protected_route_without_token(): Authorization 헤더 없이 접근 시 401 에러 테스트
+  - ✅ test_protected_route_with_invalid_token(): 잘못된 JWT 토큰으로 접근 시 401 에러 테스트
+  - ✅ test_protected_route_with_expired_token(): 만료된 JWT 토큰으로 접근 시 401 에러 테스트
+  - ✅ test_protected_route_with_malformed_header(): Bearer 누락된 헤더로 접근 시 401 에러 테스트
+  - ✅ test_protected_route_with_nonexistent_user(): 존재하지 않는 사용자 토큰으로 접근 시 401 에러 테스트
+  - ✅ 테스트 실행 확인: 6 failed (모두 404 - 엔드포인트 미구현)
+  - ✅ TDD RED 단계 완료
 
 ### TASK-011: JWT 인증 미들웨어 - 최소 구현
 - **타입**: BEHAVIORAL
