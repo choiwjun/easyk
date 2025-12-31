@@ -120,7 +120,7 @@
 
 ### TASK-005: 회원가입 API - 테스트 작성
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 회원가입 API에 대한 실패하는 테스트 작성 (RED)
 - **상세**:
   - `tests/test_auth.py` 생성
@@ -129,6 +129,16 @@
   - `test_signup_duplicate_email()`: 중복 이메일 검증
 - **검증**: 테스트 실행 시 모두 실패 (코드 미구현)
 - **의존성**: TASK-004
+- **완료 내용**:
+  - ✅ src/tests/test_auth.py 생성 (5개 테스트 케이스)
+  - ✅ test_signup_success(): 유효한 데이터로 회원가입 성공 테스트
+  - ✅ test_signup_invalid_email(): 잘못된 이메일 형식 검증 테스트
+  - ✅ test_signup_duplicate_email(): 중복 이메일 검증 테스트
+  - ✅ test_signup_missing_required_fields(): 필수 필드 누락 검증
+  - ✅ test_signup_weak_password(): 약한 비밀번호 검증
+  - ✅ pytest.ini 설정 파일 생성
+  - ✅ 테스트 실행 확인: 5 failed (모두 404 - 엔드포인트 미구현)
+  - ✅ TDD RED 단계 완료
 
 ### TASK-006: 회원가입 API - 최소 구현
 - **타입**: BEHAVIORAL
