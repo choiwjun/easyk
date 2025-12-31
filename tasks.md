@@ -206,7 +206,7 @@
 
 ### TASK-009: 로그인 API - 최소 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 테스트를 통과시키는 최소 코드 작성 (GREEN)
 - **상세**:
   - POST /api/auth/login 엔드포인트
@@ -215,6 +215,17 @@
   - 토큰 반환
 - **검증**: TASK-008의 모든 테스트 통과
 - **의존성**: TASK-008
+- **완료 내용**:
+  - ✅ src/schemas/user.py 업데이트 (LoginRequest, TokenResponse 스키마 추가)
+  - ✅ src/schemas/__init__.py 업데이트 (LoginRequest, TokenResponse export)
+  - ✅ src/utils/auth.py 업데이트 (verify_password, create_access_token 함수 추가)
+  - ✅ src/utils/__init__.py 업데이트 (verify_password, create_access_token export)
+  - ✅ src/services/auth_service.py 업데이트 (authenticate_user 함수 구현)
+  - ✅ src/routers/auth.py 업데이트 (POST /api/auth/login 엔드포인트 구현)
+  - ✅ JWT 토큰 생성 로직 구현 (python-jose, exp claim 포함)
+  - ✅ 비밀번호 검증 로직 구현 (bcrypt.checkpw)
+  - ✅ 모든 테스트 통과 (6 passed): test_login_success, test_login_invalid_password, test_login_nonexistent_user, test_login_missing_email, test_login_missing_password, test_login_invalid_email_format
+  - ✅ TDD GREEN 단계 완료
 
 ### TASK-010: JWT 인증 미들웨어 - 테스트 작성
 - **타입**: BEHAVIORAL

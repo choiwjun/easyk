@@ -1,12 +1,13 @@
 """Authentication Service"""
 
+from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 
 from ..models.user import User
-from ..schemas.user import UserCreate
-from ..utils.auth import hash_password
+from ..schemas.user import UserCreate, TokenResponse
+from ..utils.auth import hash_password, verify_password, create_access_token
 
 
 def create_user(user_data: UserCreate, db: Session) -> User:
@@ -47,3 +48,29 @@ def create_user(user_data: UserCreate, db: Session) -> User:
         )
 
     return db_user
+
+
+def authenticate_user(email: str, password: str, db: Session) -> Optional[TokenResponse]:
+    """사용자 인증 및 토큰 생성
+
+    Args:
+        email: 사용자 이메일
+        password: 비밀번호
+        db: 데이터베이스 세션
+
+    Returns:
+        TokenResponse: JWT 토큰 또는 None (인증 실패 시)
+    """
+    # 사용자 조회
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        return None
+
+    # 비밀번호 검증
+    if not verify_password(password, user.password_hash):
+        return None
+
+    # JWT 토큰 생성
+    access_token = create_access_token(data={"sub": user.email, "user_id": str(user.id)})
+
+    return TokenResponse(access_token=access_token, token_type="bearer")

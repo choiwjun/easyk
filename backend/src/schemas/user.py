@@ -48,3 +48,17 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True  # Pydantic v2: ORM 모드 활성화
+
+
+class LoginRequest(BaseModel):
+    """로그인 요청 스키마"""
+
+    email: EmailStr
+    password: str = Field(..., min_length=1)
+
+
+class TokenResponse(BaseModel):
+    """토큰 응답 스키마"""
+
+    access_token: str
+    token_type: str = "bearer"
