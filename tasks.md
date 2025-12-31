@@ -185,7 +185,7 @@
 
 ### TASK-008: 로그인 API - 테스트 작성
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 로그인 API에 대한 실패하는 테스트 작성 (RED)
 - **상세**:
   - `test_login_success()`: 유효한 자격 증명으로 로그인 성공, JWT 토큰 반환
@@ -193,6 +193,16 @@
   - `test_login_nonexistent_user()`: 존재하지 않는 사용자 검증
 - **검증**: 테스트 실행 시 모두 실패
 - **의존성**: TASK-007
+- **완료 내용**:
+  - ✅ src/tests/test_login.py 생성 (6개 테스트 케이스)
+  - ✅ test_login_success(): 유효한 자격 증명으로 로그인 성공, JWT 토큰 반환 테스트
+  - ✅ test_login_invalid_password(): 잘못된 비밀번호 검증 테스트
+  - ✅ test_login_nonexistent_user(): 존재하지 않는 사용자 검증 테스트
+  - ✅ test_login_missing_email(): 이메일 누락 검증 테스트
+  - ✅ test_login_missing_password(): 비밀번호 누락 검증 테스트
+  - ✅ test_login_invalid_email_format(): 잘못된 이메일 형식 검증 테스트
+  - ✅ 테스트 실행 확인: 6 failed (모두 404 - 엔드포인트 미구현)
+  - ✅ TDD RED 단계 완료
 
 ### TASK-009: 로그인 API - 최소 구현
 - **타입**: BEHAVIORAL
