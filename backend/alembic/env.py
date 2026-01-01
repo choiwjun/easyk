@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from config import settings
 from database import Base
-from models import User  # Import all models here
+from models import User, Consultant, Consultation  # Import all models here
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -30,7 +30,9 @@
       "Bash(timeout:*)",
       "Bash(netstat:*)",
       "Bash(cmd.exe /c \"taskkill /F /PID 17188\")",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(alembic revision:*)",
+      "Bash(.venvScriptspython -m pytest src/tests/test_consultations.py -v)"
     ]
   }
 }
