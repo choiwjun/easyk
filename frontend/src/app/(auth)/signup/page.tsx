@@ -1,17 +1,99 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Input, Button } from "@/components/ui";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [userType, setUserType] = useState<"foreign" | "organization">("foreign");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+    terms?: string;
+    general?: string;
+  }>({});
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string): boolean => {
+    // At least 8 characters, contains letter, number, and special character
+    return (
+      password.length >= 8 &&
+      /[a-zA-Z]/.test(password) &&
+      /[0-9]/.test(password) &&
+      /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted");
+    setErrors({});
+
+    // Validation
+    const newErrors: typeof errors = {};
+
+    if (!validateEmail(email)) {
+      newErrors.email = "올바른 이메일 주소를 입력해주세요";
+    }
+
+    if (!validatePassword(password)) {
+      newErrors.password = "8자 이상, 영문/숫자/특수문자를 포함해주세요";
+    }
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다";
+    }
+
+    if (!agreed) {
+      newErrors.terms = "이용약관에 동의해주세요";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // API call
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          userType,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrors({ general: data.message || "회원가입 중 오류가 발생했습니다" });
+        return;
+      }
+
+      // Redirect to login on success
+      router.push("/login");
+    } catch (error) {
+      setErrors({ general: "회원가입 중 오류가 발생했습니다" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,7 +110,14 @@ export default function SignupPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+          {/* General Error */}
+          {errors.general && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600" role="alert">{errors.general}</p>
+            </div>
+          )}
+
           {/* User Type Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -72,6 +161,9 @@ export default function SignupPage() {
             label="이메일 주소"
             placeholder="example@email.com"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
             icon={
               <svg
                 className="w-5 h-5"
@@ -95,6 +187,9 @@ export default function SignupPage() {
             label="비밀번호"
             placeholder="8자 이상, 영문/숫자/특수문자 포함"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
             icon={
               <button
                 type="button"
@@ -133,6 +228,9 @@ export default function SignupPage() {
             label="비밀번호 확인"
             placeholder="비밀번호를 한번 더 입력해주세요"
             required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={errors.confirmPassword}
             icon={
               <button
                 type="button"
@@ -166,25 +264,30 @@ export default function SignupPage() {
           />
 
           {/* Terms Agreement */}
-          <div className="flex items-start gap-3">
-            <input
-              type="checkbox"
-              id="terms"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="terms" className="text-sm text-gray-600">
-              이용약관 및 개인정보 처리방침에{" "}
-              <a href="#" className="text-blue-600 hover:underline">
-                동의합니다
-              </a>
-              .
-            </label>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="terms" className="text-sm text-gray-600">
+                이용약관 및 개인정보 처리방침에{" "}
+                <a href="#" className="text-blue-600 hover:underline">
+                  동의합니다
+                </a>
+                .
+              </label>
+            </div>
+            {errors.terms && (
+              <p className="text-sm text-red-500" role="alert">{errors.terms}</p>
+            )}
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" fullWidth size="lg">
+          <Button type="submit" fullWidth size="lg" loading={loading} disabled={loading}>
             회원가입 →
           </Button>
         </form>

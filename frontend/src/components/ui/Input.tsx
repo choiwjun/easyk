@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef, InputHTMLAttributes, ReactNode } from "react";
+import React, { forwardRef, InputHTMLAttributes, ReactNode, useId } from "react";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -10,17 +10,21 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, fullWidth = true, className = "", ...props }, ref) => {
+  ({ label, error, icon, fullWidth = true, className = "", id: providedId, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = providedId || generatedId;
+
     return (
       <div className={`flex flex-col gap-2 ${fullWidth ? "w-full" : ""}`}>
         {label && (
-          <label className="text-sm font-medium text-gray-900">
+          <label htmlFor={inputId} className="text-sm font-medium text-gray-900">
             {label}
           </label>
         )}
 
         <div className="relative">
           <input
+            id={inputId}
             ref={ref}
             className={`
               w-full h-12 px-4
@@ -45,7 +49,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {error && (
-          <p className="text-sm text-red-500">{error}</p>
+          <p className="text-sm text-red-500" role="alert">{error}</p>
         )}
       </div>
     );

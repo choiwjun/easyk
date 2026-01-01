@@ -301,7 +301,7 @@
 
 ### TASK-013: 프론트엔드 회원가입 페이지 - 테스트 작성
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 회원가입 페이지 컴포넌트 테스트 작성 (RED)
 - **상세**:
   - `src/app/(auth)/signup/page.test.tsx` 생성
@@ -310,10 +310,41 @@
   - 에러 표시 테스트
 - **검증**: 테스트 실행 시 모두 실패
 - **의존성**: TASK-012
+- **완료 내용**:
+  - ✅ Jest 및 React Testing Library 설치 (@testing-library/react, @testing-library/jest-dom, @testing-library/user-event)
+  - ✅ jest.config.js 및 jest.setup.js 설정 파일 생성
+  - ✅ package.json 테스트 스크립트 추가 (test, test:watch, test:coverage)
+  - ✅ src/app/(auth)/signup/page.test.tsx 생성 (19개 테스트 케이스)
+  - ✅ 폼 상태 관리 테스트:
+    - 사용자 유형 토글 (외국인/지원 기관)
+    - 비밀번호 표시/숨김 토글
+    - 비밀번호 확인 표시/숨김 토글
+    - 이용약관 체크박스
+  - ✅ 폼 입력 테스트:
+    - 이메일 입력
+    - 비밀번호 입력
+    - 비밀번호 확인 입력
+  - ✅ API 호출 테스트:
+    - 외국인 회원 회원가입 API 호출
+    - 지원 기관 회원가입 API 호출
+    - 성공 시 로그인 페이지 리다이렉트
+  - ✅ 에러 처리 테스트:
+    - 비밀번호 불일치 에러
+    - 이메일 형식 에러
+    - 약한 비밀번호 에러
+    - 이용약관 미동의 에러
+    - API 네트워크 에러
+    - API 응답 에러 (중복 이메일)
+    - 로딩 상태
+  - ✅ 접근성 테스트:
+    - 모든 입력 필드 label 확인
+    - 에러 메시지 ARIA 속성 확인
+  - ✅ 테스트 실행 확인: 17 failed, 2 passed (대부분 구현 미완료)
+  - ✅ TDD RED 단계 완료
 
 ### TASK-014: 프론트엔드 회원가입 페이지 - 최소 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 테스트를 통과시키는 최소 코드 작성 (GREEN)
 - **상세**:
   - `src/app/(auth)/signup/page.tsx` 생성
@@ -322,10 +353,52 @@
   - 성공 시 로그인 페이지로 리다이렉트
 - **검증**: TASK-013의 모든 테스트 통과
 - **의존성**: TASK-013
+- **완료 내용**:
+  - ✅ src/components/ui/Input.tsx 업데이트:
+    - useId 훅으로 자동 ID 생성
+    - label과 input을 htmlFor로 연결
+    - error 메시지에 role="alert" 추가
+  - ✅ src/app/(auth)/signup/page.tsx 업데이트:
+    - useRouter 훅으로 라우팅 처리
+    - 이메일, 비밀번호, 비밀번호 확인 상태 관리
+    - 에러 상태 관리 (email, password, confirmPassword, terms, general)
+    - 로딩 상태 관리
+    - 이메일 검증 함수 (validateEmail): 이메일 형식 확인
+    - 비밀번호 검증 함수 (validatePassword): 8자 이상, 영문/숫자/특수문자 포함
+    - 폼 제출 시 검증 로직:
+      - 이메일 형식 검증
+      - 비밀번호 강도 검증
+      - 비밀번호 일치 확인
+      - 이용약관 동의 확인
+    - API 호출 로직:
+      - POST /api/auth/signup
+      - email, password, userType 전송
+      - 성공 시 /login으로 리다이렉트
+      - 실패 시 에러 메시지 표시
+    - 에러 표시:
+      - Input 컴포넌트의 error prop 사용
+      - 전체 에러는 별도 alert 박스로 표시
+      - 이용약관 에러는 체크박스 아래 표시
+    - 로딩 상태:
+      - Button 컴포넌트의 loading prop 사용
+      - 로딩 중 버튼 비활성화
+    - 폼에 noValidate 추가하여 브라우저 기본 검증 비활성화
+  - ✅ src/app/(auth)/signup/page.test.tsx 업데이트:
+    - next/navigation의 useRouter mock 추가
+    - mockPush를 beforeEach에서 설정
+    - redirect 테스트에서 중복 mock 제거
+  - ✅ 모든 테스트 통과 (19 passed):
+    - 폼 상태 관리 테스트 (4개)
+    - 폼 입력 테스트 (3개)
+    - API 호출 테스트 (3개)
+    - 에러 처리 테스트 (7개)
+    - 접근성 테스트 (2개)
+  - ✅ 빌드 성공 확인
+  - ✅ TDD GREEN 단계 완료
 
 ### TASK-015: 프론트엔드 로그인 페이지 - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 로그인 페이지 전체 구현 (테스트 → 구현)
 - **상세**:
   - TASK-013, 014와 동일한 TDD 사이클
@@ -333,6 +406,45 @@
   - JWT 토큰을 쿠키 또는 localStorage 저장 (보안: HttpOnly 쿠키 권장)
 - **검증**: 로그인 성공 시 대시보드로 이동
 - **의존성**: TASK-014
+- **완료 내용**:
+  - ✅ src/app/(auth)/login/page.test.tsx 생성 (16개 테스트 케이스):
+    - 폼 렌더링 테스트 (2개): 모든 필드 렌더링, 회원가입 링크
+    - 폼 상태 관리 테스트 (1개): 비밀번호 표시/숨김 토글
+    - 폼 입력 테스트 (2개): 이메일 입력, 비밀번호 입력
+    - API 호출 테스트 (3개): API 호출, 토큰 저장, 리다이렉트
+    - 에러 처리 테스트 (6개): 이메일 검증, 빈 필드, 잘못된 자격 증명, 네트워크 에러, 로딩 상태
+    - 접근성 테스트 (2개): label, ARIA 속성
+    - localStorage mock 설정
+  - ✅ 테스트 실행 확인: 16 failed (모두 구현 미완료)
+  - ✅ TDD RED 단계 완료
+  - ✅ src/app/(auth)/login/page.tsx 구현:
+    - useRouter 훅으로 라우팅 처리
+    - 이메일, 비밀번호 상태 관리
+    - 에러 상태 관리 (email, password, general)
+    - 로딩 상태 관리
+    - 이메일 검증 함수 (validateEmail): 빈 값 체크, 이메일 형식 확인
+    - 폼 제출 시 검증 로직:
+      - 이메일 빈 값 체크
+      - 이메일 형식 검증
+      - 비밀번호 빈 값 체크
+    - API 호출 로직:
+      - POST /api/auth/login
+      - email, password 전송
+      - 성공 시 access_token을 localStorage에 저장
+      - 성공 시 / (대시보드)로 리다이렉트
+      - 실패 시 에러 메시지 표시
+    - 에러 표시:
+      - Input 컴포넌트의 error prop 사용
+      - 전체 에러는 별도 alert 박스로 표시
+    - 로딩 상태:
+      - Button 컴포넌트의 loading prop 사용
+      - 로딩 중 버튼 비활성화
+    - 비밀번호 표시/숨김 토글
+    - 회원가입 페이지 링크
+    - 폼에 noValidate 추가하여 브라우저 기본 검증 비활성화
+  - ✅ 모든 테스트 통과 (16 passed)
+  - ✅ 빌드 성공 확인 (/login 라우트 추가)
+  - ✅ TDD GREEN 단계 완료
 
 ---
 
