@@ -44,6 +44,11 @@ class UserResponse(BaseModel):
     last_name: str
     nationality: Optional[str]
     role: str
+    visa_type: Optional[str]
+    preferred_language: Optional[str]
+    residential_area: Optional[str]
+    phone_number: Optional[str]
+    bio: Optional[str]
     created_at: datetime
 
     class Config:
@@ -62,3 +67,22 @@ class TokenResponse(BaseModel):
 
     access_token: str
     token_type: str = "bearer"
+
+
+class UserUpdate(BaseModel):
+    """프로필 수정 요청 스키마"""
+
+    nationality: Optional[str] = Field(None, max_length=100)
+    visa_type: Optional[str] = Field(None, max_length=100)
+    preferred_language: Optional[str] = Field("ko", max_length=10)
+    residential_area: Optional[str] = Field(None, max_length=100)
+    phone_number: Optional[str] = Field(None, max_length=20)
+    bio: Optional[str] = None
+
+    @field_validator("nationality", "phone_number", "residential_area", mode="before")
+    @classmethod
+    def validate_non_empty_string(cls, v: Optional[str]) -> Optional[str]:
+        """빈 문자열 검증 (None으로 변환)"""
+        if v is not None and v.strip() == "":
+            return None
+        return v

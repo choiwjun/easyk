@@ -16,7 +16,21 @@
       "Bash(taskkill:*)",
       "Bash(python -m venv:*)",
       "Bash(./venv/Scripts/pip:*)",
-      "Bash(./venv/Scripts/python:*)"
+      "Bash(./venv/Scripts/python:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run build:*)",
+      "Bash(git restore:*)",
+      "Bash(git push:*)",
+      "Bash(./venv/Scripts/activate)",
+      "Bash(uvicorn:*)",
+      "Bash(findstr:*)",
+      "Bash(curl:*)",
+      "Bash(dir:*)",
+      "Bash(if exist .next rd /s /q .next)",
+      "Bash(timeout:*)",
+      "Bash(netstat:*)",
+      "Bash(cmd.exe /c \"taskkill /F /PID 17188\")",
+      "Bash(powershell:*)"
     ]
   }
 }

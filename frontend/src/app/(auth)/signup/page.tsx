@@ -7,6 +7,8 @@ import { Input, Button } from "@/components/ui";
 export default function SignupPage() {
   const router = useRouter();
   const [userType, setUserType] = useState<"foreign" | "organization">("foreign");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -14,6 +16,8 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState<{
+    firstName?: string;
+    lastName?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
@@ -43,6 +47,14 @@ export default function SignupPage() {
 
     // Validation
     const newErrors: typeof errors = {};
+
+    if (!firstName.trim()) {
+      newErrors.firstName = "이름을 입력해주세요";
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = "성을 입력해주세요";
+    }
 
     if (!validateEmail(email)) {
       newErrors.email = "올바른 이메일 주소를 입력해주세요";
@@ -76,7 +88,9 @@ export default function SignupPage() {
         body: JSON.stringify({
           email,
           password,
-          userType,
+          first_name: firstName,
+          last_name: lastName,
+          role: userType === "foreign" ? "foreign" : "consultant",
         }),
       });
 
@@ -154,6 +168,28 @@ export default function SignupPage() {
               </button>
             </div>
           </div>
+
+          {/* First Name Input */}
+          <Input
+            type="text"
+            label="이름"
+            placeholder="홍길동"
+            required
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            error={errors.firstName}
+          />
+
+          {/* Last Name Input */}
+          <Input
+            type="text"
+            label="성"
+            placeholder="Kim"
+            required
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            error={errors.lastName}
+          />
 
           {/* Email Input */}
           <Input
