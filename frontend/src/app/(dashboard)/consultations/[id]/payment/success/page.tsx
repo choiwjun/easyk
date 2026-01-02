@@ -12,6 +12,7 @@ export default function PaymentSuccessPage() {
 
   useEffect(() => {
     processPaymentCallback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const processPaymentCallback = async () => {
@@ -32,29 +33,8 @@ export default function PaymentSuccessPage() {
         return;
       }
 
-      // 결제 생성 (paymentKey가 아직 없으므로 임시로 orderId 사용)
-      // 실제로는 토스페이먼츠 결제 완료 후 paymentKey를 받아서 처리해야 함
-      // 여기서는 콜백이 결제를 찾을 수 있도록 결제를 먼저 생성해야 함
-      // 하지만 이미 결제가 생성되어 있을 수도 있으므로 에러는 무시
-      try {
-        const createResponse = await fetch("/api/payments", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            consultation_id: orderId,
-            payment_method: "toss",
-            payment_key: paymentKey,
-          }),
-        });
-        // 이미 생성된 경우 에러 무시
-      } catch (e) {
-        console.log("Payment creation error (may already exist):", e);
-      }
-
-      // 결제 콜백 처리
+      // 결제 콜백 처리 (토스페이먼츠 API 검증 포함)
+      // 결제 레코드는 이미 결제 페이지에서 생성되었으므로 여기서는 콜백만 처리
       const response = await fetch("/api/payments/callback", {
         method: "POST",
         headers: {
@@ -63,13 +43,14 @@ export default function PaymentSuccessPage() {
         body: JSON.stringify({
           paymentKey,
           orderId,
+          amount: parseInt(amount, 10),
           status: "DONE",
         }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.message || "결제 처리 중 오류가 발생했습니다.");
+        setError(data.message || data.detail || "결제 처리 중 오류가 발생했습니다.");
         setIsProcessing(false);
         return;
       }

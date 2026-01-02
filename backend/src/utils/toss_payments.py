@@ -9,6 +9,8 @@ class TossPaymentsClient:
     """토스페이먼츠 API 클라이언트"""
 
     BASE_URL = "https://api.tosspayments.com/v1"
+    # 참고: 토스페이먼츠는 샌드박스와 프로덕션 모두 동일한 엔드포인트를 사용합니다.
+    # 구분은 client_key와 secret_key로 이루어집니다.
     SANDBOX_URL = "https://api.tosspayments.com/v1"
 
     def __init__(self, client_key: Optional[str] = None, secret_key: Optional[str] = None):

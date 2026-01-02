@@ -13,7 +13,7 @@ class PaymentCreate(BaseModel):
 
     consultation_id: UUID = Field(..., description="상담 ID")
     payment_method: str = Field(..., description="결제 방식: toss, portone, card, transfer")
-    payment_key: str = Field(..., description="토스페이먼츠 paymentKey")
+    payment_key: Optional[str] = Field(None, description="토스페이먼츠 paymentKey (선택사항, 결제 완료 후 콜백에서 업데이트)")
 
     @field_validator("payment_method")
     @classmethod
@@ -30,6 +30,7 @@ class PaymentCallbackRequest(BaseModel):
 
     paymentKey: str = Field(..., description="토스페이먼츠 paymentKey")
     orderId: str = Field(..., description="주문 ID (consultation_id)")
+    amount: int = Field(..., description="결제 금액 (원)")
     status: str = Field(..., description="결제 상태 (DONE, CANCELED 등)")
 
 

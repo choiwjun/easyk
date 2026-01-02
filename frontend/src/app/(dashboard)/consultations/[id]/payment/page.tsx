@@ -140,13 +140,43 @@ export default function PaymentPage() {
         return;
       }
 
+      // 결제 레코드 먼저 생성 (pending 상태)
+      // paymentKey는 결제 완료 후에만 받을 수 있으므로 여기서는 생성하지 않음
+      try {
+        const createResponse = await fetch("/api/payments", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            consultation_id: consultationId,
+            payment_method: "toss",
+            // payment_key는 결제 완료 후 콜백에서 업데이트
+          }),
+        });
+
+        if (!createResponse.ok) {
+          const errorData = await createResponse.json();
+          // 이미 결제가 생성된 경우 (409 Conflict)는 계속 진행
+          if (createResponse.status !== 409) {
+            setError(errorData.message || "결제 생성에 실패했습니다.");
+            setIsProcessing(false);
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Payment creation error:", e);
+        setError("결제 생성 중 오류가 발생했습니다.");
+        setIsProcessing(false);
+        return;
+      }
+
       const amount = Math.floor(parseFloat(consultation.amount));
       const orderId = consultationId;
       const orderName = `${CONSULTATION_TYPE_LABELS[consultation.consultation_type] || consultation.consultation_type} 상담`;
 
-      // 임시 paymentKey 생성 (실제로는 토스페이먼츠에서 생성됨)
-      // 결제 위젯 사용 시에는 토스페이먼츠가 결제를 자동으로 생성하므로
-      // 여기서는 바로 결제 요청을 진행합니다.
+      // 토스페이먼츠 결제 요청
       const paymentWidget = paymentWidgetRef.current;
       await paymentWidget.requestPayment({
         orderId,
