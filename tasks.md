@@ -2,9 +2,9 @@
 
 **문서 버전**: v1.2
 **작성일**: 2025-12-31
-**최종 업데이트**: 2025-01-01
+**최종 업데이트**: 2026-01-02
 **프로젝트**: easyK (외국인 맞춤형 정착 지원 플랫폼)
-**진행률**: 37/73 (51%)
+**진행률**: 49/73 (67%)
 
 ---
 
@@ -1097,17 +1097,34 @@
 
 ### TASK-037: Reviews 테이블 생성
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 평가 테이블 추가
 - **상세**:
   - Database Design 섹션 4의 Reviews 테이블을 SQLAlchemy 모델로 변환
   - `src/models/review.py` 생성
 - **검증**: Supabase에서 `reviews` 테이블 확인
 - **의존성**: TASK-031
+- **완료 내용**:
+  - ✅ src/models/review.py 생성 (Review 모델):
+    - consultation_id, reviewer_id, consultant_id (외래키)
+    - rating (1-5), comment (선택사항)
+    - is_anonymous, helpful_count (메타데이터)
+    - created_at, updated_at (타임스탬프)
+    - CheckConstraint: rating 범위 검증 (1-5)
+    - UniqueConstraint: consultation_id (상담당 1개 평가만)
+  - ✅ src/models/__init__.py 업데이트 (Review export)
+  - ✅ Alembic 마이그레이션 파일 생성 (3a00342bf30b_create_reviews_table.py)
+  - ✅ 인덱스 생성:
+    - ix_reviews_consultant_id
+    - ix_reviews_consultation_id (unique)
+    - idx_reviews_created_at (DESC)
+    - ix_reviews_rating
+    - ix_reviews_reviewer_id
+  - ✅ 마이그레이션 적용 완료
 
 ### TASK-038: 후기 작성 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 상담 완료 후 후기 작성 (TDD 사이클)
 - **상세**:
   - POST /api/reviews 엔드포인트
@@ -1116,10 +1133,34 @@
   - 전문가의 평균 평점 자동 업데이트
 - **검증**: 후기 작성 후 전문가 평점 갱신 확인
 - **의존성**: TASK-037
+- **완료 내용**:
+  - ✅ src/tests/test_reviews.py 생성 (7개 테스트 케이스):
+    - test_create_review_success: 후기 작성 성공
+    - test_create_review_duplicate: 중복 후기 방지
+    - test_create_review_invalid_consultation: 존재하지 않는 상담
+    - test_create_review_unauthorized: 인증 없이 후기 작성 시도
+    - test_create_review_invalid_rating: 잘못된 rating 값 (범위 밖)
+    - test_create_review_missing_fields: 필수 필드 누락
+    - test_create_review_rating_updates_average: 전문가 평점 업데이트 확인
+  - ✅ src/schemas/review.py 생성 (ReviewCreate, ReviewResponse 스키마)
+  - ✅ src/schemas/__init__.py 업데이트 (ReviewCreate, ReviewResponse export)
+  - ✅ src/services/review_service.py 생성:
+    - create_review() 함수: 후기 작성 로직
+      - 상담 조회 및 404 에러 처리
+      - 권한 검증 (자신의 상담만 후기 작성 가능)
+      - 상담 상태 검증 (completed 상태만 후기 작성 가능)
+      - 중복 후기 방지 (IntegrityError 처리)
+    - update_consultant_rating() 함수: 전문가 평균 평점 및 총 후기 수 업데이트
+  - ✅ src/services/__init__.py 업데이트 (review_service export)
+  - ✅ src/routers/reviews.py 생성 (POST /api/reviews 엔드포인트)
+  - ✅ src/routers/__init__.py 업데이트 (reviews router export)
+  - ✅ src/main.py 업데이트 (reviews router 등록)
+  - ✅ 모든 테스트 통과 (7 passed)
+  - ✅ TDD GREEN 단계 완료
 
 ### TASK-039: 후기 목록 조회 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 전문가별 후기 목록 조회 (TDD 사이클)
 - **상세**:
   - GET /api/consultants/{id}/reviews 엔드포인트
@@ -1127,10 +1168,26 @@
   - 페이지네이션 (limit, offset)
 - **검증**: 전문가 프로필 페이지에서 후기 표시
 - **의존성**: TASK-038
+- **완료 내용**:
+  - ✅ src/tests/test_reviews.py에 TestGetConsultantReviews 클래스 추가 (5개 테스트 케이스):
+    - test_get_consultant_reviews_success: 후기 목록 조회 성공 및 최신순 정렬 확인
+    - test_get_consultant_reviews_with_pagination: 페이지네이션 테스트 (limit, offset)
+    - test_get_consultant_reviews_empty: 후기가 없는 경우 빈 리스트 반환
+    - test_get_consultant_reviews_invalid_consultant: 존재하지 않는 전문가 ID
+    - test_get_consultant_reviews_unauthorized: 인증 없이 조회 시도
+  - ✅ src/services/review_service.py에 get_consultant_reviews() 함수 추가:
+    - 전문가 존재 여부 확인 (404 에러 처리)
+    - 최신순 정렬 (created_at DESC)
+    - 페이지네이션 지원 (limit, offset)
+  - ✅ src/routers/consultants.py 생성 (GET /api/consultants/{consultant_id}/reviews 엔드포인트)
+  - ✅ src/routers/__init__.py 업데이트 (consultants router export)
+  - ✅ src/main.py 업데이트 (consultants router 등록)
+  - ✅ 모든 테스트 통과 (5 passed)
+  - ✅ TDD GREEN 단계 완료
 
 ### TASK-040: 프론트엔드 후기 작성 페이지 - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 상담 완료 후 후기 작성 폼 (TDD 사이클)
 - **상세**:
   - `src/app/(dashboard)/consultations/[id]/review/page.tsx`
@@ -1139,6 +1196,18 @@
   - 제출 시 POST /api/reviews 호출
 - **검증**: 후기 작성 후 완료 메시지 표시
 - **의존성**: TASK-039
+- **완료 내용**:
+  - ✅ src/app/api/reviews/route.ts 생성 (후기 작성 API 프록시)
+  - ✅ src/app/(dashboard)/consultations/[id]/review/page.tsx 생성:
+    - 상담 정보 조회 및 표시
+    - 별점 선택 UI (1-5점, 별 아이콘 클릭)
+    - 후기 텍스트 입력 (Textarea, 최대 500자)
+    - 폼 검증 (rating 범위, comment 길이)
+    - 후기 작성 API 호출
+    - 성공 시 상담 목록으로 이동
+    - 에러 처리 및 로딩 상태 관리
+    - 상담 상태 검증 (completed 상태만 후기 작성 가능)
+  - ✅ 사용자 친화적인 UI 구현
 
 ---
 
@@ -1146,17 +1215,37 @@
 
 ### TASK-041: Jobs 테이블 생성
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 일자리 공고 테이블 추가
 - **상세**:
   - Database Design 섹션 6의 Jobs 테이블을 SQLAlchemy 모델로 변환
   - `src/models/job.py` 생성
 - **검증**: Supabase에서 `jobs` 테이블 확인
 - **의존성**: TASK-004
+- **완료 내용**:
+  - ✅ src/models/job.py 생성 (Job 모델):
+    - posted_by (외래키, users.id 참조)
+    - position, company_name, company_phone, company_address, location
+    - employment_type (full-time, contract, part-time, temporary)
+    - salary_range, salary_currency
+    - description, requirements, preferred_qualifications, benefits
+    - required_languages (ARRAY)
+    - status (active, closed, expired, draft)
+    - deadline, created_at, updated_at
+    - CheckConstraint: employment_type, status, valid_deadline
+  - ✅ src/models/__init__.py 업데이트 (Job export)
+  - ✅ Alembic 마이그레이션 파일 생성 (b3c87d12cef1_create_jobs_table.py)
+  - ✅ 인덱스 생성:
+    - ix_jobs_posted_by
+    - ix_jobs_status
+    - ix_jobs_location
+    - ix_jobs_deadline
+    - ix_jobs_employment_type
+  - ✅ 마이그레이션 적용 완료
 
 ### TASK-042: Job_Applications 테이블 생성
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 일자리 지원 테이블 추가
 - **상세**:
   - Database Design 섹션 7의 Job_Applications 테이블을 SQLAlchemy 모델로 변환
@@ -1165,10 +1254,27 @@
   - UNIQUE 제약 (job_id, user_id) - 중복 지원 방지
 - **검증**: Supabase에서 `job_applications` 테이블 확인
 - **의존성**: TASK-041
+- **완료 내용**:
+  - ✅ src/models/job_application.py 생성 (JobApplication 모델):
+    - job_id, user_id (외래키)
+    - status (applied, in_review, interview, accepted, rejected)
+    - cover_letter, resume_url
+    - reviewer_comment
+    - applied_at, reviewed_at, updated_at
+    - CheckConstraint: status 범위 검증
+    - UniqueConstraint: job_id, user_id (중복 지원 방지)
+  - ✅ src/models/__init__.py 업데이트 (JobApplication export)
+  - ✅ Alembic 마이그레이션 파일 생성 (5f3a5c1c3a49_create_job_applications_table.py)
+  - ✅ 인덱스 생성:
+    - ix_job_applications_job_id
+    - ix_job_applications_user_id
+    - ix_job_applications_status
+    - idx_job_applications_applied_at (DESC)
+  - ✅ 마이그레이션 적용 완료
 
 ### TASK-043: 일자리 공고 목록 조회 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 일자리 목록 조회 및 검색 (TDD 사이클)
 - **상세**:
   - GET /api/jobs 엔드포인트
@@ -1177,10 +1283,31 @@
   - 페이지네이션
 - **검증**: 필터 적용 시 올바른 결과 반환
 - **의존성**: TASK-042
+- **완료 내용**:
+  - ✅ 테스트 작성 (RED 단계): test_jobs.py에 8개 테스트 케이스 작성
+    - 기본 목록 조회 (active 상태만)
+    - 지역 필터링
+    - 고용 형태 필터링
+    - 키워드 검색 (position, company_name)
+    - 다중 필터 조합
+    - 페이지네이션
+    - 빈 목록 반환
+    - 인증 실패 처리
+  - ✅ 스키마 생성: src/schemas/job.py (JobResponse)
+    - required_languages JSON 파싱 validator 추가
+  - ✅ 서비스 로직 구현: src/services/job_service.py
+    - get_jobs 함수: 필터링, 검색, 페이지네이션 지원
+    - active 상태만 조회, 최신순 정렬
+  - ✅ API 엔드포인트 구현: src/routers/jobs.py
+    - GET /api/jobs 엔드포인트
+    - Query 파라미터: location, employment_type, keyword, limit, offset
+  - ✅ 라우터 등록: main.py에 jobs 라우터 추가
+  - ✅ Job 모델 수정: required_languages를 Text로 변경 (SQLite 호환)
+  - ✅ 테스트 통과 (GREEN 단계)
 
 ### TASK-044: 일자리 상세 조회 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 특정 일자리 상세 정보 조회 (TDD 사이클)
 - **상세**:
   - GET /api/jobs/{id} 엔드포인트
@@ -1188,10 +1315,25 @@
   - 지원 여부 확인 (현재 사용자가 이미 지원했는지)
 - **검증**: 상세 페이지에서 모든 정보 표시
 - **의존성**: TASK-043
+- **완료 내용**:
+  - ✅ 테스트 작성 (RED 단계): test_jobs.py에 TestGetJobDetail 클래스 추가
+    - 기본 상세 조회 성공
+    - 지원한 일자리 상세 조회 (has_applied=True)
+    - 존재하지 않는 일자리 조회 (404)
+    - 인증 없이 조회 시도 (403)
+  - ✅ 스키마 생성: JobDetailResponse (JobResponse 확장)
+    - has_applied 필드 추가
+  - ✅ 서비스 로직 구현: src/services/job_service.py의 get_job_detail 함수
+    - 일자리 조회 및 존재 여부 확인
+    - 지원 여부 확인 (JobApplication 테이블 조회)
+  - ✅ API 엔드포인트 구현: src/routers/jobs.py
+    - GET /api/jobs/{job_id} 엔드포인트
+    - JobDetailResponse 반환
+  - ✅ 테스트 통과 (GREEN 단계)
 
 ### TASK-045: 일자리 지원 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 외국인이 일자리에 지원 (TDD 사이클)
 - **상세**:
   - POST /api/jobs/{id}/apply 엔드포인트
@@ -1200,10 +1342,31 @@
   - DB에 지원 기록 저장 (status: 'applied')
 - **검증**: 지원 후 지원 내역에 표시
 - **의존성**: TASK-044
+- **완료 내용**:
+  - ✅ 테스트 작성 (RED 단계): test_jobs.py에 TestApplyToJob 클래스 추가
+    - 기본 지원 성공 (cover_letter, resume_url 포함)
+    - 최소 데이터로 지원 성공 (필드 없음)
+    - 중복 지원 방지 테스트
+    - 존재하지 않는 일자리 지원 시도 (404)
+    - closed 상태 일자리 지원 시도 (400)
+    - 인증 없이 지원 시도 (403)
+  - ✅ 스키마 생성: src/schemas/job_application.py
+    - JobApplicationCreate: cover_letter, resume_url (optional)
+    - JobApplicationResponse: 전체 지원 내역 정보
+  - ✅ 서비스 로직 구현: src/services/job_service.py의 apply_to_job 함수
+    - 일자리 존재 여부 확인
+    - active 상태 검증
+    - 중복 지원 확인
+    - 지원 내역 생성 및 저장
+    - IntegrityError 처리 (UNIQUE 제약)
+  - ✅ API 엔드포인트 구현: src/routers/jobs.py
+    - POST /api/jobs/{job_id}/apply 엔드포인트
+    - JobApplicationResponse 반환 (201 Created)
+  - ✅ 테스트 통과 (GREEN 단계)
 
 ### TASK-046: 프론트엔드 일자리 목록 페이지 - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 일자리 검색 및 목록 표시 (TDD 사이클)
 - **상세**:
   - `src/app/(dashboard)/jobs/page.tsx`
@@ -1213,10 +1376,27 @@
   - 상세 페이지 링크
 - **검증**: 검색/필터 작동 확인
 - **의존성**: TASK-045
+- **완료 내용**:
+  - ✅ API proxy route 생성: `src/app/api/jobs/route.ts`
+    - GET 메서드로 일자리 목록 조회
+    - Query parameters 지원 (location, employment_type, keyword, limit, offset)
+    - 인증 헤더 처리
+  - ✅ 일자리 목록 페이지 구현: `src/app/(dashboard)/jobs/page.tsx`
+    - 검색창: 키워드 검색 (직종, 회사명)
+    - 필터: 지역 (텍스트 입력), 고용 형태 (드롭다운)
+    - 카드 형태 목록 표시: 직종, 회사명, 지역, 고용 형태, 급여, 설명, 마감일
+    - 상세보기 버튼: `/jobs/{id}` 링크
+    - 로딩 상태 및 에러 처리
+    - 빈 목록 처리 (필터 초기화 버튼 포함)
+  - ✅ UI/UX 구현:
+    - 반응형 레이아웃 (모바일/데스크톱)
+    - 호버 효과 (카드 그림자)
+    - 필터 변경 시 자동 검색 (지역, 고용 형태)
+    - 검색 버튼 클릭 시 검색 (키워드)
 
 ### TASK-047: 프론트엔드 일자리 상세 페이지 - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 일자리 상세 정보 및 지원 (TDD 사이클)
 - **상세**:
   - `src/app/(dashboard)/jobs/[id]/page.tsx`
@@ -1225,10 +1405,26 @@
   - 지원 모달 (자기소개서 입력)
 - **검증**: 지원 완료 후 버튼 비활성화
 - **의존성**: TASK-046
+- **완료 내용**:
+  - ✅ API proxy route 생성:
+    - `src/app/api/jobs/[id]/route.ts`: GET 메서드로 일자리 상세 조회
+    - `src/app/api/jobs/[id]/apply/route.ts`: POST 메서드로 일자리 지원
+  - ✅ 일자리 상세 페이지 구현: `src/app/(dashboard)/jobs/[id]/page.tsx`
+    - 공고 상세 정보 표시: 직종, 회사명, 지역, 고용 형태, 급여
+    - 직무 설명, 자격 요건, 우대 사항, 복리후생, 필수 언어 표시
+    - 회사 정보 (연락처, 주소) 표시
+    - 마감일 표시
+  - ✅ 지원 기능 구현:
+    - 지원 버튼: has_applied가 false이고 status가 active일 때만 표시
+    - 이미 지원한 경우 안내 메시지 표시
+    - 모집 마감된 경우 안내 메시지 표시
+    - 지원 모달: 자기소개서 (textarea), 이력서 파일 URL (input) 입력
+    - 지원 성공 시 모달 닫기 및 페이지 새로고침 (has_applied 업데이트)
+  - ✅ 에러 처리: 로딩 상태, 에러 메시지, 404 처리
 
 ### TASK-048: 지자체 일자리 공고 관리 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 지자체가 공고 작성/수정/삭제 (TDD 사이클)
 - **상세**:
   - POST /api/jobs: 새 공고 작성
@@ -1237,6 +1433,33 @@
   - 권한 검증 (role: 'admin')
 - **검증**: 지자체 계정으로만 작성/수정/삭제 가능
 - **의존성**: TASK-047
+- **완료 내용**:
+  - ✅ 스키마 추가: src/schemas/job.py
+    - JobCreate: 일자리 생성 스키마 (필수 필드 검증)
+    - JobUpdate: 일자리 수정 스키마 (모든 필드 optional)
+  - ✅ 서비스 로직 구현: src/services/job_service.py
+    - create_job(): 관리자 권한 검증, required_languages JSON 변환, 일자리 생성
+    - update_job(): 관리자 권한 검증, 일자리 조회, 부분 업데이트
+    - delete_job(): 관리자 권한 검증, 일자리 조회 및 삭제
+  - ✅ API 엔드포인트 구현: src/routers/jobs.py
+    - POST /api/jobs: 일자리 생성 (201 Created)
+    - PUT /api/jobs/{job_id}: 일자리 수정 (200 OK)
+    - DELETE /api/jobs/{job_id}: 일자리 삭제 (204 No Content)
+  - ✅ 테스트 통과 (GREEN 단계):
+    - TestCreateJob: 4개 테스트 통과
+      - 관리자 공고 작성 성공
+      - 일반 사용자 권한 없음 (403)
+      - 인증 없이 작성 시도 (403)
+      - 필수 필드 누락 (422)
+    - TestUpdateJob: 3개 테스트 통과
+      - 관리자 공고 수정 성공
+      - 일반 사용자 권한 없음 (403)
+      - 존재하지 않는 공고 (404)
+    - TestDeleteJob: 3개 테스트 통과
+      - 관리자 공고 삭제 성공
+      - 일반 사용자 권한 없음 (403)
+      - 존재하지 않는 공고 (404)
+  - ✅ 전체 테스트 통과: 28 passed (기존 18개 + 신규 10개)
 
 ### TASK-049: 지자체 지원자 목록 조회 API - 구현
 - **타입**: BEHAVIORAL
