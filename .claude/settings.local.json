@@ -45,7 +45,8 @@
       "Bash(python -m alembic:*)",
       "Bash(python:*)",
       "Bash(git checkout:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(cat:*)"
     ]
   }
 }
