@@ -4,7 +4,7 @@
 **작성일**: 2025-12-31
 **최종 업데이트**: 2026-01-02
 **프로젝트**: easyK (외국인 맞춤형 정착 지원 플랫폼)
-**진행률**: 50/73 (68%)
+**진행률**: 51/73 (70%)
 
 ---
 
@@ -1495,7 +1495,8 @@
 
 ### TASK-050: 프론트엔드 지자체 관리 페이지 - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
+- **완료일**: 2026-01-02
 - **설명**: 지자체 일자리 관리 대시보드 (TDD 사이클)
 - **상세**:
   - `src/app/(dashboard)/admin/jobs/page.tsx`
@@ -1505,6 +1506,15 @@
   - 지원자 상태 변경 (채용/거절)
 - **검증**: 공고 작성/수정/삭제, 지원자 관리 모두 작동
 - **의존성**: TASK-049
+- **구현내역**:
+  - `frontend/src/app/api/jobs/route.ts`: POST 메서드 추가 (공고 생성)
+  - `frontend/src/app/api/jobs/[id]/route.ts`: PUT, DELETE 메서드 추가 (공고 수정/삭제)
+  - `frontend/src/app/api/jobs/[id]/applications/route.ts`: GET 메서드 (지원자 목록 조회, 상태 필터링)
+  - `frontend/src/types/job.ts`: TypeScript 타입 정의 (Job, JobCreate, JobUpdate, JobApplicationWithApplicant)
+  - `frontend/src/app/(dashboard)/admin/jobs/page.tsx`: 관리자 대시보드 페이지
+    - AdminJobsPage: 일자리 목록 (상태별 표시, 작성/수정/삭제 버튼)
+    - JobFormModal: 공고 작성/수정 모달 폼 (모든 필드 입력)
+    - ApplicantsModal: 지원자 목록 조회 모달 (상태 필터링, 지원자 정보 표시)
 
 ---
 
