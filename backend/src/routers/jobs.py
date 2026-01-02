@@ -16,8 +16,14 @@ from ..services.job_service import (
     create_job as create_job_service,
     update_job as update_job_service,
     delete_job as delete_job_service,
+    get_job_applications as get_job_applications_service,
 )
-from ..schemas.job_application import JobApplicationCreate, JobApplicationResponse
+from ..schemas.job_application import (
+    JobApplicationCreate,
+    JobApplicationResponse,
+    JobApplicationWithApplicant,
+    ApplicantInfo,
+)
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 
@@ -140,6 +146,46 @@ def delete_job(
         HTTPException: 일자리를 찾을 수 없거나 권한이 없을 때 에러
     """
     delete_job_service(job_id, current_user.id, db)
+
+
+@router.get("/{job_id}/applications", response_model=List[JobApplicationWithApplicant])
+def get_job_applications(
+    job_id: UUID,
+    status_filter: Optional[str] = Query(None, alias="status", description="지원 상태 필터 (applied, in_review, accepted, rejected)"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    일자리 지원자 목록 조회 엔드포인트 (관리자 전용)
+
+    Args:
+        job_id: 일자리 ID
+        status_filter: 지원 상태 필터 (optional)
+        current_user: 현재 인증된 사용자 (admin)
+        db: 데이터베이스 세션
+
+    Returns:
+        List[JobApplicationWithApplicant]: 지원자 정보가 포함된 지원 내역 목록
+
+    Raises:
+        HTTPException: 일자리를 찾을 수 없거나 권한이 없을 때 에러
+    """
+    applications = get_job_applications_service(job_id, current_user.id, status_filter, db)
+
+    # 응답 포맷 변환
+    result = []
+    for application, user in applications:
+        app_dict = JobApplicationResponse.model_validate(application).model_dump()
+        app_dict["applicant"] = ApplicantInfo(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email,
+            phone_number=user.phone_number,
+            nationality=user.nationality,
+        )
+        result.append(JobApplicationWithApplicant(**app_dict))
+
+    return result
 
 
 @router.post("/{job_id}/apply", response_model=JobApplicationResponse, status_code=status.HTTP_201_CREATED)

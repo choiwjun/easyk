@@ -337,3 +337,61 @@ def delete_job(
     db.delete(job)
     db.commit()
 
+
+def get_job_applications(
+    job_id: UUID,
+    user_id: UUID,
+    status: Optional[str],
+    db: Session,
+) -> list[tuple["JobApplication", "User"]]:
+    """
+    일자리 지원자 목록 조회 (관리자 전용)
+
+    Args:
+        job_id: 일자리 ID
+        user_id: 조회하는 사용자 ID (admin)
+        status: 지원 상태 필터 (optional)
+        db: 데이터베이스 세션
+
+    Returns:
+        list[tuple[JobApplication, User]]: 지원 내역과 지원자 정보 튜플 리스트
+
+    Raises:
+        HTTPException: 일자리를 찾을 수 없거나 권한이 없을 때 에러
+    """
+    from fastapi import HTTPException, status as http_status
+    from ..models.user import User
+    from sqlalchemy.orm import joinedload
+
+    # 사용자 조회 및 권한 검증
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user or user.role != "admin":
+        raise HTTPException(
+            status_code=http_status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+
+    # 일자리 조회
+    job = db.query(Job).filter(Job.id == job_id).first()
+
+    if not job:
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND,
+            detail="Job not found"
+        )
+
+    # 지원 내역 조회 (User 정보와 함께)
+    query = db.query(JobApplication, User).join(
+        User, JobApplication.user_id == User.id
+    ).filter(JobApplication.job_id == job_id)
+
+    # 상태 필터링
+    if status:
+        query = query.filter(JobApplication.status == status)
+
+    # 최신순 정렬
+    applications = query.order_by(JobApplication.applied_at.desc()).all()
+
+    return applications
+

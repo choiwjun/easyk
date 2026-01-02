@@ -4,7 +4,7 @@
 **작성일**: 2025-12-31
 **최종 업데이트**: 2026-01-02
 **프로젝트**: easyK (외국인 맞춤형 정착 지원 플랫폼)
-**진행률**: 49/73 (67%)
+**진행률**: 50/73 (68%)
 
 ---
 
@@ -1463,7 +1463,7 @@
 
 ### TASK-049: 지자체 지원자 목록 조회 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE ✅
 - **설명**: 지자체가 공고별 지원자 조회 (TDD 사이클)
 - **상세**:
   - GET /api/jobs/{id}/applications 엔드포인트
@@ -1471,6 +1471,27 @@
   - 상태별 필터링 (applied, in_review, accepted, rejected)
 - **검증**: 지자체 계정으로 자신의 공고 지원자만 조회
 - **의존성**: TASK-048
+- **완료 내용**:
+  - ✅ 스키마 추가: src/schemas/job_application.py
+    - ApplicantInfo: 지원자 개인정보 (이름, 이메일, 전화번호, 국적)
+    - JobApplicationWithApplicant: 지원자 정보가 포함된 응답 스키마
+  - ✅ 서비스 로직 구현: src/services/job_service.py
+    - get_job_applications(): 관리자 권한 검증, 일자리 존재 확인
+    - User와 JobApplication JOIN하여 지원자 정보 포함
+    - 상태별 필터링 (optional)
+    - 최신순 정렬 (applied_at desc)
+  - ✅ API 엔드포인트 구현: src/routers/jobs.py
+    - GET /api/jobs/{job_id}/applications
+    - Query parameter: status (지원 상태 필터)
+    - 응답: JobApplicationWithApplicant 리스트
+  - ✅ 테스트 통과 (GREEN 단계):
+    - TestGetJobApplications: 5개 테스트 통과
+      - 지원자 목록 조회 성공
+      - 상태별 필터링 (accepted)
+      - 일반 사용자 권한 없음 (403)
+      - 존재하지 않는 일자리 (404)
+      - 빈 목록 처리
+  - ✅ 전체 테스트 통과: 33 passed (기존 28개 + 신규 5개)
 
 ### TASK-050: 프론트엔드 지자체 관리 페이지 - 구현
 - **타입**: BEHAVIORAL
