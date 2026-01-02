@@ -1,11 +1,14 @@
 """Consultant Matching Service"""
 
 import json
+import logging
 from typing import Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, cast, Text
 
 from ..models.consultant import Consultant
+
+logger = logging.getLogger(__name__)
 
 
 def find_matching_consultant(db: Session, consultation_type: str) -> Optional[Consultant]:
@@ -25,29 +28,44 @@ def find_matching_consultant(db: Session, consultation_type: str) -> Optional[Co
         3. average_rating 높은 순으로 정렬
         4. 첫 번째 전문가 반환
     """
-    # 활성화되고 검증된 전문가만 조회
-    consultants = db.query(Consultant).filter(
-        Consultant.is_active == True,
-        Consultant.is_verified == True
-    ).all()
+    # HIGH FIX: N+1 쿼리 최적화 - SQL 레벨에서 필터링
+    # PostgreSQL/SQLite 모두 지원하는 LIKE 검색 사용
+    # JSON 배열 내 검색: specialties LIKE '%"consultation_type"%'
+    search_pattern = f'%"{consultation_type}"%'
 
-    # 전문 분야가 일치하는 전문가 필터링
-    matching_consultants = []
-    for consultant in consultants:
-        try:
-            specialties = json.loads(consultant.specialties)
-            if consultation_type in specialties:
-                matching_consultants.append(consultant)
-        except (json.JSONDecodeError, TypeError):
-            # JSON 파싱 실패 시 건너뛰기
-            continue
+    try:
+        # 데이터베이스에서 직접 필터링 (N+1 해결)
+        consultant = db.query(Consultant).filter(
+            Consultant.is_active == True,
+            Consultant.is_verified == True,
+            cast(Consultant.specialties, Text).like(search_pattern)
+        ).order_by(
+            desc(Consultant.average_rating)
+        ).first()
 
-    # 매칭된 전문가가 없으면 None 반환
-    if not matching_consultants:
-        return None
+        return consultant
 
-    # 평점 높은 순으로 정렬
-    matching_consultants.sort(key=lambda c: c.average_rating, reverse=True)
+    except Exception as e:
+        # 데이터베이스 특화 기능 사용 실패 시 fallback
+        logger.warning(f"Database-level JSON filtering failed, using fallback: {e}")
 
-    # 가장 높은 평점의 전문가 반환
-    return matching_consultants[0]
+        # Fallback: 기존 Python 필터링 방식 (호환성 보장)
+        consultants = db.query(Consultant).filter(
+            Consultant.is_active == True,
+            Consultant.is_verified == True
+        ).all()
+
+        matching_consultants = []
+        for consultant in consultants:
+            try:
+                specialties = json.loads(consultant.specialties)
+                if consultation_type in specialties:
+                    matching_consultants.append(consultant)
+            except (json.JSONDecodeError, TypeError):
+                continue
+
+        if not matching_consultants:
+            return None
+
+        matching_consultants.sort(key=lambda c: c.average_rating, reverse=True)
+        return matching_consultants[0]

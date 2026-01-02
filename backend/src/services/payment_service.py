@@ -126,11 +126,12 @@ async def process_payment_callback(
     from ..utils.toss_payments import toss_payments_client
 
     # consultation_id로 결제 조회 (pending 상태인 결제만)
+    # CRITICAL FIX: SELECT FOR UPDATE로 행 잠금 - 동시성 제어
     consultation_id = UUID(order_id)
     payment = db.query(Payment).filter(
         Payment.consultation_id == consultation_id,
         Payment.status == "pending",
-    ).first()
+    ).with_for_update().first()
 
     if not payment:
         raise HTTPException(
@@ -187,9 +188,10 @@ async def process_payment_callback(
     payment.paid_at = datetime.now(timezone.utc)
     
     # 상담 상태 업데이트
+    # CRITICAL FIX: SELECT FOR UPDATE로 행 잠금
     consultation = db.query(Consultation).filter(
         Consultation.id == consultation_id
-    ).first()
+    ).with_for_update().first()
     
     if consultation:
         # 금액 검증 (DB의 상담 금액과 비교)

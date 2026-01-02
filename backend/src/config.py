@@ -6,7 +6,8 @@ class Settings(BaseSettings):
     """애플리케이션 설정"""
 
     # Database
-    DATABASE_URL: str = "postgresql://user:password@localhost:5432/easyk"
+    # HIGH FIX: 프로덕션에서는 반드시 환경 변수로 설정 필요
+    DATABASE_URL: str
 
     # Supabase (Alternative to local PostgreSQL)
     SUPABASE_URL: str = ""
@@ -14,7 +15,8 @@ class Settings(BaseSettings):
     SUPABASE_DB_URL: str = ""
 
     # Security
-    SECRET_KEY: str = "your-secret-key-here-change-in-production"
+    # HIGH FIX: 프로덕션에서는 반드시 강력한 시크릿 키 설정 필요
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
@@ -31,6 +33,7 @@ class Settings(BaseSettings):
     # Payment
     TOSS_CLIENT_KEY: str = ""
     TOSS_SECRET_KEY: str = ""
+    TOSS_WEBHOOK_SECRET: str = ""  # 웹훅 서명 검증용 시크릿
 
     model_config = SettingsConfigDict(
         env_file=".env",

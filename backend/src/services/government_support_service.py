@@ -11,6 +11,30 @@ from ..models.user import User
 from ..schemas.government_support import GovernmentSupportCreate, GovernmentSupportUpdate
 
 
+def _sanitize_search_input(input_str: Optional[str], max_length: int = 100) -> Optional[str]:
+    """
+    MEDIUM FIX: 검색 입력 값 sanitization
+
+    Args:
+        input_str: 입력 문자열
+        max_length: 최대 길이
+
+    Returns:
+        Optional[str]: 정제된 문자열 또는 None
+    """
+    if not input_str:
+        return None
+
+    # 공백 제거 및 길이 제한
+    sanitized = input_str.strip()[:max_length]
+
+    # 빈 문자열인 경우 None 반환
+    if not sanitized:
+        return None
+
+    return sanitized
+
+
 def get_supports(
     db: Session,
     category: Optional[str] = None,
@@ -31,6 +55,10 @@ def get_supports(
     Returns:
         tuple[List[GovernmentSupport], int]: (지원 목록, 전체 개수)
     """
+    # MEDIUM FIX: 입력 값 sanitization
+    category = _sanitize_search_input(category, max_length=50)
+    keyword = _sanitize_search_input(keyword)
+
     # 기본 필터: active 상태만 조회
     query = db.query(GovernmentSupport).filter(GovernmentSupport.status == "active")
 

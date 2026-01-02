@@ -44,12 +44,18 @@ def update_current_user_profile(
         UserResponse: 업데이트된 사용자 정보
     """
     # 제공된 필드만 업데이트
+    # HIGH FIX: 화이트리스트 방식으로 허용된 필드만 업데이트
     update_dict = update_data.model_dump(exclude_unset=True)
-    
+
+    # UserUpdate 스키마에 정의된 필드만 허용
+    allowed_fields = {"nationality", "visa_type", "preferred_language",
+                     "residential_area", "phone_number", "bio"}
+
     for field, value in update_dict.items():
-        setattr(current_user, field, value)
-    
+        if field in allowed_fields:
+            setattr(current_user, field, value)
+
     db.commit()
     db.refresh(current_user)
-    
+
     return current_user

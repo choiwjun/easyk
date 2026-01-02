@@ -100,23 +100,30 @@ def update_consultant_rating(consultant_id: UUID, db: Session) -> None:
     if not consultant:
         return
 
-    # 해당 전문가의 모든 후기 조회
-    reviews = db.query(Review).filter(
-        Review.consultant_id == consultant_id
-    ).all()
+    # HIGH FIX: SQL 집계 함수 사용 - N+1 쿼리 최적화
+    from sqlalchemy import func
 
-    if not reviews:
+    # COUNT()와 AVG()를 한 번의 쿼리로 조회
+    result = db.query(
+        func.count(Review.id).label('total_reviews'),
+        func.avg(Review.rating).label('average_rating')
+    ).filter(
+        Review.consultant_id == consultant_id
+    ).first()
+
+    total_reviews = result.total_reviews if result else 0
+    average_rating = result.average_rating if result and result.average_rating else 0
+
+    if total_reviews == 0:
         # 후기가 없으면 기본값으로 설정
         consultant.total_reviews = 0
         consultant.average_rating = Decimal("0.00")
     else:
         # 총 후기 수
-        consultant.total_reviews = len(reviews)
-        
-        # 평균 평점 계산
-        total_rating = sum(review.rating for review in reviews)
-        average_rating = Decimal(str(total_rating)) / Decimal(str(len(reviews)))
-        consultant.average_rating = average_rating.quantize(Decimal("0.01"))
+        consultant.total_reviews = total_reviews
+
+        # 평균 평점 계산 (이미 집계됨)
+        consultant.average_rating = Decimal(str(average_rating)).quantize(Decimal("0.01"))
 
     db.commit()
     db.refresh(consultant)

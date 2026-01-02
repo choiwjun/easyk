@@ -48,23 +48,38 @@ async def payment_callback(
 
     Args:
         callback_data: 토스페이먼츠 콜백 데이터
-        x_toss_webhook_secret: 웹훅 시크릿 (선택사항, 향후 서명 검증에 사용)
+        x_toss_webhook_secret: 웹훅 시크릿 (서명 검증에 사용)
         db: 데이터베이스 세션
 
     Returns:
         PaymentResponse: 업데이트된 결제 정보
 
     Note:
-        - 현재는 기본적인 인증만 수행 (향후 토스페이먼츠 서명 검증 추가 필요)
-        - 프로덕션 환경에서는 반드시 서명 검증 또는 IP 화이트리스트 적용 필요
+        - 프로덕션 환경에서는 반드시 웹훅 시크릿 검증 수행
+        - IP 화이트리스트는 네트워크 레벨에서 적용 권장
     """
-    # 기본 보안: 시크릿 키 검증 (간단한 방법)
-    # 향후 토스페이먼츠 공식 서명 검증 방식으로 업그레이드 필요
-    if settings.DEBUG is False:
-        # 프로덕션 환경에서는 더 엄격한 검증 필요
-        # 예: IP 화이트리스트, 서명 검증 등
-        pass
-    
+    # CRITICAL FIX: 프로덕션 환경에서 웹훅 시크릿 검증
+    if not settings.DEBUG:
+        if not x_toss_webhook_secret:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Missing webhook secret"
+            )
+
+        # 웹훅 시크릿이 설정되어 있는 경우 검증
+        if settings.TOSS_WEBHOOK_SECRET:
+            if x_toss_webhook_secret != settings.TOSS_WEBHOOK_SECRET:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid webhook secret"
+                )
+        else:
+            # 프로덕션에서 웹훅 시크릿이 설정되지 않은 경우 에러
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Webhook secret not configured"
+            )
+
     return await process_payment_callback_service(
         callback_data.paymentKey,
         callback_data.orderId,
