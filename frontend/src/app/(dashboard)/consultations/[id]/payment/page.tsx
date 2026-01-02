@@ -53,11 +53,6 @@ export default function PaymentPage() {
     if (consultation && consultation.amount) {
       initializePaymentWidget();
     }
-    return () => {
-      if (paymentMethodsWidgetRef.current) {
-        paymentMethodsWidgetRef.current.unmount();
-      }
-    };
   }, [consultation]);
 
   const fetchConsultation = async () => {

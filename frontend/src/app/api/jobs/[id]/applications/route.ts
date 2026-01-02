@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:800
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -16,7 +16,7 @@ export async function GET(
       );
     }
 
-    const jobId = params.id;
+    const { id: jobId } = await params;
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status');
 

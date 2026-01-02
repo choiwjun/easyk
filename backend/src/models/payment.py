@@ -10,15 +10,14 @@ from sqlalchemy import (
     ForeignKey,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 
 try:
-    from ..database import Base
+    from ..database import Base, UUID
 except ImportError:
     # For Alembic migrations
-    from database import Base
+    from database import Base, UUID
 
 
 class Payment(Base):
@@ -27,11 +26,11 @@ class Payment(Base):
     __tablename__ = "payments"
 
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
 
     # Foreign Keys
     consultation_id = Column(
-        UUID(as_uuid=True),
+        UUID,
         ForeignKey("consultations.id", ondelete="CASCADE"),
         nullable=False,
         unique=True,
@@ -39,7 +38,7 @@ class Payment(Base):
         comment="상담 ID (1:1 관계)",
     )
     user_id = Column(
-        UUID(as_uuid=True),
+        UUID,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -130,5 +129,6 @@ class Payment(Base):
 
     def __repr__(self):
         return f"<Payment(id={self.id}, consultation_id={self.consultation_id}, user_id={self.user_id}, status={self.status}, amount={self.amount})>"
+
 
 

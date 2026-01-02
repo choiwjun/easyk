@@ -10,15 +10,14 @@ from sqlalchemy import (
     CheckConstraint,
     ForeignKey,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 
 try:
-    from ..database import Base
+    from ..database import Base, UUID
 except ImportError:
     # For Alembic migrations
-    from database import Base
+    from database import Base, UUID
 
 
 class Consultation(Base):
@@ -27,17 +26,17 @@ class Consultation(Base):
     __tablename__ = "consultations"
 
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
 
     # Foreign Keys
     user_id = Column(
-        UUID(as_uuid=True),
+        UUID,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
     consultant_id = Column(
-        UUID(as_uuid=True),
+        UUID,
         ForeignKey("consultants.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
@@ -127,6 +126,7 @@ class Consultation(Base):
 
     def __repr__(self):
         return f"<Consultation(id={self.id}, user_id={self.user_id}, consultant_id={self.consultant_id}, status={self.status})>"
+
 
 
 

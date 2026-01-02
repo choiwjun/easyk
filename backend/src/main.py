@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .routers import auth, users, consultations, payments
+from .routers import auth, users, consultations, payments, reviews, consultants, jobs, support_keywords, government_supports
 
 # FastAPI 앱 생성
 app = FastAPI(
@@ -25,6 +25,11 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(consultations.router)
 app.include_router(payments.router)
+app.include_router(reviews.router)
+app.include_router(consultants.router)
+app.include_router(jobs.router)
+app.include_router(support_keywords.router)
+app.include_router(government_supports.router)
 
 
 # Health Check 엔드포인트

@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:800
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -16,7 +16,7 @@ export async function GET(
       );
     }
 
-    const jobId = params.id;
+    const { id: jobId } = await params;
     const url = `${BACKEND_URL}/api/jobs/${jobId}`;
 
     const response = await fetch(url, {
@@ -47,7 +47,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -59,7 +59,7 @@ export async function PUT(
       );
     }
 
-    const jobId = params.id;
+    const { id: jobId } = await params;
     const body = await request.json();
     const url = `${BACKEND_URL}/api/jobs/${jobId}`;
 
@@ -93,7 +93,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -105,7 +105,7 @@ export async function DELETE(
       );
     }
 
-    const jobId = params.id;
+    const { id: jobId } = await params;
     const url = `${BACKEND_URL}/api/jobs/${jobId}`;
 
     const response = await fetch(url, {

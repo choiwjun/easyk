@@ -10,14 +10,14 @@ from sqlalchemy import (
     func,
     CheckConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 import uuid
 
 try:
-    from ..database import Base
+    from ..database import Base, UUID
 except ImportError:
     # For Alembic migrations
-    from database import Base
+    from database import Base, UUID
 
 
 class User(Base):
@@ -26,7 +26,7 @@ class User(Base):
     __tablename__ = "users"
 
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
 
     # 인증 정보
     email = Column(String(255), unique=True, nullable=False, index=True)
@@ -86,6 +86,9 @@ class User(Base):
             name="check_role",
         ),
     )
+
+    # Relationships
+    created_keywords = relationship("SupportKeyword", back_populates="creator")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, role={self.role})>"

@@ -12,15 +12,14 @@ from sqlalchemy import (
     CheckConstraint,
     ForeignKey,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 
 try:
-    from ..database import Base
+    from ..database import Base, UUID
 except ImportError:
     # For Alembic migrations
-    from database import Base
+    from database import Base, UUID
 
 
 class Consultant(Base):
@@ -29,11 +28,11 @@ class Consultant(Base):
     __tablename__ = "consultants"
 
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
 
     # Foreign Key
     user_id = Column(
-        UUID(as_uuid=True),
+        UUID,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         unique=True,

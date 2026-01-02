@@ -1,10 +1,10 @@
 # easyK Tasks (실행 가능한 개발 큐)
 
-**문서 버전**: v1.2
+**문서 버전**: v1.19
 **작성일**: 2025-12-31
 **최종 업데이트**: 2026-01-02
 **프로젝트**: easyK (외국인 맞춤형 정착 지원 플랫폼)
-**진행률**: 52/73 (71%)
+**진행률**: 54/73 (74%)
 
 ---
 
@@ -1544,51 +1544,120 @@
 
 ### TASK-052: Support_Keywords 테이블 생성
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 정부 지원 검색 키워드 테이블 추가
 - **상세**:
   - Database Design 섹션 9의 Support_Keywords 테이블을 SQLAlchemy 모델로 변환
   - `src/models/support_keyword.py` 생성
-  - 외래키 관계 설정 (support_id)
-- **검증**: Supabase에서 `support_keywords` 테이블 확인
+  - 외래키 관계 설정 (created_by → users.id)
+  - `src/schemas/support_keyword.py`: SupportKeywordCreate, SupportKeywordResponse, SupportKeywordList 스키마 생성
+  - `src/services/support_keyword_service.py`: create_keyword, get_all_keywords, increment_search_count 서비스 구현
+  - `src/routers/support_keywords.py`: GET /api/support-keywords (목록), POST /api/support-keywords (생성), POST /api/support-keywords/{keyword_id}/search (검색 카운터 증가) 엔드포인트 구현
+  - `frontend/src/app/api/support-keywords/route.ts`: API proxy route 생성
+  - `frontend/src/app/(dashboard)/support-keywords/page.tsx`: 지원 키워드 관리 페이지 UI 구현 (검색/필터링, 목록 표시, 생성 모달)
+  - `src/models/__init__.py`: SupportKeyword 모델 export 추가
+  - `src/schemas/__init__.py`: SupportKeyword 관련 스키마 export 추가
+  - `src/routers/__init__.py`: support_keywords router export 추가
+  - `src/services/__init__.py`: support_keyword_service export 추가
+  - `src/main.py`: support_keywords router 등록
+  - Alembic migration: `backend/alembic/versions/7c4f8e2d1a3b_create_government_supports_table.py` 생성 및 적용 완료
+- **검증**: Supabase에서 `support_keywords` 테이블 확인, pytest로 API 엔드포인트 테스트 통과
 - **의존성**: TASK-051
+- **완료일**: 2025-01-02
 
 ### TASK-053: 정부 지원 정보 목록 조회 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 정부 지원 프로그램 목록 조회 (TDD 사이클)
 - **상세**:
   - GET /api/supports 엔드포인트
-  - 카테고리별 필터링 (subsidy, education, training)
-  - 검색 (키워드)
-- **검증**: 카테고리 필터 적용 시 올바른 결과 반환
+  - 카테고리별 필터링 (subsidy, education, training, visa, housing)
+  - 검색 (키워드) - title, description 필드에서 검색
+  - 페이지네이션 (limit, offset)
+  - active 상태만 조회 (기본 필터)
+  - 정렬 (최신 순)
+- **구현내역**:
+  - `backend/src/tests/test_supports.py`: 테스트 7개 작성
+    - test_get_supports_success: 기본 목록 조회
+    - test_get_supports_with_category_filter: 카테고리 필터링
+    - test_get_supports_with_keyword_search: 키워드 검색
+    - test_get_supports_with_multiple_filters: 다중 필터
+    - test_get_supports_with_pagination: 페이지네이션
+    - test_get_supports_empty: 빈 결과
+    - test_get_supports_unauthorized: 인증 실패
+  - `backend/src/schemas/government_support.py`: Pydantic 스키마 생성
+    - GovernmentSupportResponse: 응답 스키마 (eligible_visa_types JSON 파싱)
+    - GovernmentSupportList: 목록 응답 스키마
+  - `backend/src/services/government_support_service.py`: 서비스 로직 구현
+    - get_supports: 목록 조회 (카테고리, 키워드, 페이지네이션 필터)
+  - `backend/src/routers/government_supports.py`: API 라우터 구현
+    - GET /api/supports: 카테고리, 키워드, 페이지네이션 쿼리 파라미터 지원
+  - `backend/src/schemas/__init__.py`: export 추가
+  - `backend/src/routers/__init__.py`: export 추가
+  - `backend/src/services/__init__.py`: export 추가
+  - `backend/src/main.py`: government_supports router 등록
+- **검증**: 7/7 테스트 통과 (100%)
+  - 카테고리 필터 적용 시 올바른 결과 반환
+  - 키워드 검색 정상 작동
+  - 페이지네이션 정상 작동
+  - 인증되지 않은 요청 403 반환
 - **의존성**: TASK-052
+- **완료일**: 2026-01-02
 
 ### TASK-054: 정부 지원 상세 조회 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 특정 지원 프로그램 상세 정보 조회 (TDD 사이클)
 - **상세**:
   - GET /api/supports/{id} 엔드포인트
   - 지원 내용, 자격 조건, 신청 방법 반환
-- **검증**: 상세 페이지에서 모든 정보 표시
+- **검증**: 4/4 테스트 통과 (100%)
+  - 활성 지원 프로그램 상세 조회 성공
+  - 비활성 지원 프로그램도 조회 가능
+  - 존재하지 않는 ID 조회 시 404 반환
+  - 인증되지 않은 요청 403 반환
 - **의존성**: TASK-053
+- **완료일**: 2026-01-02
+- **구현내역**:
+  - `backend/src/services/government_support_service.py`: get_support_by_id() 함수 추가
+  - `backend/src/routers/government_supports.py`: GET /api/supports/{id} 엔드포인트 추가
+  - `backend/src/tests/test_supports.py`: TestGetSupportDetail 테스트 클래스 (4개 테스트)
+  - **추가 수정**: SQLite 테스트 환경을 위한 UUID 호환성 개선
+    - `backend/src/database.py`: GUID TypeDecorator 구현 (PostgreSQL/SQLite 호환)
+    - 9개 모델 파일에서 UUID import 수정 (database.UUID 사용)
+    - `backend/src/models/user.py`: SupportKeyword 관계 추가
 
 ### TASK-055: 프론트엔드 정부 지원 목록 페이지 - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 정부 지원 검색 및 목록 표시 (TDD 사이클)
 - **상세**:
-  - `src/app/(dashboard)/supports/page.tsx`
-  - 카테고리 탭 (장려금, 교육, 훈련)
+  - `frontend/src/app/api/supports/route.ts`: API proxy route 생성
+  - `frontend/src/app/(dashboard)/supports/page.tsx`
+  - 카테고리 탭 (장려금💰, 교육📚, 훈련🎓)
   - 검색창
-  - 카드 형태로 프로그램 목록 표시
+  - 카드 형태로 프로그램 목록 표시 (제목, 설명, 지원내용, 신청기간, 담당기관, 웹사이트, 공식링크)
+  - 카테고리별 필터링
+  - 키워드 검색 (title, description)
+  - 로딩, 에러 상태 처리
 - **검증**: 카테고리 전환 및 검색 작동
 - **의존성**: TASK-054
+- **구현내역**:
+  - `frontend/src/app/api/supports/route.ts`: GET 메서드로 목록 조회 프록시 구현
+  - `frontend/src/app/(dashboard)/supports/page.tsx`: React 컴포넌트 구현
+    - Support interface 정의
+    - 카테고리 라벨 및 아이콘 상수 정의
+    - 상태 라벨 및 아이콘 상수 정의
+    - 카테고리 필터 (select 드롭다운)
+    - 키워드 검색 (input)
+    - 카드 레이아웃 UI (제목, 설명, 지원내용, 신청기간, 담당기관, 웹사이트, 공식링크)
+    - 로딩, 에러 상태 처리
+    - "공식 신청 바로가기" 버튼 (외부 링크)
+- **완료일**: 2026-01-02
 
 ### TASK-056: 프론트엔드 정부 지원 상세 페이지 - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 정부 지원 프로그램 상세 정보 (TDD 사이클)
 - **상세**:
   - `src/app/(dashboard)/supports/[id]/page.tsx`
@@ -1597,10 +1666,11 @@
   - 신청 방법 및 링크
 - **검증**: 외부 링크 클릭 시 신청 페이지로 이동
 - **의존성**: TASK-055
+- **완료일**: 2026-01-02
 
 ### TASK-057: 관리자 정부 지원 정보 관리 API - 구현
 - **타입**: BEHAVIORAL
-- **상태**: TODO
+- **상태**: DONE
 - **설명**: 관리자가 정부 지원 정보 추가/수정/삭제 (TDD 사이클)
 - **상세**:
   - POST /api/supports: 새 프로그램 추가
@@ -1609,6 +1679,7 @@
   - 권한 검증 (role: 'admin')
 - **검증**: 관리자 계정으로만 관리 가능
 - **의존성**: TASK-056
+- **완료일**: 2026-01-02
 
 ---
 
@@ -1829,10 +1900,10 @@
 ## 진행 상황 추적
 
 ### 현재 진행 상황
-- **완료된 Task**: 35 / 73
-- **진행률**: 48%
-- **현재 Phase**: Phase 5 (결제 시스템) 진행 중
-- **다음 Task**: TASK-035 (결제 완료 콜백 API - 구현)
+- **완료된 Task**: 55 / 73
+- **진행률**: 75%
+- **현재 Phase**: Phase 7 (정부 지원 시스템) 진행 중
+- **다음 Task**: TASK-055 (프론트엔드 정부 지원 목록 페이지 - 구현)
 
 ### Milestone
 - **Milestone 1** (TASK-001 ~ TASK-015): 인증 시스템 완료

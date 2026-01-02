@@ -57,3 +57,29 @@ def get_current_user(
         )
 
     return user
+
+
+def get_current_admin_user(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    """현재 인증된 관리자 사용자 조회
+
+    Args:
+        current_user: 현재 인증된 사용자 (get_current_user에서 주입)
+
+    Returns:
+        User: 관리자 사용자 객체
+
+    Raises:
+        HTTPException: 관리자 권한이 없을 때 403 에러
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    return current_user
+
+
+# 별칭: require_admin
+require_admin = get_current_admin_user

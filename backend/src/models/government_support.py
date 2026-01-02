@@ -6,7 +6,7 @@ from sqlalchemy.sql import func
 from datetime import datetime
 import uuid
 
-from ..database import Base
+from ..database import Base, UUID
 
 
 class GovernmentSupport(Base):
@@ -15,7 +15,7 @@ class GovernmentSupport(Base):
     __tablename__ = "government_supports"
 
     # Primary Key
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
 
     # 프로그램 정보
     title = Column(String(200), nullable=False, comment="프로그램 제목")
