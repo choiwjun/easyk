@@ -160,3 +160,5 @@ cd backend
 **다음 단계**: 마이그레이션 적용 후 TASK-020 (Consultations 테이블 생성)을 진행하세요.
 
 
+
+

@@ -129,3 +129,5 @@ class Consultation(Base):
         return f"<Consultation(id={self.id}, user_id={self.user_id}, consultant_id={self.consultant_id}, status={self.status})>"
 
 
+
+

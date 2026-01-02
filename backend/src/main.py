@@ -1,12 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-import os
 
-from .routers import auth, users, consultations
-
-# 환경 변수 로드
-load_dotenv()
+from .config import settings
+from .routers import auth, users, consultations, payments
 
 # FastAPI 앱 생성
 app = FastAPI(
@@ -16,11 +12,9 @@ app = FastAPI(
 )
 
 # CORS 설정
-origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +24,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(consultations.router)
+app.include_router(payments.router)
 
 
 # Health Check 엔드포인트

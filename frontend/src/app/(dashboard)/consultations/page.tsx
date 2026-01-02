@@ -68,7 +68,7 @@ export default function ConsultationsPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/api/consultations", {
+      const response = await fetch("/api/consultations", {
         headers: {
           "Authorization": `Bearer ${token}`,
         },

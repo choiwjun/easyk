@@ -98,7 +98,7 @@ export default function NewConsultationPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/api/consultations", {
+      const response = await fetch("/api/consultations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
