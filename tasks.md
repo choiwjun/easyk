@@ -4,7 +4,7 @@
 **작성일**: 2025-12-31
 **최종 업데이트**: 2026-01-02
 **프로젝트**: easyK (외국인 맞춤형 정착 지원 플랫폼)
-**진행률**: 51/73 (70%)
+**진행률**: 52/73 (71%)
 
 ---
 
@@ -1522,13 +1522,25 @@
 
 ### TASK-051: Government_Supports 테이블 생성
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: DONE
+- **완료일**: 2026-01-02
 - **설명**: 정부 지원 프로그램 테이블 추가
 - **상세**:
   - Database Design 섹션 8의 Government_Supports 테이블을 SQLAlchemy 모델로 변환
   - `src/models/government_support.py` 생성
 - **검증**: Supabase에서 `government_supports` 테이블 확인
 - **의존성**: TASK-004
+- **구현내역**:
+  - `backend/src/models/government_support.py`: GovernmentSupport 모델 생성
+    - 프로그램 정보 (title, category, description)
+    - 자격 조건 (eligibility, eligible_visa_types)
+    - 지원 내용 (support_content)
+    - 담당 기관 (department, department_phone, department_website)
+    - 신청 정보 (application_period_start, application_period_end, official_link)
+    - 상태 관리 (status: active, inactive, ended)
+    - Check constraints 및 indexes 추가
+  - `backend/src/models/__init__.py`: GovernmentSupport 모델 export 추가
+  - `backend/alembic/versions/7c4f8e2d1a3b_create_government_supports_table.py`: Alembic migration 파일 생성
 
 ### TASK-052: Support_Keywords 테이블 생성
 - **타입**: STRUCTURAL
