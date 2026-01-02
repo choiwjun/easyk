@@ -3,9 +3,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button } from "@/components/ui";
+import LanguageSelector from "@/components/ui/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function SignupPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [userType, setUserType] = useState<"foreign" | "organization">("foreign");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -49,27 +52,27 @@ export default function SignupPage() {
     const newErrors: typeof errors = {};
 
     if (!firstName.trim()) {
-      newErrors.firstName = "이름을 입력해주세요";
+      newErrors.firstName = t('auth.required');
     }
 
     if (!lastName.trim()) {
-      newErrors.lastName = "성을 입력해주세요";
+      newErrors.lastName = t('auth.required');
     }
 
     if (!validateEmail(email)) {
-      newErrors.email = "올바른 이메일 주소를 입력해주세요";
+      newErrors.email = t('auth.emailInvalid');
     }
 
     if (!validatePassword(password)) {
-      newErrors.password = "8자 이상, 영문/숫자/특수문자를 포함해주세요";
+      newErrors.password = t('auth.passwordTooShort');
     }
 
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다";
+      newErrors.confirmPassword = t('auth.passwordNotMatch');
     }
 
     if (!agreed) {
-      newErrors.terms = "이용약관에 동의해주세요";
+      newErrors.terms = t('auth.required');
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -97,14 +100,14 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setErrors({ general: data.message || "회원가입 중 오류가 발생했습니다" });
+        setErrors({ general: data.message || t('errors.networkError') });
         return;
       }
 
       // Redirect to login on success
       router.push("/login");
     } catch (error) {
-      setErrors({ general: "회원가입 중 오류가 발생했습니다" });
+      setErrors({ general: t('errors.networkError') });
     } finally {
       setLoading(false);
     }
@@ -114,13 +117,16 @@ export default function SignupPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-12">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            easyK 회원가입
-          </h1>
-          <p className="text-sm text-gray-500">
-            신뢰할 수 있는 정착 지원 서비스를 만나보세요.
-          </p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              easyK {t('auth.register')}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {t('common.welcome')}
+            </p>
+          </div>
+          <LanguageSelector />
         </div>
 
         {/* Form */}
@@ -135,7 +141,7 @@ export default function SignupPage() {
           {/* User Type Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
-              사용자 유형
+              {t('profile.name')}
             </label>
             <div className="flex gap-2">
               <button
@@ -150,7 +156,7 @@ export default function SignupPage() {
                   }
                 `}
               >
-                외국인 회원
+                {userType === "foreign" ? "외국인 회원" : "Foreign Member"}
               </button>
               <button
                 type="button"
@@ -164,7 +170,7 @@ export default function SignupPage() {
                   }
                 `}
               >
-                지원 기관
+                {userType === "organization" ? "지원 기관" : "Support Org"}
               </button>
             </div>
           </div>
@@ -172,7 +178,7 @@ export default function SignupPage() {
           {/* First Name Input */}
           <Input
             type="text"
-            label="이름"
+            label={t('profile.name')}
             placeholder="홍길동"
             required
             value={firstName}
@@ -183,7 +189,7 @@ export default function SignupPage() {
           {/* Last Name Input */}
           <Input
             type="text"
-            label="성"
+            label={t('profile.name')}
             placeholder="Kim"
             required
             value={lastName}
@@ -194,7 +200,7 @@ export default function SignupPage() {
           {/* Email Input */}
           <Input
             type="email"
-            label="이메일 주소"
+            label={t('auth.email')}
             placeholder="example@email.com"
             required
             value={email}
@@ -220,7 +226,7 @@ export default function SignupPage() {
           {/* Password Input */}
           <Input
             type={showPassword ? "text" : "password"}
-            label="비밀번호"
+            label={t('auth.password')}
             placeholder="8자 이상, 영문/숫자/특수문자 포함"
             required
             value={password}
@@ -261,7 +267,7 @@ export default function SignupPage() {
           {/* Confirm Password Input */}
           <Input
             type={showConfirmPassword ? "text" : "password"}
-            label="비밀번호 확인"
+            label={t('auth.confirmPassword')}
             placeholder="비밀번호를 한번 더 입력해주세요"
             required
             value={confirmPassword}
@@ -291,7 +297,7 @@ export default function SignupPage() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5,12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                     />
                   )}
                 </svg>
@@ -310,9 +316,9 @@ export default function SignupPage() {
                 className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <label htmlFor="terms" className="text-sm text-gray-600">
-                이용약관 및 개인정보 처리방침에{" "}
+                {t('auth.required')}{" "}
                 <a href="#" className="text-blue-600 hover:underline">
-                  동의합니다
+                  {t('common.confirm')}
                 </a>
                 .
               </label>
@@ -324,16 +330,16 @@ export default function SignupPage() {
 
           {/* Submit Button */}
           <Button type="submit" fullWidth size="lg" loading={loading} disabled={loading}>
-            회원가입 →
+            {t('auth.register')} →
           </Button>
         </form>
 
         {/* Login Link */}
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
-            이미 계정이 있으신가요?{" "}
+            {t('common.welcome')}{" "}
             <a href="/login" className="text-blue-600 hover:underline font-medium">
-              로그인
+              {t('auth.login')}
             </a>
           </p>
         </div>

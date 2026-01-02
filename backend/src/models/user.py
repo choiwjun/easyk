@@ -69,15 +69,16 @@ class User(Base):
 
     # 타임스탬프
     created_at = Column(
-        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), index=True
     )
     updated_at = Column(
         TIMESTAMP(timezone=True),
         nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
+        index=True,
     )
-    last_login = Column(TIMESTAMP(timezone=True), nullable=True)
+    last_login = Column(TIMESTAMP(timezone=True), nullable=True, index=True)
 
     # 제약조건
     __table_args__ = (

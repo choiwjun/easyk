@@ -45,15 +45,23 @@ class GUID(TypeDecorator):
             else:
                 return value
 
-# 데이터베이스 엔진 생성
+# 데이터베이스 엔진 생성 (성능 최적화 옵션 포함)
 engine = create_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,  # DEBUG 모드에서 SQL 쿼리 로깅
-    pool_pre_ping=True,   # 연결 유효성 검사
+    pool_pre_ping=True,  # 연결 유효성 검사
+    pool_size=10,  # 연결 풀 크기
+    max_overflow=20,  # 최대 연결 수
+    pool_recycle=3600,  # 1시간마다 연결 재사용
 )
 
-# 세션 팩토리 생성
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# 세션 팩토리 생성 (성능 최적화 옵션 포함)
+SessionLocal = sessionmaker(
+    autocommit=False, 
+    autoflush=False, 
+    bind=engine,
+    expire_on_commit=False,  # 커밋 후 객체 만료 방지
+)
 
 # Base 클래스 (모든 모델의 부모)
 Base = declarative_base()

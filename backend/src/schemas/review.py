@@ -42,3 +42,4 @@ class ReviewResponse(BaseModel):
         from_attributes = True  # Pydantic v2: ORM 모드 활성화
 
 
+

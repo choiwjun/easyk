@@ -113,7 +113,8 @@ class TestSignup:
         assert response.status_code == 400  # Bad Request
         data = response.json()
         assert "detail" in data
-        assert "already exists" in data["detail"].lower() or "duplicate" in data["detail"].lower()
+        # 다국어 메시지 확인: 한국어("이미 존재하는 이메일입니다") 또는 영어("Email already exists")
+        assert ("이미 존재" in data["detail"] or "already exists" in data["detail"])
 
     def test_signup_missing_required_fields(self, client):
         """필수 필드 누락 시 회원가입 실패"""

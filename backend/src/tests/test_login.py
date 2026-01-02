@@ -96,7 +96,8 @@ class TestLogin:
         assert response.status_code == 401
         data = response.json()
         assert "detail" in data
-        assert "incorrect" in data["detail"].lower() or "invalid" in data["detail"].lower()
+        # 다국어 메시지 확인: 한국어("이메일 또는 비밀번호가 올바르지 않습니다") 또는 영어("Invalid email or password")
+        assert ("이메일" in data["detail"] or "비밀번호" in data["detail"]) or ("Invalid" in data["detail"] or "incorrect" in data["detail"])
 
     def test_login_nonexistent_user(self, client):
         """존재하지 않는 사용자로 로그인 시도"""
@@ -111,7 +112,8 @@ class TestLogin:
         assert response.status_code == 401
         data = response.json()
         assert "detail" in data
-        assert "incorrect" in data["detail"].lower() or "invalid" in data["detail"].lower()
+        # 다국어 메시지 확인: 한국어("이메일 또는 비밀번호가 올바르지 않습니다") 또는 영어("Invalid email or password")
+        assert ("이메일" in data["detail"] or "비밀번호" in data["detail"]) or ("Invalid" in data["detail"] or "incorrect" in data["detail"])
 
     def test_login_missing_email(self, client):
         """이메일 누락 시 검증"""

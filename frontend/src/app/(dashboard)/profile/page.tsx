@@ -3,9 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button } from "@/components/ui";
+import LanguageSelector from "@/components/ui/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<any>(null);
@@ -55,7 +58,7 @@ export default function ProfilePage() {
       setResidentialArea(data.residential_area || "");
       setErrors({});
     } catch (error) {
-      setErrors({ general: "프로필을 불러오는 데 실패했습니다" });
+      setErrors({ general: t('errors.networkError') });
     } finally {
       setLoading(false);
     }
@@ -89,7 +92,7 @@ export default function ProfilePage() {
       setProfile(data);
       setIsEditing(false);
     } catch (error) {
-      setErrors({ general: "프로필 업데이트 중 오류가 발생했습니다" });
+      setErrors({ general: t('profile.updateFailed') });
     } finally {
       setLoading(false);
     }
@@ -110,7 +113,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="text-gray-600">프로필을 불러오는 중...</p>
+          <p className="text-gray-600">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -120,13 +123,16 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-12">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            프로필 관리
-          </h1>
-          <p className="text-sm text-gray-500">
-            개인 정보를 관리하고 업데이트하세요
-          </p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              {t('profile.title')}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {t('common.detail')}
+            </p>
+          </div>
+          <LanguageSelector />
         </div>
 
         {/* General Error */}
@@ -141,7 +147,7 @@ export default function ProfilePage() {
           {/* Email (readonly) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              이메일
+              {t('auth.email')}
             </label>
             <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
               {profile?.email}
@@ -151,7 +157,7 @@ export default function ProfilePage() {
           {/* Name (readonly) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              이름
+              {t('profile.name')}
             </label>
             <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
               {profile?.first_name} {profile?.last_name}
@@ -161,12 +167,12 @@ export default function ProfilePage() {
           {/* Role (readonly) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              역할
+              {t('nav.admin')}
             </label>
             <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
-              {profile?.role === "foreign" && "외국인 회원"}
-              {profile?.role === "consultant" && "전문가"}
-              {profile?.role === "admin" && "관리자"}
+              {profile?.role === "foreign" && "외국인 회원 / Foreign Member"}
+              {profile?.role === "consultant" && "전문가 / Consultant"}
+              {profile?.role === "admin" && "관리자 / Admin"}
             </p>
           </div>
 
@@ -176,8 +182,8 @@ export default function ProfilePage() {
               {/* Nationality */}
               <Input
                 type="text"
-                label="국적"
-                placeholder="국적을 입력하세요"
+                label={t('profile.nationality')}
+                placeholder={t('profile.nationality')}
                 value={nationality}
                 onChange={(e) => setNationality(e.target.value)}
                 error={errors.nationality}
@@ -186,7 +192,7 @@ export default function ProfilePage() {
               {/* Visa Type */}
               <Input
                 type="text"
-                label="비자 종류"
+                label={t('profile.visaType')}
                 placeholder="예: E-1, D-2, F-2"
                 value={visaType}
                 onChange={(e) => setVisaType(e.target.value)}
@@ -196,7 +202,7 @@ export default function ProfilePage() {
               {/* Preferred Language */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  선호 언어
+                  {t('profile.language')}
                 </label>
                 <select
                   value={preferredLanguage}
@@ -214,7 +220,7 @@ export default function ProfilePage() {
               {/* Residential Area */}
               <Input
                 type="text"
-                label="거주 지역"
+                label={t('profile.address')}
                 placeholder="예: 고양시 덕양구"
                 value={residentialArea}
                 onChange={(e) => setResidentialArea(e.target.value)}
@@ -230,7 +236,7 @@ export default function ProfilePage() {
                   size="lg"
                   fullWidth
                 >
-                  취소
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   type="button"
@@ -241,7 +247,7 @@ export default function ProfilePage() {
                   loading={loading}
                   disabled={loading}
                 >
-                  저장
+                  {t('common.save')}
                 </Button>
               </div>
             </div>
@@ -251,7 +257,7 @@ export default function ProfilePage() {
               {nationality && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    국적
+                    {t('profile.nationality')}
                   </label>
                   <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
                     {nationality}
@@ -262,7 +268,7 @@ export default function ProfilePage() {
               {visaType && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    비자 종류
+                    {t('profile.visaType')}
                   </label>
                   <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
                     {visaType}
@@ -273,7 +279,7 @@ export default function ProfilePage() {
               {preferredLanguage && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    선호 언어
+                    {t('profile.language')}
                   </label>
                   <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
                     {preferredLanguage === "ko" && "한국어"}
@@ -288,7 +294,7 @@ export default function ProfilePage() {
               {residentialArea && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    거주 지역
+                    {t('profile.address')}
                   </label>
                   <p className="text-gray-900 px-4 py-3 bg-gray-50 rounded-lg">
                     {residentialArea}
@@ -305,7 +311,7 @@ export default function ProfilePage() {
                   size="lg"
                   fullWidth
                 >
-                  수정
+                  {t('common.edit')}
                 </Button>
               </div>
             </div>
@@ -320,4 +326,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

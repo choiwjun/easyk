@@ -48,3 +48,4 @@ class JobApplicationWithApplicant(JobApplicationResponse):
     applicant: ApplicantInfo
 
 
+

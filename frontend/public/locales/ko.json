@@ -1,0 +1,254 @@
+{
+  "common": {
+    "welcome": "환영합니다",
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "success": "성공",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "편집",
+    "confirm": "확인",
+    "close": "닫기",
+    "search": "검색",
+    "filter": "필터",
+    "all": "전체",
+    "submit": "제출",
+    "back": "뒤로",
+    "next": "다음",
+    "previous": "이전",
+    "select": "선택",
+    "clear": "초기화",
+    "apply": "적용",
+    "detail": "상세",
+    "list": "목록"
+  },
+  "nav": {
+    "home": "홈",
+    "consultations": "법률 상담",
+    "jobs": "일자리",
+    "supports": "정부 지원",
+    "profile": "내 프로필",
+    "login": "로그인",
+    "logout": "로그아웃",
+    "register": "회원가입",
+    "admin": "관리자",
+    "settings": "설정"
+  },
+  "auth": {
+    "login": "로그인",
+    "register": "회원가입",
+    "email": "이메일",
+    "password": "비밀번호",
+    "confirmPassword": "비밀번호 확인",
+    "forgotPassword": "비밀번호 찾기",
+    "rememberMe": "로그인 상태 유지",
+    "loginSuccess": "로그인되었습니다",
+    "loginFailed": "로그인에 실패했습니다",
+    "registerSuccess": "회원가입이 완료되었습니다",
+    "registerFailed": "회원가입에 실패했습니다",
+    "logout": "로그아웃",
+    "logoutSuccess": "로그아웃되었습니다",
+    "required": "필수 항목입니다",
+    "emailInvalid": "유효한 이메일 주소를 입력해주세요",
+    "passwordTooShort": "비밀번호는 최소 8자 이상이어야 합니다",
+    "passwordNotMatch": "비밀번호가 일치하지 않습니다"
+  },
+  "home": {
+    "title": "한국에서 안정적으로 정착하세요",
+    "subtitle": "법률 상담, 일자리 매칭, 정부 지원 정보를 한 곳에서",
+    "cta": "시작하기",
+    "features": {
+      "consultations": {
+        "title": "법률 상담",
+        "description": "전문 변호사와 1:1 법률 상담"
+      },
+      "jobs": {
+        "title": "일자리",
+        "description": "신뢰할 수 있는 채용 공고"
+      },
+      "supports": {
+        "title": "정부 지원",
+        "description": "정부 지원 프로그램 정보"
+      }
+    }
+  },
+  "profile": {
+    "title": "내 프로필",
+    "edit": "프로필 수정",
+    "name": "이름",
+    "nationality": "국적",
+    "visaType": "비자 종류",
+    "phoneNumber": "전화번호",
+    "address": "주소",
+    "language": "언어",
+    "updateSuccess": "프로필이 업데이트되었습니다",
+    "updateFailed": "프로필 업데이트에 실패했습니다"
+  },
+  "consultations": {
+    "title": "법률 상담",
+    "apply": "상담 신청",
+    "myConsultations": "나의 상담",
+    "list": "상담 목록",
+    "detail": "상담 상세",
+    "status": {
+      "pending": "신청 대기",
+      "matched": "전문가 매칭됨",
+      "scheduled": "예약 완료",
+      "in_progress": "상담 진행 중",
+      "completed": "완료",
+      "cancelled": "취소됨"
+    },
+    "type": {
+      "visa": "비자 문제",
+      "labor": "노동 분쟁",
+      "contract": "계약 문제",
+      "business": "사업 문제",
+      "other": "기타"
+    },
+    "applyForm": {
+      "title": "상담 신청서",
+      "type": "상담 유형",
+      "content": "상담 내용",
+      "submit": "신청하기",
+      "submitSuccess": "상담 신청이 완료되었습니다",
+      "submitFailed": "상담 신청에 실패했습니다"
+    },
+    "payment": {
+      "title": "결제",
+      "amount": "결제 금액",
+      "pay": "결제하기",
+      "paySuccess": "결제가 완료되었습니다",
+      "payFailed": "결제에 실패했습니다"
+    },
+    "review": {
+      "title": "상담 후기",
+      "rating": "평점",
+      "comment": "후기 내용",
+      "submit": "후기 작성",
+      "submitSuccess": "후기가 작성되었습니다",
+      "submitFailed": "후기 작성에 실패했습니다"
+    }
+  },
+  "jobs": {
+    "title": "일자리",
+    "list": "채용 공고",
+    "detail": "공고 상세",
+    "apply": "지원하기",
+    "applied": "지원완료",
+    "myApplications": "나의 지원 내역",
+    "status": {
+      "active": "모집중",
+      "closed": "마감",
+      "filled": "채용 완료"
+    },
+    "filter": {
+      "category": "카테고리",
+      "location": "지역",
+      "industry": "업종",
+      "salary": "연봉"
+    },
+    "applyForm": {
+      "title": "지원서",
+      "coverLetter": "자기소개서",
+      "resume": "이력서",
+      "submit": "지원하기",
+      "submitSuccess": "지원이 완료되었습니다",
+      "submitFailed": "지원에 실패했습니다",
+      "alreadyApplied": "이미 지원한 공고입니다"
+    },
+    "fields": {
+      "title": "제목",
+      "company": "회사명",
+      "location": "근무지",
+      "salary": "연봉",
+      "description": "상세 내용",
+      "requirements": "자격 요건",
+      "benefits": "혜택",
+      "deadline": "마감일",
+      "requiredLanguages": "필요 언어",
+      "category": "카테고리"
+    }
+  },
+  "supports": {
+    "title": "정부 지원",
+    "list": "지원 프로그램",
+    "detail": "상세 정보",
+    "category": {
+      "subsidy": "장려금",
+      "education": "교육",
+      "training": "훈련",
+      "visa": "비자 지원",
+      "housing": "주거 지원"
+    },
+    "status": {
+      "active": "신청 가능",
+      "inactive": "신청 불가",
+      "ended": "종료"
+    },
+    "search": "지원 프로그램 검색",
+    "keywords": "검색 키워드",
+    "fields": {
+      "title": "프로그램명",
+      "category": "카테고리",
+      "description": "설명",
+      "eligibility": "자격 요건",
+      "eligibleVisaTypes": "대상 비자",
+      "supportContent": "지원 내용",
+      "department": "담당 부처",
+      "departmentPhone": "연락처",
+      "departmentWebsite": "웹사이트",
+      "applicationPeriod": "신청 기간",
+      "officialLink": "공식 링크",
+      "status": "상태"
+    }
+  },
+  "supportKeywords": {
+    "title": "지원 키워드",
+    "add": "키워드 추가",
+    "category": {
+      "visa": "비자",
+      "labor": "노동",
+      "contract": "계약",
+      "business": "사업",
+      "other": "기타"
+    },
+    "fields": {
+      "keyword": "키워드",
+      "category": "카테고리",
+      "description": "설명",
+      "isActive": "활성 상태",
+      "searchCount": "검색 횟수"
+    }
+  },
+  "admin": {
+    "title": "관리자",
+    "dashboard": "대시보드",
+    "users": "사용자 관리",
+    "consultations": "상담 관리",
+    "jobs": "일자리 관리",
+    "supports": "지원 관리",
+    "keywords": "키워드 관리",
+    "create": "생성",
+    "update": "수정",
+    "delete": "삭제",
+    "edit": "편집",
+    "view": "조회",
+    "manage": "관리",
+    "actions": "액션"
+  },
+  "errors": {
+    "unauthorized": "인증이 필요합니다",
+    "forbidden": "접근 권한이 없습니다",
+    "notFound": "요청한 리소스를 찾을 수 없습니다",
+    "serverError": "서버 오류가 발생했습니다",
+    "networkError": "네트워크 오류가 발생했습니다",
+    "validationError": "입력 정보를 확인해주세요"
+  },
+  "language": {
+    "korean": "한국어",
+    "english": "English",
+    "switch": "언어 변경"
+  }
+}
+

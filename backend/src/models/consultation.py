@@ -46,6 +46,7 @@ class Consultation(Base):
     consultation_type = Column(
         String(100),
         nullable=False,
+        index=True,
         comment="상담 유형: visa, labor, contract, business, other",
     )
     content = Column(Text, nullable=False, comment="상담 요청 내용")
@@ -126,6 +127,7 @@ class Consultation(Base):
 
     def __repr__(self):
         return f"<Consultation(id={self.id}, user_id={self.user_id}, consultant_id={self.consultant_id}, status={self.status})>"
+
 
 
 

@@ -233,7 +233,7 @@ class TestPaymentCallback:
         from unittest.mock import patch, AsyncMock
         
         # 토스페이먼츠 API 모킹
-        with patch('src.services.payment_service.toss_payments_client.get_payment') as mock_get_payment:
+        with patch('src.utils.toss_payments.toss_payments_client.get_payment') as mock_get_payment:
             mock_get_payment.return_value = AsyncMock(return_value={
                 "totalAmount": int(float(test_payment.amount)),
                 "orderId": str(test_payment.consultation_id),

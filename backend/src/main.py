@@ -2,7 +2,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
+from .middleware.security import rate_limiter, rate_limit_exceeded_handler, validate_environment_variables
 from .routers import auth, users, consultations, payments, reviews, consultants, jobs, support_keywords, government_supports
+
+# 환경 변수 검증 (실행 시)
+try:
+    validate_environment_variables()
+except ValueError as e:
+    print(f"⚠️  Configuration Error: {e}")
+    print("Please set the required environment variables in .env file")
 
 # FastAPI 앱 생성
 app = FastAPI(
@@ -11,7 +19,7 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# CORS 설정
+# CORS 설정 (보안 강화)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.origins_list,
@@ -19,6 +27,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Rate Limiting 미들웨어
+app.state.limiter = rate_limiter
+app.add_exception_handler(Exception, rate_limit_exceeded_handler)
 
 # 라우터 등록
 app.include_router(auth.router)

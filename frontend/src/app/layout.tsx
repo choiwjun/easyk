@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Nanum_Gothic } from 'next/font/google'
 import './globals.css'
+import { LanguageProvider } from '@/contexts/LanguageContext'
 
 const nanumGothic = Nanum_Gothic({
   weight: ['400', '700', '800'],
@@ -21,7 +22,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className={nanumGothic.className}>{children}</body>
+      <body className={nanumGothic.className}>
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   )
 }

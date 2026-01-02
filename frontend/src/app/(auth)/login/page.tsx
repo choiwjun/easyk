@@ -3,9 +3,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button } from "@/components/ui";
+import LanguageSelector from "@/components/ui/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -30,13 +33,13 @@ export default function LoginPage() {
     const newErrors: typeof errors = {};
 
     if (!email) {
-      newErrors.email = "이메일 주소를 입력해주세요";
+      newErrors.email = t('auth.required');
     } else if (!validateEmail(email)) {
-      newErrors.email = "올바른 이메일 주소를 입력해주세요";
+      newErrors.email = t('auth.emailInvalid');
     }
 
     if (!password) {
-      newErrors.password = "비밀번호를 입력해주세요";
+      newErrors.password = t('auth.required');
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -61,7 +64,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setErrors({ general: data.message || "로그인 중 오류가 발생했습니다" });
+        setErrors({ general: data.message || t('errors.networkError') });
         return;
       }
 
@@ -73,7 +76,7 @@ export default function LoginPage() {
       // Redirect to dashboard on success
       router.push("/");
     } catch (error) {
-      setErrors({ general: "로그인 중 오류가 발생했습니다" });
+      setErrors({ general: t('errors.networkError') });
     } finally {
       setLoading(false);
     }
@@ -83,13 +86,16 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-12">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            easyK 로그인
-          </h1>
-          <p className="text-sm text-gray-500">
-            외국인 정착 지원 서비스에 오신 것을 환영합니다.
-          </p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              easyK {t('auth.login')}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {t('common.welcome')}
+            </p>
+          </div>
+          <LanguageSelector />
         </div>
 
         {/* Form */}
@@ -104,7 +110,7 @@ export default function LoginPage() {
           {/* Email Input */}
           <Input
             type="email"
-            label="이메일 주소"
+            label={t('auth.email')}
             placeholder="example@email.com"
             required
             value={email}
@@ -130,8 +136,8 @@ export default function LoginPage() {
           {/* Password Input */}
           <Input
             type={showPassword ? "text" : "password"}
-            label="비밀번호"
-            placeholder="비밀번호를 입력하세요"
+            label={t('auth.password')}
+            placeholder={t('auth.password')}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -170,16 +176,16 @@ export default function LoginPage() {
 
           {/* Submit Button */}
           <Button type="submit" fullWidth size="lg" loading={loading} disabled={loading}>
-            로그인
+            {t('auth.login')}
           </Button>
         </form>
 
         {/* Signup Link */}
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
-            계정이 없으신가요?{" "}
+            {t('common.welcome')}{" "}
             <a href="/signup" className="text-blue-600 hover:underline font-medium">
-              회원가입
+              {t('auth.register')}
             </a>
           </p>
         </div>

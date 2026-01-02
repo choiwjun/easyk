@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
+import LanguageSelector from "@/components/ui/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Consultation {
   id: string;
@@ -18,42 +20,55 @@ interface Consultation {
   created_at: string;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  requested: "요청됨",
-  matched: "매칭됨",
-  scheduled: "예약됨",
-  completed: "완료됨",
-  cancelled: "취소됨",
-};
-
-const STATUS_VARIANTS: Record<string, "default" | "success" | "warning" | "error" | "info"> = {
-  requested: "default",
-  matched: "info",
-  scheduled: "warning",
-  completed: "success",
-  cancelled: "error",
-};
-
-const CONSULTATION_TYPE_LABELS: Record<string, string> = {
-  visa: "비자/체류",
-  labor: "노동/고용",
-  contract: "계약/법률",
-  business: "사업/창업",
-  other: "기타",
-};
-
-const CONSULTATION_METHOD_LABELS: Record<string, string> = {
-  email: "이메일",
-  document: "문서",
-  call: "전화",
-  video: "화상",
-};
-
 export default function ConsultationsPage() {
   const router = useRouter();
+  const { t, language } = useLanguage();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      requested: language === 'ko' ? "요청됨" : "Requested",
+      matched: language === 'ko' ? "매칭됨" : "Matched",
+      scheduled: language === 'ko' ? "예약됨" : "Scheduled",
+      completed: language === 'ko' ? "완료됨" : "Completed",
+      cancelled: language === 'ko' ? "취소됨" : "Cancelled",
+    };
+    return labels[status] || status;
+  };
+
+  const getStatusVariant = (status: string): "default" | "success" | "warning" | "error" | "info" => {
+    const variants: Record<string, "default" | "success" | "warning" | "error" | "info"> = {
+      requested: "default",
+      matched: "info",
+      scheduled: "warning",
+      completed: "success",
+      cancelled: "error",
+    };
+    return variants[status] || "default";
+  };
+
+  const getTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      visa: language === 'ko' ? "비자/체류" : "Visa/Residence",
+      labor: language === 'ko' ? "노동/고용" : "Labor/Employment",
+      contract: language === 'ko' ? "계약/법률" : "Contract/Legal",
+      business: language === 'ko' ? "사업/창업" : "Business/Startup",
+      other: language === 'ko' ? "기타" : "Other",
+    };
+    return labels[type] || type;
+  };
+
+  const getMethodLabel = (method: string) => {
+    const labels: Record<string, string> = {
+      email: language === 'ko' ? "이메일" : "Email",
+      document: language === 'ko' ? "문서" : "Document",
+      call: language === 'ko' ? "전화" : "Call",
+      video: language === 'ko' ? "화상" : "Video",
+    };
+    return labels[method] || method;
+  };
 
   useEffect(() => {
     fetchConsultations();
@@ -80,10 +95,10 @@ export default function ConsultationsPage() {
       } else if (response.status === 403) {
         router.push("/login");
       } else {
-        setError("상담 목록을 불러오는데 실패했습니다.");
+        setError(t('errors.networkError'));
       }
     } catch (error) {
-      setError("네트워크 오류가 발생했습니다.");
+      setError(t('errors.networkError'));
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +106,7 @@ export default function ConsultationsPage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat("ko-KR", {
+    return new Intl.DateTimeFormat(language === 'ko' ? "ko-KR" : "en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -101,7 +116,7 @@ export default function ConsultationsPage() {
   };
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat("ko-KR", {
+    return new Intl.NumberFormat(language === 'ko' ? "ko-KR" : "en-US", {
       style: "currency",
       currency: "KRW",
     }).format(amount);
@@ -110,7 +125,7 @@ export default function ConsultationsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">로딩 중...</div>
+        <div className="text-gray-600">{t('common.loading')}</div>
       </div>
     );
   }
@@ -119,10 +134,13 @@ export default function ConsultationsPage() {
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">내 상담 신청</h1>
-          <Link href="/consultations/new">
-            <Button variant="primary">새 상담 신청</Button>
-          </Link>
+          <h1 className="text-2xl font-bold text-gray-900">{t('consultations.myConsultations')}</h1>
+          <div className="flex items-center gap-4">
+            <Link href="/consultations/new">
+              <Button variant="primary">{t('consultations.apply')}</Button>
+            </Link>
+            <LanguageSelector />
+          </div>
         </div>
 
         {error && (
@@ -133,9 +151,9 @@ export default function ConsultationsPage() {
 
         {consultations.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <p className="text-gray-600 mb-4">아직 신청한 상담이 없습니다.</p>
+            <p className="text-gray-600 mb-4">{t('consultations.myConsultations')} {t('common.list')}</p>
             <Link href="/consultations/new">
-              <Button variant="primary">첫 상담 신청하기</Button>
+              <Button variant="primary">{t('consultations.apply')}</Button>
             </Link>
           </div>
         ) : (
@@ -149,10 +167,10 @@ export default function ConsultationsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h2 className="text-lg font-semibold text-gray-900">
-                        {CONSULTATION_TYPE_LABELS[consultation.consultation_type] || consultation.consultation_type}
+                        {getTypeLabel(consultation.consultation_type)}
                       </h2>
-                      <Badge variant={STATUS_VARIANTS[consultation.status]}>
-                        {STATUS_LABELS[consultation.status] || consultation.status}
+                      <Badge variant={getStatusVariant(consultation.status)}>
+                        {getStatusLabel(consultation.status)}
                       </Badge>
                     </div>
                     <p className="text-sm text-gray-500 mb-2">
@@ -173,10 +191,13 @@ export default function ConsultationsPage() {
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <span>
-                      상담 방법: {CONSULTATION_METHOD_LABELS[consultation.consultation_method] || consultation.consultation_method}
+                      {language === 'ko' ? "상담 방법: " : "Method: "}
+                      {getMethodLabel(consultation.consultation_method)}
                     </span>
                     {consultation.consultant_id && (
-                      <span className="text-blue-600">전문가 매칭됨</span>
+                      <span className="text-blue-600">
+                        {language === 'ko' ? "전문가 매칭됨" : "Expert Matched"}
+                      </span>
                     )}
                   </div>
                   <Button
@@ -184,7 +205,7 @@ export default function ConsultationsPage() {
                     size="sm"
                     onClick={() => router.push(`/consultations/${consultation.id}`)}
                   >
-                    상세보기
+                    {t('common.detail')}
                   </Button>
                 </div>
               </div>

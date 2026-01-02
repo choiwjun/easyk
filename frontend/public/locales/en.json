@@ -1,0 +1,254 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "select": "Select",
+    "clear": "Clear",
+    "apply": "Apply",
+    "detail": "Detail",
+    "list": "List"
+  },
+  "nav": {
+    "home": "Home",
+    "consultations": "Legal Consultations",
+    "jobs": "Jobs",
+    "supports": "Government Supports",
+    "profile": "My Profile",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "admin": "Admin",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember me",
+    "loginSuccess": "Login successful",
+    "loginFailed": "Login failed",
+    "registerSuccess": "Registration successful",
+    "registerFailed": "Registration failed",
+    "logout": "Logout",
+    "logoutSuccess": "Logout successful",
+    "required": "This field is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordNotMatch": "Passwords do not match"
+  },
+  "home": {
+    "title": "Settle comfortably in Korea",
+    "subtitle": "Legal consultations, job matching, and government support information in one place",
+    "cta": "Get Started",
+    "features": {
+      "consultations": {
+        "title": "Legal Consultations",
+        "description": "1:1 legal consultation with expert lawyers"
+      },
+      "jobs": {
+        "title": "Jobs",
+        "description": "Trusted job listings"
+      },
+      "supports": {
+        "title": "Government Supports",
+        "description": "Government support program information"
+      }
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "edit": "Edit Profile",
+    "name": "Name",
+    "nationality": "Nationality",
+    "visaType": "Visa Type",
+    "phoneNumber": "Phone Number",
+    "address": "Address",
+    "language": "Language",
+    "updateSuccess": "Profile updated successfully",
+    "updateFailed": "Failed to update profile"
+  },
+  "consultations": {
+    "title": "Legal Consultations",
+    "apply": "Apply for Consultation",
+    "myConsultations": "My Consultations",
+    "list": "Consultation List",
+    "detail": "Consultation Detail",
+    "status": {
+      "pending": "Pending",
+      "matched": "Expert Matched",
+      "scheduled": "Scheduled",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "type": {
+      "visa": "Visa Issues",
+      "labor": "Labor Disputes",
+      "contract": "Contract Issues",
+      "business": "Business Issues",
+      "other": "Other"
+    },
+    "applyForm": {
+      "title": "Consultation Application",
+      "type": "Consultation Type",
+      "content": "Consultation Content",
+      "submit": "Submit Application",
+      "submitSuccess": "Consultation application submitted successfully",
+      "submitFailed": "Failed to submit consultation application"
+    },
+    "payment": {
+      "title": "Payment",
+      "amount": "Amount",
+      "pay": "Pay",
+      "paySuccess": "Payment successful",
+      "payFailed": "Payment failed"
+    },
+    "review": {
+      "title": "Consultation Review",
+      "rating": "Rating",
+      "comment": "Review Content",
+      "submit": "Submit Review",
+      "submitSuccess": "Review submitted successfully",
+      "submitFailed": "Failed to submit review"
+    }
+  },
+  "jobs": {
+    "title": "Jobs",
+    "list": "Job Listings",
+    "detail": "Job Detail",
+    "apply": "Apply",
+    "applied": "Applied",
+    "myApplications": "My Applications",
+    "status": {
+      "active": "Active",
+      "closed": "Closed",
+      "filled": "Filled"
+    },
+    "filter": {
+      "category": "Category",
+      "location": "Location",
+      "industry": "Industry",
+      "salary": "Salary"
+    },
+    "applyForm": {
+      "title": "Application Form",
+      "coverLetter": "Cover Letter",
+      "resume": "Resume",
+      "submit": "Submit Application",
+      "submitSuccess": "Application submitted successfully",
+      "submitFailed": "Failed to submit application",
+      "alreadyApplied": "You have already applied to this job"
+    },
+    "fields": {
+      "title": "Title",
+      "company": "Company",
+      "location": "Location",
+      "salary": "Salary",
+      "description": "Description",
+      "requirements": "Requirements",
+      "benefits": "Benefits",
+      "deadline": "Deadline",
+      "requiredLanguages": "Required Languages",
+      "category": "Category"
+    }
+  },
+  "supports": {
+    "title": "Government Supports",
+    "list": "Support Programs",
+    "detail": "Support Detail",
+    "category": {
+      "subsidy": "Subsidy",
+      "education": "Education",
+      "training": "Training",
+      "visa": "Visa Support",
+      "housing": "Housing Support"
+    },
+    "status": {
+      "active": "Open for Application",
+      "inactive": "Not Open",
+      "ended": "Ended"
+    },
+    "search": "Search Support Programs",
+    "keywords": "Search Keywords",
+    "fields": {
+      "title": "Program Name",
+      "category": "Category",
+      "description": "Description",
+      "eligibility": "Eligibility",
+      "eligibleVisaTypes": "Eligible Visa Types",
+      "supportContent": "Support Content",
+      "department": "Department",
+      "departmentPhone": "Phone",
+      "departmentWebsite": "Website",
+      "applicationPeriod": "Application Period",
+      "officialLink": "Official Link",
+      "status": "Status"
+    }
+  },
+  "supportKeywords": {
+    "title": "Support Keywords",
+    "add": "Add Keyword",
+    "category": {
+      "visa": "Visa",
+      "labor": "Labor",
+      "contract": "Contract",
+      "business": "Business",
+      "other": "Other"
+    },
+    "fields": {
+      "keyword": "Keyword",
+      "category": "Category",
+      "description": "Description",
+      "isActive": "Active Status",
+      "searchCount": "Search Count"
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "dashboard": "Dashboard",
+    "users": "User Management",
+    "consultations": "Consultation Management",
+    "jobs": "Job Management",
+    "supports": "Support Management",
+    "keywords": "Keyword Management",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "manage": "Manage",
+    "actions": "Actions"
+  },
+  "errors": {
+    "unauthorized": "Authentication required",
+    "forbidden": "Access forbidden",
+    "notFound": "Requested resource not found",
+    "serverError": "Server error occurred",
+    "networkError": "Network error occurred",
+    "validationError": "Please check your input"
+  },
+  "language": {
+    "korean": "한국어",
+    "english": "English",
+    "switch": "Change Language"
+  }
+}
+
