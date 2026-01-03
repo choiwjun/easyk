@@ -84,7 +84,7 @@ export default function Home() {
             {t('home.subtitle')}
           </p>
 
-          <div className="flex justify-center gap-4 mb-16">
+          <div className="flex justify-center gap-4 mb-8">
             <Button
               onClick={() => router.push('/signup')}
               className="bg-[#1E5BA0] hover:bg-[#1a4d8a] text-white px-8 py-3 text-lg"
@@ -98,6 +98,18 @@ export default function Home() {
             >
               {t('auth.login')}
             </Button>
+          </div>
+
+          {/* 사용자 가이드 링크 */}
+          <div className="flex justify-center mb-12">
+            <a
+              href="/docs/06_easyK_UserGuide.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-700 underline text-sm"
+            >
+              📖 사용자 가이드 보기
+            </a>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
