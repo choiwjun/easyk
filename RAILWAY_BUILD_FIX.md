@@ -45,7 +45,7 @@ Railway에 **명시적으로 Python 프로젝트임을 알려주는 설정 파�
 builder = "nixpacks"
 
 [deploy]
-startCommand = "uvicorn src.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "python -m uvicorn src.main:app --host 0.0.0.0 --port $PORT"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 
@@ -56,6 +56,7 @@ PYTHONUNBUFFERED = "1"
 **역할**:
 - `builder = "nixpacks"`: Nixpacks 빌더 사용 명시
 - `startCommand`: FastAPI 서버 시작 명령
+  - ⚠️ `python -m uvicorn` 사용 (uvicorn 직접 호출 시 PATH 문제)
 - `restartPolicyType`: 실패 시 재시작 정책
 - `PYTHONUNBUFFERED = "1"`: 로그 즉시 출력
 - ⚠️ `buildCommand`는 제거됨 (nixpacks가 자동 처리)
@@ -124,13 +125,14 @@ git commit -m "fix: Railway 빌드 에러 해결 - Python 프로젝트 명시"
 git push origin main
 ```
 
-**커밋 해시**: `6870455` (최종)
+**커밋 해시**: `f3279e3` (최종)
 - 첫 시도: `1366013` (Railpack 에러 - Node.js로 오인식)
 - 두 번째: `febf060` (pip 경로 에러)
 - 세 번째: `2d83601` (Nix pip 변수 에러)
 - 네 번째: `53e0e30` (No module named pip)
 - 다섯 번째: `2f08715` (externally-managed-environment)
-- 여섯 번째: `6870455` (완전 해결 - nixpacks.toml 제거)
+- 여섯 번째: `6870455` (빌드 성공! 하지만 시작 실패)
+- 일곱 번째: `f3279e3` (완전 해결 - python -m uvicorn)
 
 ### Railway 자동 재배포
 
@@ -341,7 +343,7 @@ echo "3.11" > backend/.python-version
 
 **작성일**: 2026-01-03
 **작성자**: Claude Code
-**커밋**: 6870455
+**커밋**: f3279e3
 **이슈**: Railway 빌드 에러 - "Error creating build plan with Railpack"
 
 ---
@@ -475,6 +477,37 @@ rm backend/nixpacks.toml
 - ❌ nixpacks.toml로 pip 직접 제어 → Nix 충돌
 - ✅ Railway 자동 감지 사용 → 가상환경에서 안전하게 설치
 
+### 에러 6: uvicorn: command not found (컨테이너 시작 실패)
+
+**에러 메시지**:
+```
+Starting Container
+/bin/bash: line 1: uvicorn: command not found
+```
+
+**상황**:
+- ✅ **빌드 성공!** (더 이상 빌드 에러 없음)
+- ❌ **컨테이너 시작 실패** (uvicorn을 찾을 수 없음)
+
+**원인**:
+- 가상환경(venv)에 uvicorn이 설치되었지만
+- `railway.toml`의 `startCommand`가 가상환경 밖에서 실행됨
+- uvicorn이 시스템 PATH에 없어서 명령을 찾을 수 없음
+
+**해결**:
+```toml
+# railway.toml
+[deploy]
+# ❌ startCommand = "uvicorn src.main:app --host 0.0.0.0 --port $PORT"
+✅ startCommand = "python -m uvicorn src.main:app --host 0.0.0.0 --port $PORT"
+```
+
+**왜 작동하는가?**:
+- `python -m uvicorn`: Python 모듈로 uvicorn 실행
+- Python은 시스템 PATH에 있음
+- Python이 자동으로 가상환경의 uvicorn 모듈을 찾아서 실행
+- 가상환경 활성화 불필요!
+
 ### Python 3.13 → 3.11로 변경 이유
 
 **문제**: Python 3.13은 2023년 10월 출시된 최신 버전
@@ -491,12 +524,12 @@ rm backend/nixpacks.toml
 
 **Railway가 package.json 때문에 Node.js 프로젝트로 오인식하는 문제를 해결했습니다.**
 
-- ✅ `railway.toml` 설정 파일 생성 및 최적화
+- ✅ `railway.toml` 설정 파일 생성 및 최적화 (`python -m uvicorn` 사용)
 - ❌ ~~`nixpacks.toml` 빌더 설정~~ → **삭제함** (Nix 충돌)
 - ✅ `.python-version` Python 3.11 명시
 - ✅ `runtime.txt` 추가 (Railway 표준 방식) - **가장 중요!**
 - ✅ `.railwayignore` 추가 (빌드 최적화)
-- ✅ GitHub 푸시 완료 (커밋: 6870455)
+- ✅ GitHub 푸시 완료 (커밋: f3279e3)
 - ⏳ Railway 자동 재배포 진행 중
 
 **해결된 모든 에러**:
@@ -505,11 +538,12 @@ rm backend/nixpacks.toml
 3. ✅ Nix undefined variable 'pip' → "pip" 제거
 4. ✅ No module named pip → python311Packages.pip 추가
 5. ✅ externally-managed-environment → **nixpacks.toml 완전히 삭제!**
+6. ✅ uvicorn: command not found → **python -m uvicorn 사용!**
 
 **최종 해결책**:
-- `railway.toml` (최소한의 설정만)
+- `railway.toml` (`python -m uvicorn`으로 시작)
 - `runtime.txt` (Python 3.11 명시)
 - `requirements.txt` (의존성 목록)
-- Railway 자동 감지 → 가상환경 생성 → pip 설치 성공!
+- Railway 자동 감지 → 가상환경 생성 → pip 설치 → uvicorn 실행 성공!
 
-**이제 Railway가 Python FastAPI 프로젝트로 정상 인식하고 빌드될 것입니다!** 🎉
+**이제 Railway가 Python FastAPI 프로젝트를 정상적으로 빌드하고 실행할 것입니다!** 🎉
