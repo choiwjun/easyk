@@ -1830,13 +1830,21 @@
 
 ### TASK-069: 초기 데이터 시딩
 - **타입**: STRUCTURAL
-- **상태**: TODO
+- **상태**: COMPLETED
 - **설명**: 테스트용 초기 데이터 생성
 - **상세**:
   - 전문가 5명 생성 (다양한 전문 분야)
   - 일자리 공고 15건 생성
   - 정부 지원 정보 10건 생성
 - **검증**: 앱 접속 시 샘플 데이터 표시
+- **완료 내용**:
+  - `backend/seed_data.py` 스크립트 생성
+    - Users & Consultants 시드 데이터 생성 로직
+    - Jobs 시드 데이터 생성 로직
+    - Government Supports 시드 데이터 생성 로직
+    - 데이터 중복 확인 후 건너뛰기 기능
+  - README.md에 시드 데이터 실행 방법 추가
+  - 실행 명령어: `cd backend && python seed_data.py`
 - **의존성**: TASK-068
 
 ### TASK-070: 사용자 가이드 문서 작성
