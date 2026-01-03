@@ -18,11 +18,14 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      // Translate backend error messages to Korean
-      let message = '회원가입 중 오류가 발생했습니다';
-      if (data.detail === 'User with this email already exists') {
-        message = '이미 가입된 이메일 주소입니다';
-      }
+      // 에러 메시지 다국어 지원 개선
+      const errorMessages: Record<string, string> = {
+        'User with this email already exists': '이미 가입된 이메일 주소입니다',
+        'Email already registered': '이미 가입된 이메일 주소입니다',
+        'Invalid email format': '이메일 형식이 올바르지 않습니다',
+      };
+
+      const message = errorMessages[data.detail] || data.message || '회원가입 중 오류가 발생했습니다';
       return NextResponse.json({ message }, { status: response.status });
     }
 

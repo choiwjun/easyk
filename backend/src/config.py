@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     # Database
     # HIGH FIX: 프로덕션에서는 반드시 환경 변수로 설정 필요
-    DATABASE_URL: str
+    DATABASE_URL: str = "postgresql://user:password@localhost:5432/easyk"
 
     # Supabase (Alternative to local PostgreSQL)
     SUPABASE_URL: str = ""
@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # Security
     # HIGH FIX: 프로덕션에서는 반드시 강력한 시크릿 키 설정 필요
-    SECRET_KEY: str
+    SECRET_KEY: str = "dev-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
@@ -28,7 +28,12 @@ class Settings(BaseSettings):
 
     # Application
     DEBUG: bool = True
-    ALLOWED_ORIGINS: str = "http://localhost:3000"
+
+    # CORS 설정 (콤마로 구분된 다중 도메인 지원)
+    # 로컬 개발: http://localhost:3000
+    # Vercel 배포: https://your-app.vercel.app
+    # 두 도메인 모두 허용: http://localhost:3000,https://your-app.vercel.app
+    ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     # Payment
     TOSS_CLIENT_KEY: str = ""
@@ -43,8 +48,12 @@ class Settings(BaseSettings):
 
     @property
     def origins_list(self) -> List[str]:
-        """CORS origins를 리스트로 반환"""
-        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
+        """CORS origins를 리스트로 반환 (빈 값 무시)"""
+        return [
+            origin.strip()
+            for origin in self.ALLOWED_ORIGINS.split(",")
+            if origin.strip()
+        ]
 
 
 # 싱글톤 설정 인스턴스

@@ -9,9 +9,10 @@ from datetime import datetime, timedelta
 import time
 
 # 요청 제한 설정 (프로덕션 vs 프로덕션)
+# 보안 강화: 시간 단위별로 제한 설정 (DOS 공격 방지)
 rate_limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["200 per day"],
+    default_limits=["100 per hour", "1000 per day"],
     storage_uri="memory://",
 )
 

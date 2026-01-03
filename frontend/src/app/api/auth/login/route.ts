@@ -18,11 +18,14 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      // Translate backend error messages to Korean
-      let message = '로그인 중 오류가 발생했습니다';
-      if (data.detail === 'Incorrect email or password') {
-        message = '이메일 또는 비밀번호가 올바르지 않습니다';
-      }
+      // 에러 메시지 다국어 지원 개선
+      const errorMessages: Record<string, string> = {
+        'Incorrect email or password': '이메일 또는 비밀번호가 올바르지 않습니다',
+        'User not found': '사용자를 찾을 수 없습니다',
+        'Invalid credentials': '인증 정보가 유효하지 않습니다',
+      };
+
+      const message = errorMessages[data.detail] || data.message || '로그인 중 오류가 발생했습니다';
       return NextResponse.json({ message }, { status: response.status });
     }
 

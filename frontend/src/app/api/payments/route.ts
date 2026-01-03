@@ -27,10 +27,15 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      return NextResponse.json(
-        { message: data.detail || data.message || '결제 생성 실패' },
-        { status: response.status }
-      );
+      // 에러 메시지 개선
+      const errorMessages: Record<string, string> = {
+        'Unauthorized': '인증이 필요합니다',
+        'Forbidden': '접근 권한이 없습니다',
+        'Consultation not found': '상담을 찾을 수 없습니다',
+      };
+
+      const message = errorMessages[data.detail] || data.message || '결제 생성 실패';
+      return NextResponse.json({ message }, { status: response.status });
     }
 
     return NextResponse.json(data, { status: response.status });
