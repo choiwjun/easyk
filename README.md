@@ -211,3 +211,4 @@ Railway 대시보드에서 GitHub 저장소 연결 및 자동 배포 설정
 프로젝트 관련 문의: [이메일 주소]
 
 프로젝트 링크: [GitHub 저장소 URL]
+# Vercel deployment trigger
