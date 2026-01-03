@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Navbar from "@/components/ui/Navbar";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SAMPLE_JOBS } from "@/lib/sampleData";
 
 interface Job {
   id: string;
@@ -26,6 +27,7 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [useSampleData, setUseSampleData] = useState(false); // 샘플 데이터 사용 모드
 
   // 필터 및 검색 상태
   const [keyword, setKeyword] = useState("");
@@ -55,6 +57,13 @@ export default function JobsPage() {
         return;
       }
 
+      // 샘플 데이터 사용 모드인 경우 API 호출 스킵
+      if (useSampleData) {
+        setJobs(SAMPLE_JOBS);
+        setIsLoading(false);
+        return;
+      }
+
       // Query parameters 구성
       const params = new URLSearchParams();
       if (keyword.trim()) params.append("keyword", keyword.trim());
@@ -76,10 +85,15 @@ export default function JobsPage() {
       } else if (response.status === 403) {
         router.push("/login");
       } else {
-        setError(t('errors.networkError'));
+        // API 실패 시 샘플 데이터 사용
+        console.warn('[Jobs] API 호출 실패, 샘플 데이터 사용:', response.status);
+        setJobs(SAMPLE_JOBS);
       }
     } catch (error) {
-      setError(t('errors.networkError'));
+      // 네트워크 오류 시 샘플 데이터 사용
+      console.warn('[Jobs] 네트워크 오류, 샘플 데이터 사용:', error);
+      setJobs(SAMPLE_JOBS);
+      setError(`UI 데모: 샘플 데이터를 표시합니다. (${t('errors.networkError')})`);
     } finally {
       setIsLoading(false);
     }
@@ -155,6 +169,39 @@ export default function JobsPage() {
       <Navbar />
       <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
+          {/* UI 데모 토글 */}
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-yellow-700">🎨</span>
+                <span className="text-sm font-medium text-yellow-800">
+                  {language === 'ko' ? 'UI 데모: 샘플 데이터 사용' : 'UI Demo: Use Sample Data'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setUseSampleData(!useSampleData);
+                  setIsLoading(true);
+                  setError("");
+                  fetchJobs();
+                }}
+                className={`px-3 py-1 text-sm rounded-md font-medium transition-colors ${
+                  useSampleData
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {useSampleData ? (language === 'ko' ? '🟢 샘플 데이터 중' : '🟢 Sample Data') : (language === 'ko' ? '⚪ API 사용 중' : '⚪ Using API')}
+              </button>
+            </div>
+            <p className="text-xs text-yellow-600 mt-1">
+              {language === 'ko' 
+                ? '개발/테스트용 샘플 데이터입니다. 백엔드 API 연결 없이 UI를 확인할 수 있습니다.'
+                : 'Sample data for development/testing. Check UI without backend API connection.'}
+            </p>
+          </div>
+
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">{t('jobs.title')}</h1>
           </div>

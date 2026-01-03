@@ -7,6 +7,7 @@ import Input from "@/components/ui/Input";
 import Navbar from "@/components/ui/Navbar";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SAMPLE_SUPPORTS } from "@/lib/sampleData";
 
 interface Support {
   id: string;
@@ -42,6 +43,7 @@ export default function SupportsPage() {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [useSampleData, setUseSampleData] = useState(false); // 샘플 데이터 사용 모드
 
   // 검색 및 필터 상태
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -58,6 +60,14 @@ export default function SupportsPage() {
 
       if (!token) {
         router.push("/login");
+        return;
+      }
+
+      // 샘플 데이터 사용 모드인 경우 API 호출 스킵
+      if (useSampleData) {
+        setSupports(SAMPLE_SUPPORTS);
+        setTotal(SAMPLE_SUPPORTS.length);
+        setIsLoading(false);
         return;
       }
 
@@ -84,10 +94,18 @@ export default function SupportsPage() {
       } else if (response.status === 403 || response.status === 401) {
         router.push("/login");
       } else {
-        setError(language === 'ko' ? "지원 프로그램 목록을 불러오는데 실패했습니다." : "Failed to load support programs.");
+        // API 실패 시 샘플 데이터 사용
+        console.warn('[Supports] API 호출 실패, 샘플 데이터 사용:', response.status);
+        setSupports(SAMPLE_SUPPORTS);
+        setTotal(SAMPLE_SUPPORTS.length);
+        setError(`UI 데모: 샘플 데이터를 표시합니다. (${language === 'ko' ? "지원 프로그램 목록을 불러오는데 실패했습니다." : "Failed to load support programs."})`);
       }
     } catch (error) {
-      setError(language === 'ko' ? "네트워크 오류가 발생했습니다." : "Network error occurred.");
+      // 네트워크 오류 시 샘플 데이터 사용
+      console.warn('[Supports] 네트워크 오류, 샘플 데이터 사용:', error);
+      setSupports(SAMPLE_SUPPORTS);
+      setTotal(SAMPLE_SUPPORTS.length);
+      setError(`UI 데모: 샘플 데이터를 표시합니다. (${language === 'ko' ? "네트워크 오류가 발생했습니다." : "Network error occurred."})`);
     } finally {
       setIsLoading(false);
     }
@@ -147,6 +165,39 @@ export default function SupportsPage() {
       <Navbar />
       <div className="py-8 px-4">
         <div className="max-w-7xl mx-auto">
+          {/* UI 데모 토글 */}
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-yellow-700">🎨</span>
+                <span className="text-sm font-medium text-yellow-800">
+                  {language === 'ko' ? 'UI 데모: 샘플 데이터 사용' : 'UI Demo: Use Sample Data'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setUseSampleData(!useSampleData);
+                  setIsLoading(true);
+                  setError("");
+                  fetchSupports();
+                }}
+                className={`px-3 py-1 text-sm rounded-md font-medium transition-colors ${
+                  useSampleData
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {useSampleData ? (language === 'ko' ? '🟢 샘플 데이터 중' : '🟢 Sample Data') : (language === 'ko' ? '⚪ API 사용 중' : '⚪ Using API')}
+              </button>
+            </div>
+            <p className="text-xs text-yellow-600 mt-1">
+              {language === 'ko' 
+                ? '개발/테스트용 샘플 데이터입니다. 백엔드 API 연결 없이 UI를 확인할 수 있습니다.'
+                : 'Sample data for development/testing. Check UI without backend API connection.'}
+            </p>
+          </div>
+
           {/* 헤더 */}
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900">
