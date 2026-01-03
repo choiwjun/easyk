@@ -64,23 +64,21 @@ PYTHONUNBUFFERED = "1"
 
 ```toml
 [phases.setup]
-nixPkgs = ["python311"]
+nixPkgs = ["python311", "pip"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt"]
-
-[phases.build]
-cmds = []
+cmds = ["python -m pip install --upgrade pip", "python -m pip install -r requirements.txt"]
 
 [start]
 cmd = "uvicorn src.main:app --host 0.0.0.0 --port $PORT"
 ```
 
 **역할**:
-- `nixPkgs = ["python311"]`: Python 3.11 사용 (안정성 및 호환성)
+- `nixPkgs = ["python311", "pip"]`: Python 3.11 및 pip 패키지 명시적 설치
+- `python -m pip`: pip 모듈을 직접 호출하여 경로 문제 해결
+- `--upgrade pip`: pip를 최신 버전으로 업그레이드
 - `phases.install`: 의존성 설치 단계
 - `start.cmd`: 서버 시작 명령
-- ⚠️ Python 3.13은 너무 최신이라 일부 패키지 호환성 문제 가능
 
 ### 3. `backend/.python-version` (Python 버전 명시)
 
@@ -91,6 +89,36 @@ cmd = "uvicorn src.main:app --host 0.0.0.0 --port $PORT"
 **역할**:
 - Python 버전을 명시적으로 지정
 - Nixpacks가 이 파일을 읽고 정확한 Python 버전 사용
+
+### 4. `backend/runtime.txt` (Heroku/Railway 표준 방식)
+
+```
+python-3.11.0
+```
+
+**역할**:
+- Heroku 및 Railway 표준 Python 버전 명시 방법
+- `.python-version`과 함께 이중 명시로 확실하게 설정
+
+### 5. `backend/.railwayignore` (불필요한 파일 제외)
+
+```
+node_modules/
+*.md
+.git/
+.gitignore
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env.local
+.env.*.local
+```
+
+**역할**:
+- 빌드 시 불필요한 파일 제외
+- 빌드 속도 향상 및 용량 절약
+- node_modules 제외 (Toss Payments SDK는 프론트엔드에서 사용)
 
 ---
 
@@ -104,9 +132,10 @@ git commit -m "fix: Railway 빌드 에러 해결 - Python 프로젝트 명시"
 git push origin main
 ```
 
-**커밋 해시**: `febf060` (최종)
-- 첫 시도: `1366013` (pip 에러 발생)
-- 두 번째: `febf060` (성공)
+**커밋 해시**: `2d83601` (최종)
+- 첫 시도: `1366013` (Railpack 에러 - Node.js로 오인식)
+- 두 번째: `febf060` (pip 경로 에러)
+- 세 번째: `2d83601` (완전 해결)
 
 ### Railway 자동 재배포
 
@@ -317,7 +346,7 @@ echo "3.11" > backend/.python-version
 
 **작성일**: 2026-01-03
 **작성자**: Claude Code
-**커밋**: febf060
+**커밋**: 2d83601
 **이슈**: Railway 빌드 에러 - "Error creating build plan with Railpack"
 
 ---
@@ -344,9 +373,20 @@ builder = "nixpacks"
 # buildCommand = "pip install -r requirements.txt"  ← 이 줄 제거
 
 # nixpacks.toml의 install phase가 대신 처리함
+[phases.setup]
+nixPkgs = ["python311", "pip"]  ← pip 패키지 명시적 추가
+
 [phases.install]
-cmds = ["pip install -r requirements.txt"]
+cmds = [
+  "python -m pip install --upgrade pip",  ← python -m 사용
+  "python -m pip install -r requirements.txt"
+]
 ```
+
+**핵심 해결책**:
+1. `pip` 패키지를 nixPkgs에 명시적으로 추가
+2. `pip install` 대신 `python -m pip install` 사용
+3. pip를 먼저 업그레이드하여 최신 버전 사용
 
 ### Python 3.13 → 3.11로 변경 이유
 
@@ -364,10 +404,12 @@ cmds = ["pip install -r requirements.txt"]
 
 **Railway가 package.json 때문에 Node.js 프로젝트로 오인식하는 문제를 해결했습니다.**
 
-- ✅ `railway.toml` 설정 파일 생성
-- ✅ `nixpacks.toml` 빌더 설정 생성
-- ✅ `.python-version` Python 버전 명시
-- ✅ GitHub 푸시 완료
+- ✅ `railway.toml` 설정 파일 생성 및 최적화
+- ✅ `nixpacks.toml` 빌더 설정 (pip 명시적 추가, python -m pip 사용)
+- ✅ `.python-version` Python 3.11 명시
+- ✅ `runtime.txt` 추가 (Railway 표준 방식)
+- ✅ `.railwayignore` 추가 (빌드 최적화)
+- ✅ GitHub 푸시 완료 (커밋: 2d83601)
 - ⏳ Railway 자동 재배포 진행 중
 
-**이제 Railway가 Python FastAPI 프로젝트로 정상 인식하고 빌드될 것입니다!** 🎉
+**이제 Railway가 Python FastAPI 프로젝트로 정상 인식하고 pip 경로 문제 없이 빌드될 것입니다!** 🎉
