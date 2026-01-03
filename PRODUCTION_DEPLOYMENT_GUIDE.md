@@ -284,3 +284,4 @@ https://your-backend.railway.app/docs
 **마지막 업데이트**: 2026-01-03
 
 
+

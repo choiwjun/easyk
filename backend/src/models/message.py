@@ -28,3 +28,4 @@ class Message(Base):
     consultation = relationship("Consultation", back_populates="messages")
 
 
+
