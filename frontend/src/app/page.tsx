@@ -14,7 +14,7 @@ export default function Home() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  uconst checkAuth = async () => {
+  const checkAuth = async () => {
     const token = localStorage.getItem('access_token');
     
     if (!token) {

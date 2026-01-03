@@ -46,7 +46,9 @@
       "Bash(python:*)",
       "Bash(git checkout:*)",
       "Bash(ls:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git rm:*)",
+      "Bash(tail:*)"
     ]
   }
 }
