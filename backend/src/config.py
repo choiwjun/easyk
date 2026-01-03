@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     # Application
     DEBUG: bool = True
 
+    # File Upload
+    UPLOAD_DIR: str = "uploads"  # 파일 업로드 경로
+
     # CORS 설정 (콤마로 구분된 다중 도메인 지원)
     # 로컬 개발: http://localhost:3000
     # Vercel 배포: https://your-app.vercel.app
