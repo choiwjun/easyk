@@ -32,6 +32,9 @@ export default function SupportsDetailPage() {
   const [support, setSupport] = useState<Support | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState<string | null>(null);
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -66,6 +69,7 @@ export default function SupportsDetailPage() {
 
   useEffect(() => {
     fetchSupportDetail();
+    fetchTemplates();
   }, [supportId]);
 
   const fetchSupportDetail = async () => {
@@ -107,6 +111,49 @@ export default function SupportsDetailPage() {
       month: "long",
       day: "numeric",
     }).format(date);
+  };
+
+  const fetchTemplates = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      const response = await fetch(`/api/document-templates?category=support_application&language=ko`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTemplates(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch templates:", error);
+    }
+  };
+
+  const handleDownload = async (templateId: string) => {
+    try {
+      setIsDownloading(templateId);
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const template = templates.find((t: any) => t.id === templateId);
+      if (template) {
+        const link = document.createElement("a");
+        link.href = template.file_url;
+        link.download = template.file_name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      alert("다운로드에 실패했습니다.");
+    } finally {
+      setIsDownloading(null);
+    }
   };
 
   if (isLoading) {
@@ -298,6 +345,53 @@ export default function SupportsDetailPage() {
                 </a>
               </div>
             )}
+
+            {/* Document Templates */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  서류 템플릿 다운로드
+                </h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowTemplatesModal(true)}
+                >
+                  템플릿 보기
+                </Button>
+              </div>
+              {templates.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {templates.map((template: any) => (
+                    <div key={template.id} className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-semibold text-gray-900 mb-1">
+                            {template.name}
+                          </h3>
+                          <p className="text-sm text-gray-600 line-clamp-2">
+                            {template.description || "서류 양식"}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleDownload(template.id)}
+                        disabled={isDownloading === template.id}
+                        className="w-full"
+                      >
+                        {isDownloading === template.id ? "다운로드 중..." : "다운로드"}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-gray-50 rounded-lg p-8 text-center">
+                  <p className="text-gray-600">서류 템플릿이 없습니다.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
