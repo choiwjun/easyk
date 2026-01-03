@@ -45,7 +45,7 @@ Railway에 **명시적으로 Python 프로젝트임을 알려주는 설정 파�
 builder = "nixpacks"
 
 [deploy]
-startCommand = "python -m uvicorn src.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "python3 -m uvicorn src.main:app --host 0.0.0.0 --port $PORT"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 
@@ -56,7 +56,7 @@ PYTHONUNBUFFERED = "1"
 **역할**:
 - `builder = "nixpacks"`: Nixpacks 빌더 사용 명시
 - `startCommand`: FastAPI 서버 시작 명령
-  - ⚠️ `python -m uvicorn` 사용 (uvicorn 직접 호출 시 PATH 문제)
+  - ⚠️ `python3 -m uvicorn` 사용 (python/uvicorn 직접 호출 시 PATH 문제)
 - `restartPolicyType`: 실패 시 재시작 정책
 - `PYTHONUNBUFFERED = "1"`: 로그 즉시 출력
 - ⚠️ `buildCommand`는 제거됨 (nixpacks가 자동 처리)
@@ -125,14 +125,15 @@ git commit -m "fix: Railway 빌드 에러 해결 - Python 프로젝트 명시"
 git push origin main
 ```
 
-**커밋 해시**: `f3279e3` (최종)
+**커밋 해시**: `4a5a57b` (최종)
 - 첫 시도: `1366013` (Railpack 에러 - Node.js로 오인식)
 - 두 번째: `febf060` (pip 경로 에러)
 - 세 번째: `2d83601` (Nix pip 변수 에러)
 - 네 번째: `53e0e30` (No module named pip)
 - 다섯 번째: `2f08715` (externally-managed-environment)
 - 여섯 번째: `6870455` (빌드 성공! 하지만 시작 실패)
-- 일곱 번째: `f3279e3` (완전 해결 - python -m uvicorn)
+- 일곱 번째: `f3279e3` (python not found)
+- 여덟 번째: `4a5a57b` (완전 해결 - python3 사용)
 
 ### Railway 자동 재배포
 
@@ -343,7 +344,7 @@ echo "3.11" > backend/.python-version
 
 **작성일**: 2026-01-03
 **작성자**: Claude Code
-**커밋**: f3279e3
+**커밋**: 4a5a57b
 **이슈**: Railway 빌드 에러 - "Error creating build plan with Railpack"
 
 ---
@@ -499,7 +500,7 @@ Starting Container
 # railway.toml
 [deploy]
 # ❌ startCommand = "uvicorn src.main:app --host 0.0.0.0 --port $PORT"
-✅ startCommand = "python -m uvicorn src.main:app --host 0.0.0.0 --port $PORT"
+✅ startCommand = "python3 -m uvicorn src.main:app --host 0.0.0.0 --port $PORT"
 ```
 
 **왜 작동하는가?**:
@@ -507,6 +508,31 @@ Starting Container
 - Python은 시스템 PATH에 있음
 - Python이 자동으로 가상환경의 uvicorn 모듈을 찾아서 실행
 - 가상환경 활성화 불필요!
+
+### 에러 7: python: command not found
+
+**에러 메시지**:
+```
+Starting Container
+/bin/bash: line 1: python: command not found
+```
+
+**원인**:
+- Linux 시스템에서 Python 3는 보통 `python3` 명령어로 설치됨
+- `python` 명령어는 Python 2를 가리키거나 존재하지 않을 수 있음
+- Railway 컨테이너에는 `python3`만 설치되어 있음
+
+**해결**:
+```toml
+# railway.toml
+[deploy]
+# ❌ startCommand = "python -m uvicorn ..."
+✅ startCommand = "python3 -m uvicorn src.main:app --host 0.0.0.0 --port $PORT"
+```
+
+**핵심**:
+- ✅ `python3`: 대부분의 Linux 시스템에서 표준
+- ❌ `python`: 레거시 명령어, 존재하지 않을 수 있음
 
 ### Python 3.13 → 3.11로 변경 이유
 
@@ -538,12 +564,13 @@ Starting Container
 3. ✅ Nix undefined variable 'pip' → "pip" 제거
 4. ✅ No module named pip → python311Packages.pip 추가
 5. ✅ externally-managed-environment → **nixpacks.toml 완전히 삭제!**
-6. ✅ uvicorn: command not found → **python -m uvicorn 사용!**
+6. ✅ uvicorn: command not found → python -m uvicorn 시도
+7. ✅ python: command not found → **python3 사용!**
 
 **최종 해결책**:
-- `railway.toml` (`python -m uvicorn`으로 시작)
+- `railway.toml` (`python3 -m uvicorn`으로 시작)
 - `runtime.txt` (Python 3.11 명시)
 - `requirements.txt` (의존성 목록)
-- Railway 자동 감지 → 가상환경 생성 → pip 설치 → uvicorn 실행 성공!
+- Railway 자동 감지 → 가상환경 생성 → pip 설치 → python3으로 uvicorn 실행 성공!
 
 **이제 Railway가 Python FastAPI 프로젝트를 정상적으로 빌드하고 실행할 것입니다!** 🎉
