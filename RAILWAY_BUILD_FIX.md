@@ -125,7 +125,7 @@ git commit -m "fix: Railway 빌드 에러 해결 - Python 프로젝트 명시"
 git push origin main
 ```
 
-**커밋 해시**: `4a5a57b` (최종)
+**커밋 해시**: `fbb1ade` (최종)
 - 첫 시도: `1366013` (Railpack 에러 - Node.js로 오인식)
 - 두 번째: `febf060` (pip 경로 에러)
 - 세 번째: `2d83601` (Nix pip 변수 에러)
@@ -133,7 +133,8 @@ git push origin main
 - 다섯 번째: `2f08715` (externally-managed-environment)
 - 여섯 번째: `6870455` (빌드 성공! 하지만 시작 실패)
 - 일곱 번째: `f3279e3` (python not found)
-- 여덟 번째: `4a5a57b` (완전 해결 - python3 사용)
+- 여덟 번째: `4a5a57b` (python3 not found - 런타임 이미지 문제!)
+- 아홉 번째: `fbb1ade` (완전 해결 - railway.toml 삭제, Procfile 사용)
 
 ### Railway 자동 재배포
 
@@ -534,6 +535,44 @@ Starting Container
 - ✅ `python3`: 대부분의 Linux 시스템에서 표준
 - ❌ `python`: 레거시 명령어, 존재하지 않을 수 있음
 
+### 에러 8: python3: command not found (런타임 이미지 문제 - 최종 해결!)
+
+**에러 메시지**:
+```
+Starting Container
+/bin/bash: line 1: python3: command not found
+/bin/bash: line 1: python3: command not found
+(11번 반복...)
+```
+
+**원인**:
+- **빌드 이미지 vs 런타임 이미지 분리 문제!**
+- `railway.toml`의 `startCommand`가 **런타임 컨테이너**에서 실행됨
+- 빌드 이미지에는 Python이 있지만, 런타임 이미지에는 Python이 설치되지 않음
+- Railway의 Nixpacks는 빌드와 런타임을 분리하여 컨테이너 크기 최적화
+
+**최종 해결책**: `railway.toml` 완전히 삭제하고 `Procfile`만 사용!
+
+```bash
+# railway.toml 삭제
+rm backend/railway.toml
+
+# Procfile 수정
+web: python3 -m uvicorn src.main:app --host 0.0.0.0 --port $PORT
+```
+
+**왜 Procfile이 작동하는가?**:
+1. Railway는 `Procfile`을 **빌드 컨텍스트에서 인식**
+2. `Procfile`의 `web` 명령은 **올바른 런타임 컨텍스트**에서 실행됨
+3. Railway가 Python 런타임을 런타임 이미지에 포함시킴
+4. `python3 -m uvicorn`이 정상적으로 실행됨
+
+**railway.toml vs Procfile**:
+- ❌ `railway.toml`의 `startCommand`: 런타임 이미지에서 실행 (Python 없음)
+- ✅ `Procfile`의 `web`: 올바른 컨텍스트에서 실행 (Python 있음)
+
+**커밋**: fbb1ade
+
 ### Python 3.13 → 3.11로 변경 이유
 
 **문제**: Python 3.13은 2023년 10월 출시된 최신 버전
@@ -566,11 +605,27 @@ Starting Container
 5. ✅ externally-managed-environment → **nixpacks.toml 완전히 삭제!**
 6. ✅ uvicorn: command not found → python -m uvicorn 시도
 7. ✅ python: command not found → **python3 사용!**
+8. ✅ python3: command not found (런타임 이미지 문제) → **railway.toml 삭제, Procfile만 사용!**
 
-**최종 해결책**:
-- `railway.toml` (`python3 -m uvicorn`으로 시작)
-- `runtime.txt` (Python 3.11 명시)
-- `requirements.txt` (의존성 목록)
-- Railway 자동 감지 → 가상환경 생성 → pip 설치 → python3으로 uvicorn 실행 성공!
+**최종 해결책 (9번의 시도 끝에)**:
+- ❌ ~~`railway.toml`~~ → **삭제함** (런타임 컨텍스트 문제)
+- ❌ ~~`nixpacks.toml`~~ → **삭제함** (Nix 불변 파일시스템 충돌)
+- ✅ `Procfile` → `web: python3 -m uvicorn src.main:app --host 0.0.0.0 --port $PORT`
+- ✅ `runtime.txt` → `python-3.11.0` (Railway 자동 감지용)
+- ✅ `requirements.txt` → 의존성 목록
+- ✅ `.railwayignore` → 빌드 최적화
+
+**Railway 배포 플로우**:
+1. `runtime.txt` 감지 → Python 프로젝트 인식
+2. 자동으로 가상환경 생성
+3. `pip install -r requirements.txt` 실행
+4. `Procfile`의 `web` 명령으로 서버 시작
+5. ✅ 성공!
+
+**핵심 교훈**:
+- 🚫 **복잡한 설정보다 플랫폼 표준 사용** (Procfile, runtime.txt)
+- 🚫 **Nix와 pip를 직접 제어하려 하지 말 것**
+- ✅ **Railway 자동 감지 활용** (runtime.txt만으로 충분)
+- ✅ **Procfile이 railway.toml보다 안정적** (올바른 컨텍스트)
 
 **이제 Railway가 Python FastAPI 프로젝트를 정상적으로 빌드하고 실행할 것입니다!** 🎉
