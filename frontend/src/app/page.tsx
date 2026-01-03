@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/ui/Navbar';
 
 export default function Home() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
