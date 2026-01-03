@@ -200,7 +200,7 @@ export default function ConsultantsDashboard() {
       });
 
       if (response.ok) {
-        fetchConsultations("matched");
+        fetchConsultations();
         fetchStats();
       } else {
         const errorData = await response.json();
@@ -296,31 +296,28 @@ export default function ConsultantsDashboard() {
           <div className="flex gap-4">
             <button
               onClick={() => setActiveTab("incoming")}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === "incoming"
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${activeTab === "incoming"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+                }`}
             >
               진입 상담 ({incomingConsultations.length})
             </button>
             <button
               onClick={() => setActiveTab("accepted")}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === "accepted"
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${activeTab === "accepted"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+                }`}
             >
               예약 상담 ({acceptedConsultations.length})
             </button>
             <button
               onClick={() => setActiveTab("completed")}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === "completed"
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${activeTab === "completed"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+                }`}
             >
               완료 상담 ({completedConsultations.length})
             </button>
@@ -348,57 +345,57 @@ export default function ConsultantsDashboard() {
             {(activeTab === "incoming"
               ? incomingConsultations
               : activeTab === "accepted"
-              ? acceptedConsultations
-              : completedConsultations).map((consultation) => (
-              <div
-                key={consultation.id}
-                className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h2 className="text-lg font-semibold text-gray-900">
-                        {TYPE_LABELS[consultation.consultation_type] || consultation.consultation_type}
-                      </h2>
-                      <Badge variant={getStatusVariant(consultation.status)}>
-                        {getStatusLabel(consultation.status)}
-                      </Badge>
+                ? acceptedConsultations
+                : completedConsultations).map((consultation) => (
+                  <div
+                    key={consultation.id}
+                    className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h2 className="text-lg font-semibold text-gray-900">
+                            {TYPE_LABELS[consultation.consultation_type] || consultation.consultation_type}
+                          </h2>
+                          <Badge variant={getStatusVariant(consultation.status)}>
+                            {getStatusLabel(consultation.status)}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-500 mb-2">
+                          신청자: {consultation.user.first_name} {consultation.user.last_name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {formatDate(consultation.created_at)}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-500 mb-2">
-                      신청자: {consultation.user.first_name} {consultation.user.last_name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {formatDate(consultation.created_at)}
-                    </p>
-                  </div>
-                </div>
 
-                {/* 내용 */}
-                <div className="mb-4">
-                  <p className="text-gray-700 line-clamp-2">{consultation.content}</p>
-                </div>
+                    {/* 내용 */}
+                    <div className="mb-4">
+                      <p className="text-gray-700 line-clamp-2">{consultation.content}</p>
+                    </div>
 
-                {/* 액션 버튼 */}
-                {activeTab === "incoming" && (
-                  <div className="flex gap-3 pt-4 border-t border-gray-100">
-                    <Button
-                      variant="primary"
-                      onClick={() => handleAccept(consultation.id)}
-                      className="flex-1"
-                    >
-                      수락
-                    </Button>
-                    <Button
-                      variant="danger"
-                      onClick={() => handleReject(consultation.id)}
-                      className="flex-1"
-                    >
-                      거절
-                    </Button>
+                    {/* 액션 버튼 */}
+                    {activeTab === "incoming" && (
+                      <div className="flex gap-3 pt-4 border-t border-gray-100">
+                        <Button
+                          variant="primary"
+                          onClick={() => handleAccept(consultation.id)}
+                          className="flex-1"
+                        >
+                          수락
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={() => handleReject(consultation.id)}
+                          className="flex-1"
+                        >
+                          거절
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                ))}
           </div>
         )}
       </div>

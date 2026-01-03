@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:800
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const token = request.headers.get('authorization');
@@ -16,7 +16,7 @@ export async function PUT(
       );
     }
 
-    const applicationId = params.id;
+    const { id: applicationId } = await params;
     const body = await request.json();
 
     const response = await fetch(
@@ -49,3 +49,4 @@ export async function PUT(
     );
   }
 }
+

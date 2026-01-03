@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:800
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -16,7 +16,7 @@ export async function GET(
       );
     }
 
-    const consultationId = params.id;
+    const { id: consultationId } = await params;
 
     const response = await fetch(`${BACKEND_URL}/api/consultations/${consultationId}`, {
       method: 'GET',
@@ -47,3 +47,4 @@ export async function GET(
     );
   }
 }
+

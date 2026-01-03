@@ -84,6 +84,10 @@ export default function EligibilityCheckPage() {
   };
 
   const handleCheckEligibility = () => {
+    if (!support) {
+      setError("지원 프로그램 정보가 없습니다.");
+      return;
+    }
     if (!selectedVisaType) {
       setError("비자 종류를 선택해주세요.");
       return;
@@ -214,14 +218,12 @@ export default function EligibilityCheckPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-6">자격 확인</h2>
 
             {checkResult && (
-              <div className={`mb-6 p-4 rounded-md ${
-                checkResult.eligible
+              <div className={`mb-6 p-4 rounded-md ${checkResult.eligible
                   ? "bg-green-50 border-green-200"
                   : "bg-red-50 border-red-200"
-              }`}>
-                <p className={`text-sm ${
-                  checkResult.eligible ? "text-green-800" : "text-red-800"
                 }`}>
+                <p className={`text-sm ${checkResult.eligible ? "text-green-800" : "text-red-800"
+                  }`}>
                   {checkResult.message}
                 </p>
               </div>

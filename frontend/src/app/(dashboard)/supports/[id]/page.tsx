@@ -348,29 +348,32 @@ export default function SupportsDetailPage() {
 
             {/* Document Templates */}
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">
-                  서류 템플릿 다운로드
+                  📄 {language === 'ko' ? '서류 템플릿 다운로드' : 'Document Templates'}
                 </h2>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowTemplatesModal(true)}
                 >
-                  템플릿 보기
+                  {language === 'ko' ? '전체 보기' : 'View All'}
                 </Button>
               </div>
               {templates.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {templates.map((template: any) => (
-                    <div key={template.id} className="bg-gray-50 rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-semibold text-gray-900 mb-1">
-                            {template.name}
-                          </h3>
+                  {templates.slice(0, 4).map((template: any) => (
+                    <div key={template.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-blue-300 transition-colors">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-lg">📋</span>
+                            <h3 className="font-semibold text-gray-900">
+                              {template.name}
+                            </h3>
+                          </div>
                           <p className="text-sm text-gray-600 line-clamp-2">
-                            {template.description || "서류 양식"}
+                            {template.description || (language === 'ko' ? '서류 양식' : 'Document form')}
                           </p>
                         </div>
                       </div>
@@ -381,19 +384,111 @@ export default function SupportsDetailPage() {
                         disabled={isDownloading === template.id}
                         className="w-full"
                       >
-                        {isDownloading === template.id ? "다운로드 중..." : "다운로드"}
+                        {isDownloading === template.id 
+                          ? (language === 'ko' ? '다운로드 중...' : 'Downloading...') 
+                          : (language === 'ko' ? '⬇️ 다운로드' : '⬇️ Download')}
                       </Button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="bg-gray-50 rounded-lg p-8 text-center">
-                  <p className="text-gray-600">서류 템플릿이 없습니다.</p>
+                <div className="bg-gray-50 rounded-lg p-8 text-center border border-dashed border-gray-300">
+                  <span className="text-4xl mb-4 block">📭</span>
+                  <p className="text-gray-600">
+                    {language === 'ko' ? '등록된 서류 템플릿이 없습니다.' : 'No document templates available.'}
+                  </p>
                 </div>
               )}
             </div>
           </div>
         </div>
+
+        {/* Document Templates Modal */}
+        {showTemplatesModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                <h3 className="text-xl font-bold text-gray-900">
+                  📄 {language === 'ko' ? '서류 템플릿' : 'Document Templates'}
+                </h3>
+                <button
+                  onClick={() => setShowTemplatesModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Modal Body */}
+              <div className="p-6 overflow-y-auto max-h-[60vh]">
+                {templates.length > 0 ? (
+                  <div className="space-y-4">
+                    {templates.map((template: any) => (
+                      <div 
+                        key={template.id} 
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                      >
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <span className="text-2xl">📋</span>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 mb-1">
+                              {template.name}
+                            </h4>
+                            <p className="text-sm text-gray-600">
+                              {template.description || (language === 'ko' ? '서류 양식' : 'Document form')}
+                            </p>
+                            {template.file_type && (
+                              <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">
+                                {template.file_type.toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => handleDownload(template.id)}
+                          disabled={isDownloading === template.id}
+                        >
+                          {isDownloading === template.id 
+                            ? (language === 'ko' ? '다운로드 중...' : 'Downloading...') 
+                            : (language === 'ko' ? '다운로드' : 'Download')}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <span className="text-5xl mb-4 block">📭</span>
+                    <p className="text-gray-600 mb-2">
+                      {language === 'ko' ? '등록된 서류 템플릿이 없습니다.' : 'No document templates available.'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {language === 'ko' 
+                        ? '관리자가 템플릿을 추가하면 여기에 표시됩니다.' 
+                        : 'Templates will appear here once added by admin.'}
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              {/* Modal Footer */}
+              <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowTemplatesModal(false)}
+                >
+                  {language === 'ko' ? '닫기' : 'Close'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="text-center mt-8">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
+import ChatBox from "@/components/consultations/ChatBox";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const CONSULTATION_TYPE_LABELS: Record<string, string> = {
@@ -59,10 +60,33 @@ export default function ConsultationDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     fetchConsultation();
+    fetchCurrentUser();
   }, [consultationId]);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      const response = await fetch("/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentUserId(data.id);
+      }
+    } catch (error) {
+      console.error("Failed to fetch current user:", error);
+    }
+  };
 
   const fetchConsultation = async () => {
     try {
@@ -338,6 +362,33 @@ export default function ConsultationDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* 채팅 섹션 */}
+          {(consultation.status === "matched" || consultation.status === "scheduled" || consultation.status === "completed") && (
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  💬 {language === 'ko' ? '상담 채팅' : 'Consultation Chat'}
+                </h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowChat(!showChat)}
+                >
+                  {showChat
+                    ? (language === 'ko' ? '채팅 닫기' : 'Close Chat')
+                    : (language === 'ko' ? '채팅 열기' : 'Open Chat')}
+                </Button>
+              </div>
+              {showChat && (
+                <ChatBox
+                  consultationId={consultationId}
+                  currentUserId={currentUserId}
+                  isEnabled={true}
+                />
+              )}
+            </div>
+          )}
 
           {/* 액션 버튼 */}
           <div className="mt-8 pt-6 border-t border-gray-200">

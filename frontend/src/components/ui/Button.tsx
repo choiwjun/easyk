@@ -3,7 +3,7 @@
 import React, { ButtonHTMLAttributes, ReactNode } from "react";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "danger" | "success" | "warning";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   icon?: ReactNode;
@@ -48,6 +48,24 @@ const Button: React.FC<ButtonProps> = ({
       hover:bg-blue-50
       focus:ring-blue-500
       active:bg-blue-100
+    `,
+    danger: `
+      bg-red-600 text-white
+      hover:bg-red-700
+      focus:ring-red-500
+      active:bg-red-800
+    `,
+    success: `
+      bg-green-600 text-white
+      hover:bg-green-700
+      focus:ring-green-500
+      active:bg-green-800
+    `,
+    warning: `
+      bg-yellow-500 text-white
+      hover:bg-yellow-600
+      focus:ring-yellow-500
+      active:bg-yellow-700
     `,
   };
 
