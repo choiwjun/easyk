@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
 
+// Vercel deployment fix - force rebuild
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
