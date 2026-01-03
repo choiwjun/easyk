@@ -1,267 +1,270 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { JobApplicationWithJob } from '@/types/job';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth, useAuthFetch } from '@/hooks/useAuth';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Badge from "@/components/ui/Badge";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+interface Application {
+  id: string;
+  job_id: string;
+  job: {
+    id: string;
+    title: string;
+    company_name: string;
+    location: string;
+    salary_min: number;
+    salary_max: number;
+  };
+  applicant_id: string;
+  applicant: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  };
+  status: string;
+  resume: string;
+  cover_letter: string;
+  available_from: string;
+  available_to: string;
+  created_at: string;
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "검토 중",
+  under_review: "검토 중",
+  shortlisted: "면접 대기",
+  rejected: "거절",
+  hired: "채용됨",
+};
+
+const STATUS_VARIANTS: Record<string, "info" | "warning" | "success" | "error"> = {
+  pending: "info",
+  under_review: "info",
+  shortlisted: "warning",
+  rejected: "error",
+  hired: "success",
+};
 
 export default function ApplicationsPage() {
-  const { t } = useLanguage();
-  const { isLoading: authLoading, requireAuth } = useAuth();
-  const authFetch = useAuthFetch();
-  const [applications, setApplications] = useState<JobApplicationWithJob[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
-
-  // Require authentication
-  useEffect(() => {
-    requireAuth();
-  }, [requireAuth]);
+  const router = useRouter();
+  const { t, language } = useLanguage();
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
-    if (!authLoading) {
-      fetchApplications();
-    }
-  }, [statusFilter, authLoading]);
+    fetchApplications();
+  }, []);
 
-  const fetchApplications = async () => {
+  const fetchApplications = async (status?: string) => {
     try {
-      setLoading(true);
-      setError('');
+      const token = localStorage.getItem("access_token");
 
-      const queryParams = statusFilter ? `?status=${statusFilter}` : '';
-      const response = await authFetch(`/api/jobs/applications/my${queryParams}`);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || '지원 내역을 불러오는데 실패했습니다');
+      if (!token) {
+        router.push("/login");
+        return;
       }
 
-      const data = await response.json();
-      setApplications(data);
-    } catch (err: any) {
-      console.error('Failed to fetch applications:', err);
-      setError(err.message || '지원 내역을 불러오는데 실패했습니다');
+      const statusParam = status && status !== "all" ? `?status=${status}` : "";
+      const response = await fetch(`/api/applications${statusParam}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setApplications(data);
+      } else if (response.status === 403) {
+        router.push("/login");
+      } else {
+        setError(t('errors.networkError'));
+      }
+    } catch (error) {
+      setError(t('errors.networkError'));
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case 'applied':
-        return 'bg-blue-100 text-blue-800';
-      case 'in_review':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'accepted':
-        return 'bg-green-100 text-green-800';
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  const handleStatusFilter = (status: string) => {
+    setStatusFilter(status);
+    fetchApplications(status);
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'applied':
-        return '지원 완료';
-      case 'in_review':
-        return '검토 중';
-      case 'accepted':
-        return '합격';
-      case 'rejected':
-        return '불합격';
-      default:
-        return status;
-    }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("ko-KR");
   };
 
-  const getEmploymentTypeText = (type: string) => {
-    switch (type) {
-      case 'full-time':
-        return '정규직';
-      case 'part-time':
-        return '아르바이트';
-      case 'contract':
-        return '계약직';
-      case 'temporary':
-        return '임시직';
-      default:
-        return type;
+  const getFilteredApplications = () => {
+    if (statusFilter === "all") {
+      return applications;
     }
+    return applications.filter((app) => app.status === statusFilter);
   };
 
-  if (loading) {
+  const getStatusVariant = (status: string): "info" | "warning" | "success" | "error" => {
+    return STATUS_VARIANTS[status] || "info";
+  };
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg text-gray-600">로딩 중...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">{t('common.loading')}</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">내 지원 내역</h1>
-        <p className="text-gray-600">지원한 일자리 현황을 확인하세요</p>
-      </div>
-
-      {/* 필터 */}
-      <div className="mb-6 flex items-center gap-4">
-        <label htmlFor="status-filter" className="text-sm font-medium text-gray-700">
-          상태 필터:
-        </label>
-        <select
-          id="status-filter"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="">전체</option>
-          <option value="applied">지원 완료</option>
-          <option value="in_review">검토 중</option>
-          <option value="accepted">합격</option>
-          <option value="rejected">불합격</option>
-        </select>
-      </div>
-
-      {/* 에러 메시지 */}
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-600">{error}</p>
-        </div>
-      )}
-
-      {/* 지원 내역 목록 */}
-      {applications.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 text-lg">
-            {statusFilter ? '해당 상태의 지원 내역이 없습니다' : '아직 지원한 일자리가 없습니다'}
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* 헤더 */}
+        <div className="mb-6">
+          <Button variant="outline" onClick={() => router.back()}>
+            ← 뒤로가기
+          </Button>
+          <h1 className="text-3xl font-bold text-gray-900 mt-4 mb-2">
+            지원 내역
+          </h1>
+          <p className="text-gray-600">
+            총 {applications.length}개의 지원 내역이 있습니다.
           </p>
         </div>
-      ) : (
-        <div className="space-y-4">
-          {applications.map((application) => (
-            <div
-              key={application.id}
-              className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        {/* 상태 필터 */}
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant={statusFilter === "all" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => handleStatusFilter("all")}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                    {application.job.position}
-                  </h3>
-                  <p className="text-gray-600 mb-2">{application.job.company_name}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      {application.job.location}
-                    </span>
-                    <span>•</span>
-                    <span>{getEmploymentTypeText(application.job.employment_type)}</span>
-                    {application.job.salary_range && (
-                      <>
-                        <span>•</span>
-                        <span>{application.job.salary_range}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
+              전체 ({applications.length})
+            </Button>
+            <Button
+              variant={statusFilter === "pending" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => handleStatusFilter("pending")}
+            >
+              검토 중 ({applications.filter((a) => a.status === "pending").length})
+            </Button>
+            <Button
+              variant={statusFilter === "under_review" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => handleStatusFilter("under_review")}
+            >
+              검토 진행 중 ({applications.filter((a) => a.status === "under_review").length})
+            </Button>
+            <Button
+              variant={statusFilter === "shortlisted" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => handleStatusFilter("shortlisted")}
+            >
+              면접 대기 ({applications.filter((a) => a.status === "shortlisted").length})
+            </Button>
+            <Button
+              variant={statusFilter === "rejected" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => handleStatusFilter("rejected")}
+            >
+              거절 ({applications.filter((a) => a.status === "rejected").length})
+            </Button>
+            <Button
+              variant={statusFilter === "hired" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => handleStatusFilter("hired")}
+            >
+              채용됨 ({applications.filter((a) => a.status === "hired").length})
+            </Button>
+          </div>
+        </div>
 
-                <div className="flex flex-col items-end gap-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeColor(
-                      application.status
-                    )}`}
-                  >
-                    {getStatusText(application.status)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200 pt-4 mt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-500">지원일:</span>
-                    <span className="ml-2 text-gray-900">
-                      {new Date(application.applied_at).toLocaleDateString('ko-KR')}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">마감일:</span>
-                    <span className="ml-2 text-gray-900">
-                      {new Date(application.job.deadline).toLocaleDateString('ko-KR')}
-                    </span>
-                  </div>
-                  {application.reviewed_at && (
-                    <div>
-                      <span className="text-gray-500">검토일:</span>
-                      <span className="ml-2 text-gray-900">
-                        {new Date(application.reviewed_at).toLocaleDateString('ko-KR')}
-                      </span>
+        {/* 지원 내역 목록 */}
+        {getFilteredApplications().length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <p className="text-gray-600 mb-4">표시할 지원 내역이 없습니다.</p>
+            <Button onClick={() => router.push("/jobs")} variant="primary">
+              공고 목록으로 이동
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {getFilteredApplications().map((application) => (
+              <Card
+                key={application.id}
+                className="p-6 hover:shadow-md transition-shadow"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h2 className="text-xl font-semibold text-gray-900">
+                        {application.job.title}
+                      </h2>
+                      <Badge variant={getStatusVariant(application.status)}>
+                        {STATUS_LABELS[application.status] || application.status}
+                      </Badge>
                     </div>
-                  )}
-                </div>
-
-                {application.cover_letter && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-500 mb-1">자기소개서:</p>
-                    <p className="text-gray-700 text-sm line-clamp-2">
-                      {application.cover_letter}
+                    <p className="text-sm text-gray-500 mb-2">
+                      회사: {application.job.company_name}
+                    </p>
+                    <p className="text-sm text-gray-500 mb-2">
+                      위치: {application.job.location}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {formatDate(application.created_at)}
                     </p>
                   </div>
-                )}
-
-                {application.reviewer_comment && (
-                  <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">검토자 코멘트:</p>
-                    <p className="text-gray-700 text-sm">{application.reviewer_comment}</p>
+                  <div className="text-right">
+                    <p className="text-lg font-semibold text-gray-900">
+                      {application.job.salary_min.toLocaleString()} -
+                      {application.job.salary_max.toLocaleString()}원
+                    </p>
                   </div>
-                )}
-              </div>
+                </div>
 
-              <div className="mt-4 flex gap-2">
-                <a
-                  href={`/jobs/${application.job.id}`}
-                  className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                >
-                  공고 보기
-                </a>
-                {application.resume_url && (
-                  <a
-                    href={application.resume_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                {/* 이력서 및 자기소개서 요약 */}
+                <div className="mb-4">
+                  <div className="text-sm text-gray-700 mb-1">
+                    <span className="font-semibold">이력서:</span> {application.resume.substring(0, 100)}...
+                  </div>
+                  <div className="text-sm text-gray-700">
+                    <span className="font-semibold">자기소개서:</span> {application.cover_letter.substring(0, 100)}...
+                  </div>
+                </div>
+
+                {/* 버튼 */}
+                <div className="flex gap-3 pt-4 border-t border-gray-100">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/jobs/${application.job_id}`)}
+                    className="flex-1"
                   >
-                    제출한 이력서 보기
-                  </a>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+                    공고 보기
+                  </Button>
+                  {application.status === "hired" && (
+                    <Button
+                      variant="primary"
+                      onClick={() => alert("축하합니다! 채용이 확정되었습니다.")}
+                      className="flex-1"
+                    >
+                      🎉 채용 확정
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

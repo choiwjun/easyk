@@ -142,3 +142,107 @@ def reject_consultation(
     """
     from uuid import UUID
     return reject_consultation_service(UUID(consultation_id), current_user, db)
+
+
+@router.get("/dashboard/stats", response_model=dict)
+def get_dashboard_stats(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    전문가 대시보드 통계
+
+    Args:
+        current_user: 현재 인증된 사용자 (전문가)
+        db: 데이터베이스 세션
+
+    Returns:
+        dict: 통계 데이터 (상담 수, 수익, 평점 등)
+    """
+    from ..models.consultation import Consultation
+    from ..models.consultant import Consultant
+    from ..models.review import Review
+    from sqlalchemy import func
+    from datetime import datetime, timedelta
+
+    # 전문가 정보 조회
+    consultant = db.query(Consultant).filter(
+        Consultant.user_id == current_user.id
+    ).first()
+
+    if not consultant:
+        return {
+            "total_consultations": 0,
+            "requested": 0,
+            "matched": 0,
+            "scheduled": 0,
+            "completed": 0,
+            "cancelled": 0,
+            "total_revenue": 0,
+            "average_rating": 0,
+            "total_reviews": 0,
+        }
+
+    # 전체 상담 수
+    total_consultations = db.query(func.count(Consultation.id)).filter(
+        Consultation.consultant_id == consultant.id
+    ).scalar()
+
+    # 상태별 수
+    requested = db.query(func.count(Consultation.id)).filter(
+        Consultation.consultant_id == consultant.id,
+        Consultation.status == "requested"
+    ).scalar()
+
+    matched = db.query(func.count(Consultation.id)).filter(
+        Consultation.consultant_id == consultant.id,
+        Consultation.status == "matched"
+    ).scalar()
+
+    scheduled = db.query(func.count(Consultation.id)).filter(
+        Consultation.consultant_id == consultant.id,
+        Consultation.status == "scheduled"
+    ).scalar()
+
+    completed = db.query(func.count(Consultation.id)).filter(
+        Consultation.consultant_id == consultant.id,
+        Consultation.status == "completed"
+    ).scalar()
+
+    cancelled = db.query(func.count(Consultation.id)).filter(
+        Consultation.consultant_id == consultant.id,
+        Consultation.status == "cancelled"
+    ).scalar()
+
+    # 총 수익 (완료 상담 중 결제 완료된 것만)
+    total_revenue = db.query(func.sum(Consultation.amount)).filter(
+        Consultation.consultant_id == consultant.id,
+        Consultation.status == "completed",
+        Consultation.payment_status == "completed"
+    ).scalar() or 0
+
+    # 평균 평점
+    avg_rating = db.query(func.avg(Review.rating)).join(
+        Consultation, Review.consultation_id == Consultation.id
+    ).filter(
+        Consultation.consultant_id == consultant.id
+    ).scalar() or 0
+
+    # 총 리뷰 수
+    total_reviews = db.query(func.count(Review.id)).join(
+        Consultation, Review.consultation_id == Consultation.id
+    ).filter(
+        Consultation.consultant_id == consultant.id
+    ).scalar() or 0
+
+    return {
+        "total_consultations": total_consultations,
+        "requested": requested,
+        "matched": matched,
+        "scheduled": scheduled,
+        "completed": completed,
+        "cancelled": cancelled,
+        "total_revenue": float(total_revenue),
+        "average_rating": round(avg_rating, 1),
+        "total_reviews": total_reviews,
+    }

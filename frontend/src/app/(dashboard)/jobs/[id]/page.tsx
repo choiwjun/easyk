@@ -48,10 +48,14 @@ export default function JobDetailPage() {
   const [coverLetter, setCoverLetter] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 관심 공고 저장 상태
+  const [isSaved, setIsSaved] = useState(false);
   const [applyError, setApplyError] = useState("");
 
   useEffect(() => {
     fetchJob();
+    checkSavedStatus();
   }, [jobId]);
 
   const fetchJob = async () => {
@@ -129,6 +133,60 @@ export default function JobDetailPage() {
     }
   };
 
+  const checkSavedStatus = () => {
+    try {
+      const savedJobs = JSON.parse(localStorage.getItem("saved_jobs") || "[]");
+      const saved = savedJobs.some((saved: { job_id: string }) => saved.job_id === jobId);
+      setIsSaved(saved);
+    } catch (error) {
+      console.error("Failed to check saved status:", error);
+    }
+  };
+
+  const handleSaveJob = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      if (isSaved) {
+        // 이미 저장됨: 제거
+        const response = await fetch(`/api/jobs/${jobId}/save`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          setIsSaved(false);
+
+          // 로컬 스토리지에서도 제거
+          const savedJobs = JSON.parse(localStorage.getItem("saved_jobs") || "[]");
+          const updated = savedJobs.filter((saved: { job_id: string }) => saved.job_id !== jobId);
+          localStorage.setItem("saved_jobs", JSON.stringify(updated));
+        }
+      } else {
+        // 저장되지 않음: 추가
+        const response = await fetch(`/api/jobs/${jobId}/save`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          setIsSaved(true);
+
+          // 로컬 스토리지에도 추가
+          const savedJobs = JSON.parse(localStorage.getItem("saved_jobs") || "[]");
+          savedJobs.push({ job_id: jobId, saved_at: new Date().toISOString() });
+          localStorage.setItem("saved_jobs", JSON.stringify(savedJobs));
+        }
+      }
+    } catch (error) {
+      alert(isSaved ? "저장 취소에 실패했습니다." : "저장하는데 실패했습니다.");
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("ko-KR", {
@@ -199,24 +257,38 @@ export default function JobDetailPage() {
 
           {/* 지원 버튼 */}
           <div className="pt-4 border-t border-gray-200">
-            {job.has_applied ? (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                <p className="text-blue-700 font-medium">이미 지원하신 일자리입니다.</p>
-              </div>
-            ) : job.status === "active" ? (
+            <div className="flex gap-4">
+              {/* 관심 공고 저장 버튼 */}
               <Button
-                variant="primary"
+                variant="outline"
                 size="lg"
-                fullWidth
-                onClick={() => setShowApplyModal(true)}
+                onClick={handleSaveJob}
+                className="flex items-center gap-2"
               >
-                지원하기
+                {isSaved ? "❤️ 저장됨" : "🤍 관심 공고"}
               </Button>
-            ) : (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-                <p className="text-gray-600">모집이 마감된 일자리입니다.</p>
-              </div>
-            )}
+
+              {/* 지원 버튼 */}
+              {job.has_applied ? (
+                <div className="flex-1 bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                  <p className="text-blue-700 font-medium">이미 지원하신 일자리입니다.</p>
+                </div>
+              ) : job.status === "active" ? (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  onClick={() => setShowApplyModal(true)}
+                  className="flex-1"
+                >
+                  지원하기
+                </Button>
+              ) : (
+                <div className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                  <p className="text-gray-600">모집이 마감된 일자리입니다.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

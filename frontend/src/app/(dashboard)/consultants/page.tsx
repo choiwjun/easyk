@@ -20,13 +20,28 @@ interface Consultant {
 interface Consultation {
   id: string;
   consultation_type: string;
+  consultation_method: string;
   content: string;
   status: string;
+  amount: number;
   user: {
     first_name: string;
     last_name: string;
+    email: string;
   };
   created_at: string;
+}
+
+interface DashboardStats {
+  total_consultations: number;
+  requested: number;
+  matched: number;
+  scheduled: number;
+  completed: number;
+  cancelled: number;
+  total_revenue: number;
+  average_rating: number;
+  total_reviews: number;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -50,13 +65,40 @@ export default function ConsultantsDashboard() {
   const { t, language } = useLanguage();
   const [incomingConsultations, setIncomingConsultations] = useState<Consultation[]>([]);
   const [acceptedConsultations, setAcceptedConsultations] = useState<Consultation[]>([]);
+  const [completedConsultations, setCompletedConsultations] = useState<Consultation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"incoming" | "accepted">("incoming");
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [activeTab, setActiveTab] = useState<"incoming" | "accepted" | "completed">("incoming");
 
   useEffect(() => {
     fetchConsultations();
+    fetchStats();
   }, []);
+
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch("/api/consultations/dashboard/stats", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch stats:", error);
+    }
+  };
 
   const fetchConsultations = async () => {
     try {
@@ -67,17 +109,36 @@ export default function ConsultantsDashboard() {
         return;
       }
 
-      const response = await fetch("/api/consultants/incoming", {
+      // 진입 상담 목록 (matched 상태)
+      const incomingResponse = await fetch("/api/consultations?status=matched", {
         headers: {
           "Authorization": `Bearer ${token}`,
         },
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setIncomingConsultations(data.incoming || []);
-        setAcceptedConsultations(data.accepted || []);
-      } else if (response.status === 403) {
+      // 수락 상담 목록 (scheduled 상태)
+      const acceptedResponse = await fetch("/api/consultations?status=scheduled", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      // 완료 상담 목록 (completed 상태)
+      const completedResponse = await fetch("/api/consultations?status=completed", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (incomingResponse.ok && acceptedResponse.ok && completedResponse.ok) {
+        const incomingData = await incomingResponse.json();
+        const acceptedData = await acceptedResponse.json();
+        const completedData = await completedResponse.json();
+
+        setIncomingConsultations(incomingData || []);
+        setAcceptedConsultations(acceptedData || []);
+        setCompletedConsultations(completedData || []);
+      } else if (incomingResponse.status === 403) {
         router.push("/login");
       } else {
         setError(t('errors.networkError'));
@@ -98,7 +159,7 @@ export default function ConsultantsDashboard() {
         return;
       }
 
-      const response = await fetch(`/api/consultants/incoming/${consultationId}/accept`, {
+      const response = await fetch(`/api/consultations/${consultationId}/accept`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -107,6 +168,7 @@ export default function ConsultantsDashboard() {
 
       if (response.ok) {
         fetchConsultations();
+        fetchStats();
       } else {
         const errorData = await response.json();
         alert(errorData.detail || "수락에 실패했습니다.");
@@ -128,7 +190,7 @@ export default function ConsultantsDashboard() {
         return;
       }
 
-      const response = await fetch(`/api/consultants/incoming/${consultationId}/reject`, {
+      const response = await fetch(`/api/consultations/${consultationId}/reject`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -138,7 +200,8 @@ export default function ConsultantsDashboard() {
       });
 
       if (response.ok) {
-        fetchConsultations();
+        fetchConsultations("matched");
+        fetchStats();
       } else {
         const errorData = await response.json();
         alert(errorData.detail || "거절에 실패했습니다.");
@@ -204,6 +267,30 @@ export default function ConsultantsDashboard() {
           </div>
         )}
 
+        {/* 통계 카드 */}
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <p className="text-sm text-gray-600 mb-2">전체 상담</p>
+              <p className="text-3xl font-bold text-gray-900">{stats.total_consultations}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <p className="text-sm text-gray-600 mb-2">진입 요청</p>
+              <p className="text-2xl font-bold text-green-600">{stats.requested}</p>
+              <p className="text-sm text-gray-600">매칭됨: {stats.matched}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <p className="text-sm text-gray-600 mb-2">예약 상담</p>
+              <p className="text-2xl font-bold text-yellow-600">{stats.scheduled}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <p className="text-sm text-gray-600 mb-2">완료 상담</p>
+              <p className="text-2xl font-bold text-gray-600">{stats.completed}</p>
+              <p className="text-sm text-gray-600">평균 평점: {stats.average_rating}</p>
+            </div>
+          </div>
+        )}
+
         {/* 탭 */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
           <div className="flex gap-4">
@@ -225,7 +312,17 @@ export default function ConsultantsDashboard() {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              수락 상담 ({acceptedConsultations.length})
+              예약 상담 ({acceptedConsultations.length})
+            </button>
+            <button
+              onClick={() => setActiveTab("completed")}
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === "completed"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              완료 상담 ({completedConsultations.length})
             </button>
           </div>
         </div>
@@ -234,17 +331,25 @@ export default function ConsultantsDashboard() {
         {activeTab === "incoming" && incomingConsultations.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <p className="text-gray-600 mb-4">진입 상담 요청이 없습니다.</p>
-            <Button onClick={fetchConsultations} variant="outline">
+            <Button onClick={() => fetchConsultations()} variant="outline">
               새로고침
             </Button>
           </div>
         ) : activeTab === "accepted" && acceptedConsultations.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <p className="text-gray-600 mb-4">수락한 상담이 없습니다.</p>
+            <p className="text-gray-600 mb-4">예약된 상담이 없습니다.</p>
+          </div>
+        ) : activeTab === "completed" && completedConsultations.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <p className="text-gray-600 mb-4">완료된 상담이 없습니다.</p>
           </div>
         ) : (
           <div className="space-y-4">
-            {(activeTab === "incoming" ? incomingConsultations : acceptedConsultations).map((consultation) => (
+            {(activeTab === "incoming"
+              ? incomingConsultations
+              : activeTab === "accepted"
+              ? acceptedConsultations
+              : completedConsultations).map((consultation) => (
               <div
                 key={consultation.id}
                 className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
