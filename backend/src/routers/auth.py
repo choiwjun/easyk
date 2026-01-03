@@ -1,9 +1,10 @@
 """Authentication Router"""
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
 from sqlalchemy.orm import Session
 
 from ..database import get_db
+from ..models.user import User
 from ..schemas.user import UserCreate, UserResponse, LoginRequest, TokenResponse
 from ..services.auth_service import create_user, authenticate_user
 from ..utils.i18n import get_error_message
@@ -28,6 +29,52 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db), request: Reques
         HTTPException: 이메일 중복 시 400 에러
     """
     return create_user(user_data, db, request)
+
+
+@router.get("/check-email")
+def check_email_availability(
+    email: str = Query(..., description="확인할 이메일 주소"),
+    db: Session = Depends(get_db),
+):
+    """
+    이메일 중복 체크 엔드포인트 (실시간 중복 확인)
+
+    Args:
+        email: 확인할 이메일 주소
+        db: 데이터베이스 세션
+
+    Returns:
+        dict: { available: bool, message: str }
+
+    Example:
+        GET /api/auth/check-email?email=test@example.com
+        {
+            "available": true,
+            "message": "사용 가능한 이메일입니다."
+        }
+    """
+    # 이메일 형식 검증
+    import re
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(email_regex, email):
+        return {
+            "available": False,
+            "message": "올바른 이메일 형식이 아닙니다."
+        }
+
+    # DB에서 중복 확인
+    existing_user = db.query(User).filter(User.email == email).first()
+
+    if existing_user:
+        return {
+            "available": False,
+            "message": "이미 사용 중인 이메일입니다."
+        }
+
+    return {
+        "available": True,
+        "message": "사용 가능한 이메일입니다."
+    }
 
 
 @router.post("/login", response_model=TokenResponse)

@@ -13,6 +13,8 @@ export default function SignupPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+  const [emailChecking, setEmailChecking] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +46,48 @@ export default function SignupPage() {
     );
   };
 
+  // 이메일 중복 실시간 체크
+  useEffect(() => {
+    const checkEmailAvailability = async () => {
+      if (!validateEmail(email) || emailChecking) {
+        setEmailAvailable(null);
+        return;
+      }
+
+      setEmailChecking(true);
+      try {
+        const response = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`);
+
+        if (response.ok) {
+          const data = await response.json();
+          setEmailAvailable(data.available);
+        } else {
+          setEmailAvailable(null);
+        }
+      } catch (error) {
+        setEmailAvailable(null);
+      } finally {
+        setEmailChecking(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(checkEmailAvailability, 500);
+    return () => clearTimeout(debounceTimer);
+  }, [email]);
+
+  const getEmailStatusMessage = () => {
+    if (emailChecking) {
+      return t('common.loading');
+    }
+    if (emailAvailable === false) {
+      return '이미 사용 중인 이메일입니다.';
+    }
+    if (emailAvailable === true) {
+      return '사용 가능한 이메일입니다.';
+    }
+    return '';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -61,6 +105,8 @@ export default function SignupPage() {
 
     if (!validateEmail(email)) {
       newErrors.email = t('auth.emailInvalid');
+    } else if (emailAvailable === false) {
+      newErrors.email = '이미 사용 중인 이메일입니다.';
     }
 
     if (!validatePassword(password)) {
@@ -198,30 +244,38 @@ export default function SignupPage() {
           />
 
           {/* Email Input */}
-          <Input
-            type="email"
-            label={t('auth.email')}
-            placeholder="example@email.com"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={errors.email}
-            icon={
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-            }
-          />
+          <div>
+            <Input
+              type="email"
+              label={t('auth.email')}
+              placeholder="example@email.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              error={errors.email}
+              icon={
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+              }
+            />
+            {/* 이메일 중복 체크 메시지 */}
+            {email && getEmailStatusMessage() && (
+              <p className={`mt-1 text-sm ${emailAvailable === false ? 'text-red-600' : 'text-green-600'}`}>
+                {getEmailStatusMessage()}
+              </p>
+            )}
+          </div>
 
           {/* Password Input */}
           <Input
