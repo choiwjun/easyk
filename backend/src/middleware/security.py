@@ -96,3 +96,4 @@ def validate_environment_variables() -> None:
         error_msg = f"Missing required environment variables: {', '.join(missing_vars)}"
         raise ValueError(error_msg)
 
+

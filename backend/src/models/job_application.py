@@ -101,3 +101,4 @@ class JobApplication(Base):
         return f"<JobApplication(id={self.id}, job_id={self.job_id}, user_id={self.user_id}, status={self.status})>"
 
 
+

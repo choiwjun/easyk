@@ -49,3 +49,4 @@ class JobApplicationWithApplicant(JobApplicationResponse):
 
 
 
+

@@ -93,3 +93,4 @@ class TestI18n:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         # 지원하지 않는 언어는 한국어로 폴백
 
+
