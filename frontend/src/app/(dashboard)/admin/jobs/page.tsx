@@ -3,31 +3,90 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
-import { Job, JobCreate, JobUpdate, JobApplicationWithApplicant } from "@/types/job";
+import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
+import Select from "@/components/ui/Select";
+import Badge from "@/components/ui/Badge";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  "full-time": "정규직",
-  "part-time": "파트타임",
-  "contract": "계약직",
-  "temporary": "임시직",
-};
+interface Job {
+  id: string;
+  position: string;
+  company_name: string;
+  location: string;
+  employment_type: string;
+  salary_range: string;
+  description: string;
+  requirements: string;
+  preferred_qualifications: string;
+  benefits: string;
+  status: string;
+  deadline: string;
+  created_at: string;
+}
+
+interface Applicant {
+  id: string;
+  job_id: string;
+  user: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone_number?: string;
+  };
+  resume?: string;
+  cover_letter?: string;
+  status: string;
+  created_at: string;
+}
 
 const STATUS_LABELS: Record<string, string> = {
-  "active": "모집중",
-  "closed": "마감",
-  "expired": "기한만료",
-  "draft": "임시저장",
+  active: "모집중",
+  closed: "마감",
+  expired: "만료",
+  draft: "임시저장",
 };
 
-export default function AdminJobsPage() {
+const EMPLOYMENT_TYPES = [
+  { value: "full-time", label: "정규직" },
+  { value: "part-time", label: "파트타임" },
+  { value: "contract", label: "계약직" },
+  { value: "temporary", label: "임시직" },
+];
+
+const APPLICANT_STATUS_LABELS: Record<string, string> = {
+  pending: "검토중",
+  interview_scheduled: "면접대기",
+  hired: "채용됨",
+  rejected: "거절됨",
+};
+
+export default function AdminJobsDashboard() {
   const router = useRouter();
+  const { t, language } = useLanguage();
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [showJobForm, setShowJobForm] = useState(false);
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [showApplicants, setShowApplicants] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const [showNewJobForm, setShowNewJobForm] = useState(false);
+  const [showEditJobForm, setShowEditJobForm] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
+  // 새 공고 폼 상태
+  const [newJob, setNewJob] = useState({
+    position: "",
+    company_name: "고양시청",
+    location: "경기도 고양시",
+    employment_type: "full-time",
+    salary_range: "",
+    description: "",
+    requirements: "",
+    preferred_qualifications: "",
+    benefits: "",
+  });
 
   useEffect(() => {
     fetchJobs();
@@ -42,71 +101,255 @@ export default function AdminJobsPage() {
         return;
       }
 
-      const response = await fetch("/api/jobs", {
+      const response = await fetch("/api/jobs/admin", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         const data = await response.json();
-        setJobs(data);
+        setJobs(data.jobs || []);
       } else if (response.status === 403) {
-        router.push("/");
+        router.push("/login");
       } else {
-        setError("일자리 목록을 불러오는데 실패했습니다.");
+        setError(t('errors.networkError'));
       }
     } catch (error) {
-      setError("네트워크 오류가 발생했습니다.");
+      setError(t('errors.networkError'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCreateJob = () => {
-    setEditingJob(null);
-    setShowJobForm(true);
-  };
-
-  const handleEditJob = (job: Job) => {
-    setEditingJob(job);
-    setShowJobForm(true);
-  };
-
-  const handleDeleteJob = async (jobId: string) => {
-    if (!confirm("정말로 이 일자리 공고를 삭제하시겠습니까?")) {
-      return;
-    }
-
+  const fetchApplicants = async (jobId: string) => {
     try {
       const token = localStorage.getItem("access_token");
 
-      const response = await fetch(`/api/jobs/${jobId}`, {
-        method: "DELETE",
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(`/api/jobs/${jobId}/applications`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
-        await fetchJobs();
-      } else {
         const data = await response.json();
-        alert(data.message || "삭제에 실패했습니다.");
+        setApplicants(data.applications || []);
+      } else {
+        setError("지원자 목록을 불러올 수 없습니다.");
+      }
+    } catch (error) {
+      setError("네트워크 오류가 발생했습니다.");
+    }
+  };
+
+  const handleCreateJob = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...newJob,
+          deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        setShowNewJobForm(false);
+        setNewJob({
+          position: "",
+          company_name: "고양시청",
+          location: "경기도 고양시",
+          employment_type: "full-time",
+          salary_range: "",
+          description: "",
+          requirements: "",
+          preferred_qualifications: "",
+          benefits: "",
+        });
+        fetchJobs();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || "공고 등록에 실패했습니다.");
+      }
+    } catch (error) {
+      setError("네트워크 오류가 발생했습니다.");
+    }
+  };
+
+  const handleUpdateJob = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!editingJob) return;
+
+    try {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(`/api/jobs/${editingJob.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(newJob),
+      });
+
+      if (response.ok) {
+        setShowEditJobForm(false);
+        setEditingJob(null);
+        fetchJobs();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || "공고 수정에 실패했습니다.");
+      }
+    } catch (error) {
+      setError("네트워크 오류가 발생했습니다.");
+    }
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    if (!confirm("정말 이 공고를 삭제하시겠습니까?")) {
+      return;
+    }
+
+    setIsDeleting(jobId);
+    setError("");
+
+    try {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        if (selectedJob?.id === jobId) {
+          setSelectedJob(null);
+          setShowApplicants(false);
+        }
+        fetchJobs();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || "공고 삭제에 실패했습니다.");
+      }
+    } catch (error) {
+      setError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setIsDeleting(null);
+    }
+  };
+
+  const handleCloseJob = async (jobId: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "closed" }),
+      });
+
+      if (response.ok) {
+        fetchJobs();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || "공고 마감에 실패했습니다.");
+      }
+    } catch (error) {
+      setError("네트워크 오류가 발생했습니다.");
+    }
+  };
+
+  const handleViewApplicants = (job: Job) => {
+    setSelectedJob(job);
+    setShowApplicants(true);
+    fetchApplicants(job.id);
+  };
+
+  const handleUpdateApplicantStatus = async (applicantId: string, newStatus: string) => {
+    try {
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(`/api/jobs/applications/${applicantId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        fetchApplicants(selectedJob!.id);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.detail || "상태 업데이트에 실패했습니다.");
       }
     } catch (error) {
       alert("네트워크 오류가 발생했습니다.");
     }
   };
 
-  const handleViewApplicants = (jobId: string) => {
-    setSelectedJobId(jobId);
-    setShowApplicants(true);
+  const getStatusLabel = (status: string) => {
+    return STATUS_LABELS[status] || status;
+  };
+
+  const getStatusVariant = (status: string): "success" | "warning" | "error" | "info" | "default" => {
+    const variants: Record<string, "success" | "warning" | "error" | "info" | "default"> = {
+      active: "success",
+      closed: "warning",
+      expired: "error",
+      draft: "default",
+    };
+    return variants[status] || "default";
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat("ko-KR", {
+    return new Intl.DateTimeFormat(language === 'ko' ? "ko-KR" : "en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -116,18 +359,19 @@ export default function AdminJobsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">로딩 중...</div>
+        <div className="text-gray-600">{t('common.loading')}</div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">일자리 관리</h1>
-          <Button variant="primary" onClick={handleCreateJob}>
-            + 새 공고 작성
+      <div className="max-w-7xl mx-auto">
+        {/* 헤더 */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">일자리 공고 관리</h1>
+          <Button onClick={() => setShowNewJobForm(true)}>
+            + 새 공고 등록
           </Button>
         </div>
 
@@ -137,628 +381,401 @@ export default function AdminJobsPage() {
           </div>
         )}
 
-        {jobs.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <p className="text-gray-600 mb-4">등록된 일자리가 없습니다.</p>
-            <Button variant="primary" onClick={handleCreateJob}>
-              첫 공고 작성하기
-            </Button>
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {jobs.map((job) => (
-              <div
-                key={job.id}
-                className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h2 className="text-xl font-semibold text-gray-900">
-                        {job.position}
-                      </h2>
-                      <span
-                        className={`px-2 py-1 text-xs font-medium rounded ${
-                          job.status === "active"
-                            ? "bg-green-100 text-green-800"
-                            : job.status === "closed"
-                            ? "bg-gray-100 text-gray-800"
-                            : job.status === "expired"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {STATUS_LABELS[job.status]}
-                      </span>
-                    </div>
-                    <p className="text-lg text-gray-700 mb-2">{job.company_name}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>{job.location}</span>
-                      <span>•</span>
-                      <span>
-                        {EMPLOYMENT_TYPE_LABELS[job.employment_type] ||
-                          job.employment_type}
-                      </span>
-                      {job.salary_range && (
-                        <>
-                          <span>•</span>
-                          <span className="font-semibold text-gray-900">
-                            {job.salary_range}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <p className="text-gray-700 line-clamp-2">{job.description}</p>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="text-sm text-gray-600">
-                    마감일: {formatDate(job.deadline)}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewApplicants(job.id)}
-                    >
-                      지원자 ({job.id})
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handleEditJob(job)}
-                    >
-                      수정
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteJob(job.id)}
-                    >
-                      삭제
-                    </Button>
-                  </div>
-                </div>
+        {/* 새 공고 등록 폼 */}
+        {showNewJobForm && (
+          <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">새 공고 등록</h2>
+              <Button variant="outline" onClick={() => setShowNewJobForm(false)}>
+                닫기
+              </Button>
+            </div>
+            <form onSubmit={handleCreateJob} className="space-y-6">
+              <Input
+                label="직종"
+                required
+                value={newJob.position}
+                onChange={(e) => setNewJob({ ...newJob, position: e.target.value })}
+                placeholder="예: 외국인 고용 담당자"
+              />
+              <Input
+                label="회사명"
+                required
+                value={newJob.company_name}
+                onChange={(e) => setNewJob({ ...newJob, company_name: e.target.value })}
+              />
+              <Input
+                label="근무 지역"
+                required
+                value={newJob.location}
+                onChange={(e) => setNewJob({ ...newJob, location: e.target.value })}
+              />
+              <Select
+                label="고용 형태"
+                options={EMPLOYMENT_TYPES}
+                value={newJob.employment_type}
+                onChange={(e) => setNewJob({ ...newJob, employment_type: e.target.value })}
+                required
+              />
+              <Input
+                label="급여 범위"
+                value={newJob.salary_range}
+                onChange={(e) => setNewJob({ ...newJob, salary_range: e.target.value })}
+                placeholder="예: 연봉 3,500만원~4,000만원"
+              />
+              <Textarea
+                label="업무 설명"
+                required
+                value={newJob.description}
+                onChange={(e) => setNewJob({ ...newJob, description: e.target.value })}
+                rows={4}
+              />
+              <Textarea
+                label="자격 요건"
+                value={newJob.requirements}
+                onChange={(e) => setNewJob({ ...newJob, requirements: e.target.value })}
+                rows={3}
+              />
+              <Textarea
+                label="우대 사항"
+                value={newJob.preferred_qualifications}
+                onChange={(e) => setNewJob({ ...newJob, preferred_qualifications: e.target.value })}
+                rows={2}
+              />
+              <Textarea
+                label="복지"
+                value={newJob.benefits}
+                onChange={(e) => setNewJob({ ...newJob, benefits: e.target.value })}
+                rows={2}
+              />
+              <div className="flex gap-4 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowNewJobForm(false)}
+                >
+                  취소
+                </Button>
+                <Button type="submit" variant="primary">
+                  공고 등록
+                </Button>
               </div>
-            ))}
+            </form>
           </div>
         )}
-      </div>
 
-      {showJobForm && (
-        <JobFormModal
-          job={editingJob}
-          onClose={() => {
-            setShowJobForm(false);
-            setEditingJob(null);
-          }}
-          onSuccess={() => {
-            setShowJobForm(false);
-            setEditingJob(null);
-            fetchJobs();
-          }}
-        />
-      )}
-
-      {showApplicants && selectedJobId && (
-        <ApplicantsModal
-          jobId={selectedJobId}
-          onClose={() => {
-            setShowApplicants(false);
-            setSelectedJobId(null);
-          }}
-        />
-      )}
-    </div>
-  );
-}
-
-interface JobFormModalProps {
-  job: Job | null;
-  onClose: () => void;
-  onSuccess: () => void;
-}
-
-function JobFormModal({ job, onClose, onSuccess }: JobFormModalProps) {
-  const [formData, setFormData] = useState<JobCreate>({
-    position: job?.position || "",
-    company_name: job?.company_name || "",
-    company_phone: job?.company_phone || "",
-    company_address: job?.company_address || "",
-    location: job?.location || "",
-    employment_type: job?.employment_type || "full-time",
-    salary_range: job?.salary_range || "",
-    salary_currency: job?.salary_currency || "KRW",
-    description: job?.description || "",
-    requirements: job?.requirements || "",
-    preferred_qualifications: job?.preferred_qualifications || "",
-    benefits: job?.benefits || "",
-    required_languages: job?.required_languages || [],
-    status: job?.status || "active",
-    deadline: job?.deadline ? job.deadline.split("T")[0] : "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError("");
-
-    try {
-      const token = localStorage.getItem("access_token");
-
-      const payload = {
-        ...formData,
-        deadline: new Date(formData.deadline).toISOString(),
-      };
-
-      const url = job ? `/api/jobs/${job.id}` : "/api/jobs";
-      const method = job ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        onSuccess();
-      } else {
-        const data = await response.json();
-        setError(data.message || "작업에 실패했습니다.");
-      }
-    } catch (error) {
-      setError("네트워크 오류가 발생했습니다.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">
-            {job ? "일자리 공고 수정" : "새 일자리 공고 작성"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            ✕
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+        {/* 공고 수정 폼 */}
+        {showEditJobForm && editingJob && (
+          <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">공고 수정</h2>
+              <Button variant="outline" onClick={() => {
+                setShowEditJobForm(false);
+                setEditingJob(null);
+              }}>
+                닫기
+              </Button>
             </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                직종 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
+            <form onSubmit={handleUpdateJob} className="space-y-6">
+              <Input
+                label="직종"
                 required
-                value={formData.position}
-                onChange={(e) =>
-                  setFormData({ ...formData, position: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={newJob.position}
+                onChange={(e) => setNewJob({ ...newJob, position: e.target.value })}
               />
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                회사명 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
+              <Input
+                label="회사명"
                 required
-                value={formData.company_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, company_name: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={newJob.company_name}
+                onChange={(e) => setNewJob({ ...newJob, company_name: e.target.value })}
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                회사 전화번호
-              </label>
-              <input
-                type="text"
-                value={formData.company_phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, company_phone: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                회사 주소
-              </label>
-              <input
-                type="text"
-                value={formData.company_address}
-                onChange={(e) =>
-                  setFormData({ ...formData, company_address: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                근무 지역 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
+              <Input
+                label="근무 지역"
                 required
-                value={formData.location}
-                onChange={(e) =>
-                  setFormData({ ...formData, location: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={newJob.location}
+                onChange={(e) => setNewJob({ ...newJob, location: e.target.value })}
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                고용 형태 <span className="text-red-500">*</span>
-              </label>
-              <select
+              <Select
+                label="고용 형태"
+                options={EMPLOYMENT_TYPES}
+                value={newJob.employment_type}
+                onChange={(e) => setNewJob({ ...newJob, employment_type: e.target.value })}
                 required
-                value={formData.employment_type}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    employment_type: e.target.value as any,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="full-time">정규직</option>
-                <option value="part-time">파트타임</option>
-                <option value="contract">계약직</option>
-                <option value="temporary">임시직</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                급여 범위
-              </label>
-              <input
-                type="text"
-                placeholder="예: 3,000,000 - 4,000,000"
-                value={formData.salary_range}
-                onChange={(e) =>
-                  setFormData({ ...formData, salary_range: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                마감일 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                required
-                value={formData.deadline}
-                onChange={(e) =>
-                  setFormData({ ...formData, deadline: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Input
+                label="급여 범위"
+                value={newJob.salary_range}
+                onChange={(e) => setNewJob({ ...newJob, salary_range: e.target.value })}
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                공고 상태 <span className="text-red-500">*</span>
-              </label>
-              <select
+              <Textarea
+                label="업무 설명"
                 required
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value as any })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="active">모집중</option>
-                <option value="closed">마감</option>
-                <option value="draft">임시저장</option>
-              </select>
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                업무 설명 <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                required
+                value={newJob.description}
+                onChange={(e) => setNewJob({ ...newJob, description: e.target.value })}
                 rows={4}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                필수 요구사항
-              </label>
-              <textarea
+              <Textarea
+                label="자격 요건"
+                value={newJob.requirements}
+                onChange={(e) => setNewJob({ ...newJob, requirements: e.target.value })}
                 rows={3}
-                value={formData.requirements}
-                onChange={(e) =>
-                  setFormData({ ...formData, requirements: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                우대사항
-              </label>
-              <textarea
-                rows={3}
-                value={formData.preferred_qualifications}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    preferred_qualifications: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Textarea
+                label="우대 사항"
+                value={newJob.preferred_qualifications}
+                onChange={(e) => setNewJob({ ...newJob, preferred_qualifications: e.target.value })}
+                rows={2}
               />
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                복리후생
-              </label>
-              <textarea
-                rows={3}
-                value={formData.benefits}
-                onChange={(e) =>
-                  setFormData({ ...formData, benefits: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Textarea
+                label="복지"
+                value={newJob.benefits}
+                onChange={(e) => setNewJob({ ...newJob, benefits: e.target.value })}
+                rows={2}
               />
-            </div>
-          </div>
-
-          <div className="flex gap-2 pt-4 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-            >
-              취소
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              loading={isSubmitting}
-              className="flex-1"
-            >
-              {job ? "수정" : "작성"}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-interface ApplicantsModalProps {
-  jobId: string;
-  onClose: () => void;
-}
-
-function ApplicantsModal({ jobId, onClose }: ApplicantsModalProps) {
-  const [applicants, setApplicants] = useState<JobApplicationWithApplicant[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-
-  useEffect(() => {
-    fetchApplicants();
-  }, [statusFilter]);
-
-  const fetchApplicants = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-
-      const params = new URLSearchParams();
-      if (statusFilter) params.append("status", statusFilter);
-      const queryString = params.toString();
-
-      const url = `/api/jobs/${jobId}/applications${
-        queryString ? `?${queryString}` : ""
-      }`;
-
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setApplicants(data);
-      } else {
-        const data = await response.json();
-        setError(data.message || "지원자 목록 조회 실패");
-      }
-    } catch (error) {
-      setError("네트워크 오류가 발생했습니다.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">지원자 목록</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="p-6">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              상태 필터
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">전체</option>
-              <option value="applied">지원완료</option>
-              <option value="in_review">검토중</option>
-              <option value="accepted">합격</option>
-              <option value="rejected">불합격</option>
-            </select>
-          </div>
-
-          {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-
-          {isLoading ? (
-            <div className="text-center py-12">
-              <div className="text-gray-600">로딩 중...</div>
-            </div>
-          ) : applicants.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">지원자가 없습니다.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {applicants.map((application) => (
-                <div
-                  key={application.id}
-                  className="border border-gray-200 rounded-lg p-4"
+              <div className="flex gap-4 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowEditJobForm(false);
+                    setEditingJob(null);
+                  }}
                 >
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {application.applicant.last_name}
-                        {application.applicant.first_name}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {application.applicant.email}
-                      </p>
-                      {application.applicant.phone_number && (
-                        <p className="text-sm text-gray-600">
-                          {application.applicant.phone_number}
-                        </p>
-                      )}
-                      {application.applicant.nationality && (
-                        <p className="text-sm text-gray-600">
-                          국적: {application.applicant.nationality}
-                        </p>
-                      )}
-                    </div>
-                    <span
-                      className={`px-3 py-1 text-sm font-medium rounded ${
-                        application.status === "applied"
-                          ? "bg-blue-100 text-blue-800"
-                          : application.status === "in_review"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : application.status === "accepted"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {application.status === "applied"
-                        ? "지원완료"
-                        : application.status === "in_review"
-                        ? "검토중"
-                        : application.status === "accepted"
-                        ? "합격"
-                        : "불합격"}
-                    </span>
-                  </div>
+                  취소
+                </Button>
+                <Button type="submit" variant="primary">
+                  저장
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
 
-                  {application.cover_letter && (
-                    <div className="mb-3">
-                      <p className="text-sm font-medium text-gray-700 mb-1">
-                        자기소개서
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {application.cover_letter}
-                      </p>
-                    </div>
-                  )}
+        {/* 공고 목록 또는 지원자 목록 */}
+        {showApplicants && selectedJob ? (
+          <div className="space-y-6">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowApplicants(false);
+                setSelectedJob(null);
+              }}
+            >
+              ← 공고 목록으로 돌아가기
+            </Button>
 
-                  {application.resume_url && (
-                    <div className="mb-3">
-                      <p className="text-sm font-medium text-gray-700 mb-1">
-                        이력서
-                      </p>
-                      <a
-                        href={application.resume_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
-                      >
-                        이력서 보기
-                      </a>
-                    </div>
-                  )}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                {selectedJob.position} - 지원자 목록
+              </h2>
 
-                  <div className="text-xs text-gray-500 pt-2 border-t">
-                    지원일시: {formatDate(application.applied_at)}
-                  </div>
+              {applicants.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">지원자가 없습니다.</p>
                 </div>
-              ))}
+              ) : (
+                <div className="space-y-4">
+                  {applicants.map((applicant) => (
+                    <div
+                      key={applicant.id}
+                      className="border border-gray-200 rounded-lg p-4"
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-2">
+                            {applicant.user.first_name} {applicant.user.last_name}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-1">
+                            {applicant.user.email}
+                          </p>
+                          {applicant.user.phone_number && (
+                            <p className="text-sm text-gray-600">
+                              {applicant.user.phone_number}
+                            </p>
+                          )}
+                          <p className="text-sm text-gray-500">
+                            지원일: {formatDate(applicant.created_at)}
+                          </p>
+                        </div>
+                        <div>
+                          <Badge variant={applicant.status === "hired" ? "success" : "default"}>
+                            {APPLICANT_STATUS_LABELS[applicant.status] || applicant.status}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {applicant.resume && (
+                        <div className="mb-2 p-3 bg-gray-50 rounded-md">
+                          <p className="text-xs text-gray-600 mb-1">이력서</p>
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{applicant.resume}</p>
+                        </div>
+                      )}
+
+                      {applicant.cover_letter && (
+                        <div className="mb-2 p-3 bg-gray-50 rounded-md">
+                          <p className="text-xs text-gray-600 mb-1">자기소개서</p>
+                          <p className="text-sm text-gray-700 whitespace-pre-wrap">{applicant.cover_letter}</p>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2 pt-4 border-t border-gray-200">
+                        {applicant.status === "pending" && (
+                          <>
+                            <Button
+                              variant="success"
+                              size="sm"
+                              onClick={() => handleUpdateApplicantStatus(applicant.id, "interview_scheduled")}
+                            >
+                              면접 예정
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleUpdateApplicantStatus(applicant.id, "rejected")}
+                            >
+                              거절
+                            </Button>
+                          </>
+                        )}
+                        {applicant.status === "interview_scheduled" && (
+                          <>
+                            <Button
+                              variant="success"
+                              size="sm"
+                              onClick={() => handleUpdateApplicantStatus(applicant.id, "hired")}
+                            >
+                              채용 확정
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleUpdateApplicantStatus(applicant.id, "rejected")}
+                            >
+                              거절
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
+                전체 공고 ({jobs.length}건)
+              </h2>
+            </div>
+
+            {jobs.length === 0 ? (
+              <div className="p-12 text-center">
+                <p className="text-gray-600">등록된 공고가 없습니다.</p>
+                <Button
+                  onClick={() => setShowNewJobForm(true)}
+                  variant="primary"
+                  className="mt-4"
+                >
+                  첫 공고 등록
+                </Button>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200">
+                {jobs.map((job) => (
+                  <div key={job.id} className="p-6 hover:bg-gray-50 transition-colors">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                          {job.position}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-2">{job.company_name}</p>
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <span>{job.location}</span>
+                          <span>•</span>
+                          <span>
+                            {EMPLOYMENT_TYPES.find(
+                              (t) => t.value === job.employment_type
+                            )?.label || job.employment_type}
+                          </span>
+                          {job.salary_range && (
+                            <>
+                              <span>•</span>
+                              <span className="font-semibold">{job.salary_range}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={getStatusVariant(job.status)}>
+                          {getStatusLabel(job.status)}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <p className="text-gray-700 line-clamp-2 mb-4">
+                      {job.description}
+                    </p>
+
+                    <div className="text-sm text-gray-500 mb-4">
+                      마감일: {formatDate(job.deadline)}
+                    </div>
+
+                    <div className="flex gap-2 pt-4 border-t border-gray-200">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingJob(job);
+                          setNewJob({
+                            position: job.position,
+                            company_name: job.company_name,
+                            location: job.location,
+                            employment_type: job.employment_type,
+                            salary_range: job.salary_range,
+                            description: job.description,
+                            requirements: job.requirements,
+                            preferred_qualifications: job.preferred_qualifications,
+                            benefits: job.benefits,
+                          });
+                          setShowEditJobForm(true);
+                        }}
+                      >
+                        수정
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewApplicants(job)}
+                      >
+                        지원자 ({applicants.length})
+                      </Button>
+                      {job.status === "active" && (
+                        <Button
+                          variant="warning"
+                          size="sm"
+                          onClick={() => handleCloseJob(job.id)}
+                        >
+                          모집 마감
+                        </Button>
+                      )}
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteJob(job.id)}
+                        disabled={isDeleting === job.id}
+                        loading={isDeleting === job.id}
+                      >
+                        삭제
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
