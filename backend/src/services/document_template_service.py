@@ -134,3 +134,4 @@ def delete_document_template(
     db.commit()
     return True
 
+

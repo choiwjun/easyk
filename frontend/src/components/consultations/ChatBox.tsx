@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -33,17 +33,18 @@ export default function ChatBox({ consultationId, currentUserId, isEnabled = tru
     const [error, setError] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const pollingRef = useRef<NodeJS.Timeout | null>(null);
+    const isMountedRef = useRef(true);
 
     // Scroll to bottom when new messages arrive
-    const scrollToBottom = () => {
+    const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    }, []);
 
     // Fetch messages
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         try {
             const token = localStorage.getItem("access_token");
-            if (!token) return;
+            if (!token || !isMountedRef.current) return;
 
             const response = await fetch(`/api/messages/${consultationId}`, {
                 headers: {
@@ -51,7 +52,7 @@ export default function ChatBox({ consultationId, currentUserId, isEnabled = tru
                 },
             });
 
-            if (response.ok) {
+            if (response.ok && isMountedRef.current) {
                 const data = await response.json();
                 setMessages(data);
                 setError("");
@@ -59,9 +60,11 @@ export default function ChatBox({ consultationId, currentUserId, isEnabled = tru
         } catch (err) {
             console.error("Failed to fetch messages:", err);
         } finally {
-            setIsLoading(false);
+            if (isMountedRef.current) {
+                setIsLoading(false);
+            }
         }
-    };
+    }, [consultationId]);
 
     // Send message
     const handleSend = async (e: React.FormEvent) => {
@@ -102,42 +105,45 @@ export default function ChatBox({ consultationId, currentUserId, isEnabled = tru
     };
 
     // Format timestamp
-    const formatTime = (dateString: string) => {
+    const formatTime = useCallback((dateString: string) => {
         const date = new Date(dateString);
         return new Intl.DateTimeFormat(language === 'ko' ? 'ko-KR' : 'en-US', {
             hour: '2-digit',
             minute: '2-digit',
         }).format(date);
-    };
+    }, [language]);
 
-    const formatDate = (dateString: string) => {
+    const formatDate = useCallback((dateString: string) => {
         const date = new Date(dateString);
         return new Intl.DateTimeFormat(language === 'ko' ? 'ko-KR' : 'en-US', {
             month: 'short',
             day: 'numeric',
         }).format(date);
-    };
+    }, [language]);
 
     // Initial fetch and polling
     useEffect(() => {
+        isMountedRef.current = true;
+
         if (isEnabled) {
             fetchMessages();
 
             // Poll for new messages every 5 seconds
             pollingRef.current = setInterval(fetchMessages, 5000);
-
-            return () => {
-                if (pollingRef.current) {
-                    clearInterval(pollingRef.current);
-                }
-            };
         }
-    }, [consultationId, isEnabled]);
+
+        return () => {
+            isMountedRef.current = false;
+            if (pollingRef.current) {
+                clearInterval(pollingRef.current);
+            }
+        };
+    }, [consultationId, isEnabled, fetchMessages]);
 
     // Scroll to bottom on new messages
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [messages, scrollToBottom]);
 
     if (!isEnabled) {
         return (
@@ -205,8 +211,8 @@ export default function ChatBox({ consultationId, currentUserId, isEnabled = tru
                                         <div className={`max-w-[75%] ${isOwn ? 'order-2' : 'order-1'}`}>
                                             <div
                                                 className={`px-4 py-2 rounded-2xl ${isOwn
-                                                        ? 'bg-blue-600 text-white rounded-br-none'
-                                                        : 'bg-white text-gray-800 rounded-bl-none border border-gray-200'
+                                                    ? 'bg-blue-600 text-white rounded-br-none'
+                                                    : 'bg-white text-gray-800 rounded-bl-none border border-gray-200'
                                                     }`}
                                             >
                                                 <p className="whitespace-pre-wrap break-words">{message.content}</p>

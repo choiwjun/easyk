@@ -29,3 +29,4 @@ class UploadResponse(UploadBase):
     class Config:
         from_attributes = True
 
+

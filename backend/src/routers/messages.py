@@ -120,3 +120,4 @@ def get_unread_count(
     count = get_unread_message_count_service(current_user.id, db)
     return {"count": count}
 
+

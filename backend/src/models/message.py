@@ -27,3 +27,4 @@ class Message(Base):
     sender = relationship("User", back_populates="sent_messages")
     consultation = relationship("Consultation", back_populates="messages")
 
+

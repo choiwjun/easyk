@@ -39,3 +39,4 @@ class DocumentTemplateResponse(DocumentTemplateBase):
     class Config:
         from_attributes = True
 
+

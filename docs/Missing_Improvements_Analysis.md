@@ -304,3 +304,4 @@ GET /api/consultants/dashboard/stats  # 대시보드 통계
 **작성일**: 2026-01-03  
 **버전**: 1.0.0
 
+
