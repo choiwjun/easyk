@@ -8,16 +8,58 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/ui/Navbar';
 
 export default function Home() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  uconst checkAuth = async () => {
     const token = localStorage.getItem('access_token');
-    setIsAuthenticated(!!token);
-    setLoading(false);
-  }, []);
+    
+    if (!token) {
+      setIsAuthenticated(false);
+      setLoading(false);
+      return;
+    }
+  
+    try {
+      const response = await fetch('/api/users/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setIsAuthenticated(true);
+        setUserRole(data.role || 'foreign');
+      } else {
+        localStorage.removeItem('access_token');
+        setIsAuthenticated(false);
+        setUserRole(null);
+      }
+    } catch (error) {
+      console.error('[Home] 인증 체크 오류:', error);
+      setIsAuthenticated(false);
+      setUserRole(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+  checkAuth();
+  // 역할별로 다른 페이지로 이동
+  useEffect(() => {
+    if (isAuthenticated && userRole) {
+      if (userRole === 'foreign') {
+        router.replace('/jobs');
+      } else if (userRole === 'consultant') {
+        router.replace('/consultations');
+      } else if (userRole === 'admin') {
+        router.replace('/admin/jobs');
+      }
+    }
+  }, [isAuthenticated, userRole, router]);
 
   if (loading) {
     return (
