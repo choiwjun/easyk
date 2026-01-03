@@ -4,10 +4,19 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Button from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function Home() {
   const { t } = useLanguage();
   const router = useRouter();
+
+  // 로그인한 사용자는 일자리 페이지로 리다이렉트
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      router.push('/jobs');
+    }
+  }, [router]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-b from-blue-50 to-white">

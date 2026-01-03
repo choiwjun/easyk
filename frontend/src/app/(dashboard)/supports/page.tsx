@@ -142,15 +142,16 @@ export default function SupportsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* 헤더 */}
-        <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">
-            {language === 'ko' ? "정부 지원 정보" : "Government Support Programs"}
-          </h1>
-          <LanguageSelector />
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* 헤더 */}
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {language === 'ko' ? "정부 지원 정보" : "Government Support Programs"}
+            </h1>
+          </div>
 
         {/* 카테고리 탭 */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
@@ -331,6 +332,7 @@ export default function SupportsPage() {
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

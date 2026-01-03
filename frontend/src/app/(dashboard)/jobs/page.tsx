@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import LanguageSelector from "@/components/ui/LanguageSelector";
+import Navbar from "@/components/ui/Navbar";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Job {
@@ -151,12 +151,13 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{t('jobs.title')}</h1>
-          <LanguageSelector />
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">{t('jobs.title')}</h1>
+          </div>
 
         {/* 검색 및 필터 */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
@@ -304,6 +305,7 @@ export default function JobsPage() {
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
