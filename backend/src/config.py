@@ -20,11 +20,13 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # SMTP
-    SMTP_SERVER: str = "smtp.gmail.com"
+    # Email / SMTP
+    EMAIL_ENABLED: bool = False  # 이메일 기능 활성화 여부
+    SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
+    FROM_EMAIL: str = "noreply@easyk.com"
 
     # Application
     DEBUG: bool = True

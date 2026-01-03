@@ -84,3 +84,18 @@ export interface JobApplication {
 export interface JobApplicationWithApplicant extends JobApplication {
   applicant: ApplicantInfo;
 }
+
+export interface JobInfo {
+  id: string;
+  position: string;
+  company_name: string;
+  location: string;
+  employment_type: 'full-time' | 'part-time' | 'contract' | 'temporary';
+  salary_range: string | null;
+  status: 'active' | 'closed' | 'expired' | 'draft';
+  deadline: string;
+}
+
+export interface JobApplicationWithJob extends JobApplication {
+  job: JobInfo;
+}

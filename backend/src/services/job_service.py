@@ -424,3 +424,121 @@ def get_job_applications(
 
     return applications
 
+
+def update_job_application_status(
+    application_id: UUID,
+    status_update: "JobApplicationStatusUpdate",
+    user_id: UUID,
+    db: Session,
+) -> "JobApplication":
+    """
+    일자리 지원 상태 업데이트 (관리자 전용)
+
+    Args:
+        application_id: 지원 내역 ID
+        status_update: 상태 업데이트 데이터
+        user_id: 업데이트하는 사용자 ID (admin)
+        db: 데이터베이스 세션
+
+    Returns:
+        JobApplication: 업데이트된 지원 내역
+
+    Raises:
+        HTTPException: 지원 내역을 찾을 수 없거나 권한이 없을 때 에러
+    """
+    from fastapi import HTTPException, status as http_status
+    from ..models.user import User
+    from datetime import datetime
+
+    # 사용자 조회 및 권한 검증
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user or user.role != "admin":
+        raise HTTPException(
+            status_code=http_status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+
+    # 지원 내역 조회
+    application = db.query(JobApplication).filter(
+        JobApplication.id == application_id
+    ).first()
+
+    if not application:
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND,
+            detail="Job application not found"
+        )
+
+    # 상태 검증
+    valid_statuses = ["applied", "in_review", "accepted", "rejected"]
+    if status_update.status not in valid_statuses:
+        raise HTTPException(
+            status_code=http_status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
+        )
+
+    # 상태 업데이트
+    application.status = status_update.status
+    application.reviewer_comment = status_update.reviewer_comment
+    application.reviewed_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(application)
+
+    # 이메일 알림 발송 (accepted/rejected 시)
+    if status_update.status in ["accepted", "rejected"]:
+        from ..models.user import User
+        applicant = db.query(User).filter(User.id == application.user_id).first()
+        job = db.query(Job).filter(Job.id == application.job_id).first()
+
+        if applicant and applicant.email and job:
+            from .email_service import send_job_application_status_email
+            try:
+                send_job_application_status_email(
+                    applicant.email,
+                    job.position,
+                    job.company_name,
+                    status_update.status,
+                    status_update.reviewer_comment,
+                )
+            except Exception as e:
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Failed to send job application status email: {e}")
+
+    return application
+
+
+def get_user_job_applications(
+    user_id: UUID,
+    status: Optional[str],
+    db: Session,
+) -> list[tuple["JobApplication", "Job"]]:
+    """
+    사용자의 일자리 지원 내역 조회
+
+    Args:
+        user_id: 사용자 ID
+        status: 지원 상태 필터 (optional)
+        db: 데이터베이스 세션
+
+    Returns:
+        list[tuple[JobApplication, Job]]: 지원 내역과 일자리 정보 튜플 리스트
+    """
+    from sqlalchemy.orm import joinedload
+
+    # 지원 내역 조회 (Job 정보와 함께)
+    query = db.query(JobApplication, Job).join(
+        Job, JobApplication.job_id == Job.id
+    ).filter(JobApplication.user_id == user_id)
+
+    # 상태 필터링
+    if status:
+        query = query.filter(JobApplication.status == status)
+
+    # 최신순 정렬
+    applications = query.order_by(JobApplication.applied_at.desc()).all()
+
+    return applications
+

@@ -12,6 +12,8 @@ from ..schemas.government_support import (
     GovernmentSupportList,
     GovernmentSupportCreate,
     GovernmentSupportUpdate,
+    EligibilityCheckRequest,
+    EligibilityCheckResponse,
 )
 from ..middleware.auth import get_current_user, require_admin
 from ..services.government_support_service import (
@@ -20,6 +22,7 @@ from ..services.government_support_service import (
     create_support,
     update_support,
     delete_support,
+    check_eligibility as check_eligibility_service,
 )
 
 router = APIRouter(prefix="/api/supports", tags=["government-supports"])
@@ -159,5 +162,38 @@ def delete_existing_support(
         )
 
     return None
+
+
+@router.post("/eligibility-check", response_model=EligibilityCheckResponse)
+def check_support_eligibility(
+    eligibility_request: EligibilityCheckRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    정부 지원 프로그램 자격 확인 엔드포인트
+
+    Args:
+        eligibility_request: 자격 확인 요청 데이터
+        current_user: 현재 인증된 사용자
+        db: 데이터베이스 세션
+
+    Returns:
+        EligibilityCheckResponse: 자격 확인 결과
+    """
+    result = check_eligibility_service(
+        eligibility_request.support_id,
+        eligibility_request.visa_type,
+        eligibility_request.age,
+        eligibility_request.residence_location,
+        eligibility_request.employment_status,
+        db,
+    )
+
+    # support 객체를 Response 스키마로 변환
+    if result["support"]:
+        result["support"] = GovernmentSupportResponse.model_validate(result["support"])
+
+    return EligibilityCheckResponse(**result)
 
 

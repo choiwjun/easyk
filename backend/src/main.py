@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
 from .config import settings
 from .middleware.security import rate_limiter, rate_limit_exceeded_handler, validate_environment_variables
-from .routers import auth, users, consultations, payments, reviews, consultants, jobs, support_keywords, government_supports
+from .routers import auth, users, consultations, payments, reviews, consultants, jobs, support_keywords, government_supports, uploads
 
 # 환경 변수 검증 (실행 시)
 try:
@@ -42,6 +44,15 @@ app.include_router(consultants.router)
 app.include_router(jobs.router)
 app.include_router(support_keywords.router)
 app.include_router(government_supports.router)
+app.include_router(uploads.router)
+
+# Static files for uploaded resumes
+upload_dir = os.path.join("uploads")
+if os.path.exists(upload_dir):
+    app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
+else:
+    os.makedirs(upload_dir, exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
 
 
 # Health Check 엔드포인트

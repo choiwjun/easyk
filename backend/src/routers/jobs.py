@@ -17,12 +17,22 @@ from ..services.job_service import (
     update_job as update_job_service,
     delete_job as delete_job_service,
     get_job_applications as get_job_applications_service,
+    update_job_application_status as update_job_application_status_service,
+    get_user_job_applications as get_user_job_applications_service,
+)
+from ..services.saved_job_service import (
+    save_job as save_job_service,
+    unsave_job as unsave_job_service,
+    get_saved_jobs as get_saved_jobs_service,
 )
 from ..schemas.job_application import (
     JobApplicationCreate,
     JobApplicationResponse,
     JobApplicationWithApplicant,
+    JobApplicationStatusUpdate,
     ApplicantInfo,
+    JobApplicationWithJob,
+    JobInfo,
 )
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
@@ -214,4 +224,141 @@ def apply_to_job(
         application_data.resume_url,
         db,
     )
+
+
+@router.put("/applications/{application_id}/status", response_model=JobApplicationResponse)
+def update_application_status(
+    application_id: UUID,
+    status_update: JobApplicationStatusUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    일자리 지원 상태 업데이트 엔드포인트 (관리자 전용)
+
+    Args:
+        application_id: 지원 내역 ID
+        status_update: 상태 업데이트 데이터
+        current_user: 현재 인증된 사용자 (admin)
+        db: 데이터베이스 세션
+
+    Returns:
+        JobApplicationResponse: 업데이트된 지원 내역
+
+    Raises:
+        HTTPException: 지원 내역을 찾을 수 없거나 권한이 없을 때 에러
+    """
+    return update_job_application_status_service(
+        application_id,
+        status_update,
+        current_user.id,
+        db,
+    )
+
+
+@router.get("/applications/my", response_model=List[JobApplicationWithJob])
+def get_my_applications(
+    status_filter: Optional[str] = Query(None, alias="status", description="지원 상태 필터 (applied, in_review, accepted, rejected)"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    내 일자리 지원 내역 조회 엔드포인트
+
+    Args:
+        status_filter: 지원 상태 필터 (optional)
+        current_user: 현재 인증된 사용자
+        db: 데이터베이스 세션
+
+    Returns:
+        List[JobApplicationWithJob]: 일자리 정보가 포함된 지원 내역 목록
+    """
+    applications = get_user_job_applications_service(current_user.id, status_filter, db)
+
+    # 응답 포맷 변환
+    result = []
+    for application, job in applications:
+        app_dict = JobApplicationResponse.model_validate(application).model_dump()
+        app_dict["job"] = JobInfo(
+            id=job.id,
+            position=job.position,
+            company_name=job.company_name,
+            location=job.location,
+            employment_type=job.employment_type,
+            salary_range=job.salary_range,
+            status=job.status,
+            deadline=job.deadline,
+        )
+        result.append(JobApplicationWithJob(**app_dict))
+
+    return result
+
+
+@router.post("/{job_id}/save", status_code=status.HTTP_201_CREATED)
+def save_job(
+    job_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    일자리 저장 (관심 목록에 추가) 엔드포인트
+
+    Args:
+        job_id: 일자리 ID
+        current_user: 현재 인증된 사용자
+        db: 데이터베이스 세션
+
+    Returns:
+        dict: 저장 성공 메시지
+
+    Raises:
+        HTTPException: 일자리를 찾을 수 없거나 이미 저장된 경우
+    """
+    save_job_service(current_user.id, job_id, db)
+    return {"message": "일자리가 저장되었습니다"}
+
+
+@router.delete("/{job_id}/save", status_code=status.HTTP_204_NO_CONTENT)
+def unsave_job(
+    job_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    일자리 저장 취소 (관심 목록에서 제거) 엔드포인트
+
+    Args:
+        job_id: 일자리 ID
+        current_user: 현재 인증된 사용자
+        db: 데이터베이스 세션
+
+    Raises:
+        HTTPException: 저장된 일자리를 찾을 수 없는 경우
+    """
+    unsave_job_service(current_user.id, job_id, db)
+
+
+@router.get("/saved/my", response_model=List[JobResponse])
+def get_my_saved_jobs(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    내가 저장한 일자리 목록 조회 엔드포인트
+
+    Args:
+        current_user: 현재 인증된 사용자
+        db: 데이터베이스 세션
+
+    Returns:
+        List[JobResponse]: 저장된 일자리 목록
+    """
+    saved_jobs = get_saved_jobs_service(current_user.id, db)
+
+    # Job 정보만 추출하여 반환
+    result = []
+    for saved_job, job in saved_jobs:
+        result.append(JobResponse.model_validate(job))
+
+    return result
 

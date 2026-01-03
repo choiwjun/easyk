@@ -40,6 +40,28 @@ def create_consultation(
     return create_consultation_service(consultation_data, current_user, db)
 
 
+@router.get("/{consultation_id}", response_model=ConsultationResponse)
+def get_consultation_detail(
+    consultation_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    상담 상세 정보 조회
+
+    Args:
+        consultation_id: 상담 ID
+        current_user: 현재 인증된 사용자
+        db: 데이터베이스 세션
+
+    Returns:
+        ConsultationResponse: 상담 상세 정보
+    """
+    from uuid import UUID
+    from ..services.consultation_service import get_consultation_by_id as get_consultation_by_id_service
+    return get_consultation_by_id_service(UUID(consultation_id), current_user, db)
+
+
 @router.get("", response_model=List[ConsultationResponse])
 def get_user_consultations(
     status: Optional[str] = Query(None, description="상태 필터 (requested, matched, scheduled, completed 등)"),

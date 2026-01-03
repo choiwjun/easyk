@@ -48,7 +48,8 @@
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(git rm:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(venvScriptsalembic revision -m \"create_saved_jobs_table\")"
     ]
   }
 }

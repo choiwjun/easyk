@@ -176,3 +176,43 @@ class GovernmentSupportList(BaseModel):
         from_attributes = True
 
 
+class EligibilityCheckRequest(BaseModel):
+    """자격 확인 요청 스키마"""
+
+    support_id: UUID = Field(..., description="정부 지원 프로그램 ID")
+    visa_type: str = Field(..., min_length=1, max_length=10, description="비자 종류 (예: E-1, F-2)")
+    age: Optional[int] = Field(None, ge=0, le=150, description="나이")
+    residence_location: Optional[str] = Field(None, max_length=100, description="거주 지역")
+    employment_status: Optional[str] = Field(None, max_length=50, description="고용 상태")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "support_id": "123e4567-e89b-12d3-a456-426614174000",
+                "visa_type": "E-7",
+                "age": 30,
+                "residence_location": "서울시 강남구",
+                "employment_status": "employed",
+            }
+        }
+
+
+class EligibilityCheckResponse(BaseModel):
+    """자격 확인 응답 스키마"""
+
+    eligible: bool = Field(..., description="자격 충족 여부")
+    message: str = Field(..., description="결과 메시지")
+    reasons: List[str] = Field(default_factory=list, description="자격 충족/미충족 이유")
+    support: Optional[GovernmentSupportResponse] = Field(None, description="지원 프로그램 정보")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "eligible": True,
+                "message": "자격 조건을 충족합니다",
+                "reasons": ["비자 종류가 eligible_visa_types에 포함됨"],
+                "support": None,
+            }
+        }
+
+

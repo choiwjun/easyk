@@ -90,6 +90,7 @@ class User(Base):
 
     # Relationships
     created_keywords = relationship("SupportKeyword", back_populates="creator")
+    saved_jobs = relationship("SavedJob", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User(id={self.id}, email={self.email}, role={self.role})>"

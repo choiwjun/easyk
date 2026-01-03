@@ -53,6 +53,21 @@ def create_consultation(
     db.commit()
     db.refresh(new_consultation)
 
+    # 이메일 알림 발송 (매칭 완료 시)
+    if matched_consultant and user.email:
+        from .email_service import send_consultation_matched_email
+        try:
+            send_consultation_matched_email(
+                user.email,
+                matched_consultant.office_name,
+                consultation_data.consultation_type,
+            )
+        except Exception as e:
+            # 이메일 발송 실패해도 상담 신청은 유지
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to send consultation matched email: {e}")
+
     return new_consultation
 
 
@@ -140,6 +155,22 @@ def accept_consultation(
     db.commit()
     db.refresh(consultation)
 
+    # 이메일 알림 발송 (수락 시)
+    from ..models.user import User as UserModel
+    client = db.query(UserModel).filter(UserModel.id == consultation.user_id).first()
+    if client and client.email:
+        from .email_service import send_consultation_accepted_email
+        try:
+            send_consultation_accepted_email(
+                client.email,
+                consultant.office_name,
+                None,  # scheduled_at은 나중에 추가 가능
+            )
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to send consultation accepted email: {e}")
+
     return consultation
 
 
@@ -189,6 +220,28 @@ def reject_consultation(
     db.commit()
     db.refresh(consultation)
 
+    # 이메일 알림 발송 (거절 시)
+    from ..models.user import User as UserModel
+    client = db.query(UserModel).filter(UserModel.id == consultation.user_id).first()
+    if client and client.email:
+        from .email_service import send_consultation_rejected_email
+        try:
+            send_consultation_rejected_email(
+                client.email,
+                consultant.office_name,
+            )
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to send consultation rejected email: {e}")
+
+    # TODO: 다른 전문가 자동 재매칭
+    # new_consultant = find_matching_consultant(db, consultation.consultation_type, exclude_id=consultant.id)
+    # if new_consultant:
+    #     consultation.consultant_id = new_consultant.id
+    #     consultation.status = "matched"
+    #     db.commit()
+
     return consultation
 
 
@@ -220,3 +273,48 @@ def get_user_consultations(
     consultations = query.order_by(Consultation.created_at.desc()).all()
 
     return consultations
+
+
+def get_consultation_by_id(
+    consultation_id: UUID,
+    user: User,
+    db: Session
+) -> Consultation:
+    """상담 상세 정보 조회
+
+    Args:
+        consultation_id: 상담 ID
+        user: 현재 사용자
+        db: 데이터베이스 세션
+
+    Returns:
+        Consultation: 상담 상세 정보
+
+    Raises:
+        HTTPException: 상담을 찾을 수 없거나 권한이 없는 경우
+    """
+    from fastapi import HTTPException
+
+    # 상담 조회
+    consultation = db.query(Consultation).filter(
+        Consultation.id == consultation_id
+    ).first()
+
+    if not consultation:
+        raise HTTPException(status_code=404, detail="Consultation not found")
+
+    # 권한 검증: 본인이 신청한 상담이거나, 매칭된 전문가인 경우에만 조회 가능
+    consultant = db.query(Consultant).filter(
+        Consultant.user_id == user.id
+    ).first()
+
+    is_client = consultation.user_id == user.id
+    is_consultant = consultant and consultation.consultant_id == consultant.id
+
+    if not (is_client or is_consultant):
+        raise HTTPException(
+            status_code=403,
+            detail="You are not authorized to view this consultation"
+        )
+
+    return consultation

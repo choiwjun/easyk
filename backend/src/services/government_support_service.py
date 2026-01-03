@@ -204,3 +204,92 @@ def delete_support(
     return True
 
 
+def check_eligibility(
+    support_id: UUID,
+    visa_type: str,
+    age: Optional[int],
+    residence_location: Optional[str],
+    employment_status: Optional[str],
+    db: Session,
+) -> dict:
+    """
+    정부 지원 프로그램 자격 확인
+
+    Args:
+        support_id: 지원 프로그램 ID
+        visa_type: 비자 종류
+        age: 나이 (optional)
+        residence_location: 거주 지역 (optional)
+        employment_status: 고용 상태 (optional)
+        db: 데이터베이스 세션
+
+    Returns:
+        dict: 자격 확인 결과
+    """
+    # 지원 프로그램 조회
+    support = get_support_by_id(db, support_id)
+
+    if not support:
+        return {
+            "eligible": False,
+            "message": "해당 지원 프로그램을 찾을 수 없습니다",
+            "reasons": ["프로그램 ID가 유효하지 않음"],
+            "support": None,
+        }
+
+    # eligible_visa_types 파싱
+    try:
+        eligible_visas = json.loads(support.eligible_visa_types) if support.eligible_visa_types else []
+    except (json.JSONDecodeError, TypeError):
+        eligible_visas = []
+
+    # 자격 확인 로직
+    reasons = []
+    eligible = True
+
+    # 1. 비자 유형 확인 (가장 중요)
+    if eligible_visas and visa_type not in eligible_visas:
+        eligible = False
+        reasons.append(f"비자 종류 '{visa_type}'는 지원 대상이 아닙니다 (지원 가능 비자: {', '.join(eligible_visas)})")
+    elif eligible_visas and visa_type in eligible_visas:
+        reasons.append(f"비자 종류 '{visa_type}'는 지원 가능합니다")
+
+    # 2. 나이 조건 확인 (eligibility 문자열에서 파싱)
+    # TODO: eligibility 텍스트에서 나이 조건을 파싱하는 로직 추가 가능
+    # 예: "만 18세 이상 40세 이하" 같은 텍스트 파싱
+
+    # 3. 거주 지역 확인 (department 또는 eligibility에서 확인)
+    # TODO: 특정 지역에만 제공되는 지원의 경우 확인
+
+    # 4. 프로그램 상태 확인
+    if support.status != "active":
+        eligible = False
+        reasons.append(f"현재 지원이 불가능한 상태입니다 (상태: {support.status})")
+
+    # 5. 신청 기간 확인
+    if support.application_period_start or support.application_period_end:
+        from datetime import date
+        today = date.today()
+
+        if support.application_period_start and today < support.application_period_start:
+            eligible = False
+            reasons.append(f"신청 시작일({support.application_period_start})이 아직 도래하지 않았습니다")
+
+        if support.application_period_end and today > support.application_period_end:
+            eligible = False
+            reasons.append(f"신청 마감일({support.application_period_end})이 지났습니다")
+
+    # 결과 메시지 생성
+    if eligible:
+        message = "✅ 자격 조건을 충족합니다! 신청 가능합니다."
+    else:
+        message = "❌ 아쉽게도 자격 조건을 충족하지 못합니다."
+
+    return {
+        "eligible": eligible,
+        "message": message,
+        "reasons": reasons if reasons else ["자격 확인 완료"],
+        "support": support,
+    }
+
+
