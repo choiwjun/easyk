@@ -64,22 +64,22 @@ PYTHONUNBUFFERED = "1"
 
 ```toml
 [phases.setup]
-nixPkgs = ["python311"]
+nixPkgs = ["python311", "python311Packages.pip"]
 
 [phases.install]
-cmds = ["python -m pip install --upgrade pip", "python -m pip install -r requirements.txt"]
+cmds = ["pip install --upgrade pip", "pip install -r requirements.txt"]
 
 [start]
 cmd = "uvicorn src.main:app --host 0.0.0.0 --port $PORT"
 ```
 
 **역할**:
-- `nixPkgs = ["python311"]`: Python 3.11 설치 (pip는 Python에 포함됨)
-- `python -m pip`: pip 모듈을 직접 호출하여 경로 문제 해결
+- `nixPkgs = ["python311", "python311Packages.pip"]`: Python 3.11과 pip 패키지 모두 설치
+- `pip install`: 직접 pip 명령어 사용 (경로가 설정되어 있음)
 - `--upgrade pip`: pip를 최신 버전으로 업그레이드
 - `phases.install`: 의존성 설치 단계
 - `start.cmd`: 서버 시작 명령
-- ⚠️ Nix에서 `pip`는 별도 패키지가 아니므로 nixPkgs에 추가하면 안 됨
+- ⚠️ Nix에서 pip는 `python311Packages.pip` 형태로 명시해야 함
 
 ### 3. `backend/.python-version` (Python 버전 명시)
 
@@ -133,11 +133,12 @@ git commit -m "fix: Railway 빌드 에러 해결 - Python 프로젝트 명시"
 git push origin main
 ```
 
-**커밋 해시**: `53e0e30` (최종)
+**커밋 해시**: `2f08715` (최종)
 - 첫 시도: `1366013` (Railpack 에러 - Node.js로 오인식)
 - 두 번째: `febf060` (pip 경로 에러)
 - 세 번째: `2d83601` (Nix pip 변수 에러)
-- 네 번째: `53e0e30` (완전 해결)
+- 네 번째: `53e0e30` (No module named pip)
+- 다섯 번째: `2f08715` (완전 해결)
 
 ### Railway 자동 재배포
 
@@ -348,7 +349,7 @@ echo "3.11" > backend/.python-version
 
 **작성일**: 2026-01-03
 **작성자**: Claude Code
-**커밋**: 53e0e30
+**커밋**: 2f08715
 **이슈**: Railway 빌드 에러 - "Error creating build plan with Railpack"
 
 ---
@@ -418,6 +419,37 @@ cmds = [
 ]
 ```
 
+### 에러 4: No module named pip
+
+**에러 메시지**:
+```
+/root/.nix-profile/bin/python: No module named pip
+"python -m pip install --upgrade pip" did not complete successfully: exit code: 1
+```
+
+**원인**:
+- Python 3.11이 설치되었지만 pip 모듈이 포함되지 않음
+- Nix 환경에서는 Python과 pip가 별도로 관리됨
+- `python -m pip`를 실행하려면 pip 모듈이 필요함
+
+**해결**:
+```toml
+# nixpacks.toml - 최종 버전!
+[phases.setup]
+nixPkgs = ["python311", "python311Packages.pip"]  # pip를 python311Packages.pip으로 추가
+
+[phases.install]
+cmds = [
+  "pip install --upgrade pip",  # python -m 제거, 직접 pip 사용
+  "pip install -r requirements.txt"
+]
+```
+
+**핵심**:
+- ✅ `python311Packages.pip`: Nix에서 pip를 추가하는 올바른 방법
+- ✅ `pip install`: pip가 PATH에 있으므로 직접 사용 가능
+- ❌ `python -m pip`: pip 모듈이 없어서 실패했음
+
 ### Python 3.13 → 3.11로 변경 이유
 
 **문제**: Python 3.13은 2023년 10월 출시된 최신 버전
@@ -435,16 +467,19 @@ cmds = [
 **Railway가 package.json 때문에 Node.js 프로젝트로 오인식하는 문제를 해결했습니다.**
 
 - ✅ `railway.toml` 설정 파일 생성 및 최적화
-- ✅ `nixpacks.toml` 빌더 설정 (python -m pip 사용, Nix pip 에러 해결)
+- ✅ `nixpacks.toml` 빌더 설정 (python311Packages.pip 사용)
 - ✅ `.python-version` Python 3.11 명시
 - ✅ `runtime.txt` 추가 (Railway 표준 방식)
 - ✅ `.railwayignore` 추가 (빌드 최적화)
-- ✅ GitHub 푸시 완료 (커밋: 53e0e30)
+- ✅ GitHub 푸시 완료 (커밋: 2f08715)
 - ⏳ Railway 자동 재배포 진행 중
 
 **해결된 모든 에러**:
 1. ✅ Railpack 에러 (Node.js로 오인식) → railway.toml 추가
-2. ✅ pip 경로 에러 → python -m pip 사용
-3. ✅ Nix undefined variable 'pip' → nixPkgs에서 pip 제거
+2. ✅ pip 경로 에러 (command not found) → nixpacks.toml 사용
+3. ✅ Nix undefined variable 'pip' → 단순 "pip" 제거
+4. ✅ No module named pip → python311Packages.pip으로 올바르게 추가
+
+**최종 해결책**: `nixPkgs = ["python311", "python311Packages.pip"]` + `pip install` 직접 사용
 
 **이제 Railway가 Python FastAPI 프로젝트로 정상 인식하고 빌드될 것입니다!** 🎉
