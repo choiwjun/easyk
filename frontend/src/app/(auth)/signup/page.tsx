@@ -104,8 +104,8 @@ export default function SignupPage() {
         return;
       }
 
-      // Redirect to login on success
-      router.push("/login");
+      // Redirect to home on success
+      router.push("/");
     } catch (error) {
       setErrors({ general: t('errors.networkError') });
     } finally {

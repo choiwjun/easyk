@@ -73,7 +73,7 @@ export default function LoginPage() {
         localStorage.setItem('access_token', data.access_token);
       }
 
-      // Redirect to dashboard on success
+      // Redirect to home (dashboard for logged in users)
       router.push("/");
     } catch (error) {
       setErrors({ general: t('errors.networkError') });
