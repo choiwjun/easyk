@@ -304,7 +304,7 @@ export default function AdminJobsDashboard() {
     fetchApplicants(job.id);
   };
 
-  const handleUpdateApplicantStatus = async (applicantId: string, newStatus: string) => {
+  const handleUpdateApplicantStatus = async (applicantId: string, newStatus: string, reviewerComment?: string) => {
     try {
       const token = localStorage.getItem("access_token");
 
@@ -313,20 +313,26 @@ export default function AdminJobsDashboard() {
         return;
       }
 
-      const response = await fetch(`/api/jobs/applications/${applicantId}`, {
+      const response = await fetch(`/api/jobs/applications/${applicantId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({
+          status: newStatus,
+          reviewer_comment: reviewerComment || null
+        }),
       });
 
       if (response.ok) {
-        fetchApplicants(selectedJob!.id);
+        alert("지원자 상태가 업데이트되었습니다.");
+        if (selectedJob) {
+          fetchApplicants(selectedJob.id);
+        }
       } else {
         const errorData = await response.json();
-        alert(errorData.detail || "상태 업데이트에 실패했습니다.");
+        alert(errorData.message || "상태 업데이트에 실패했습니다.");
       }
     } catch (error) {
       alert("네트워크 오류가 발생했습니다.");

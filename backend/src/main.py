@@ -5,7 +5,7 @@ import os
 
 from .config import settings
 from .middleware.security import rate_limiter, rate_limit_exceeded_handler, validate_environment_variables
-from .routers import auth, users, consultations, payments, reviews, consultants, jobs, support_keywords, government_supports, uploads
+from .routers import auth, users, consultations, payments, reviews, consultants, jobs, support_keywords, government_supports, uploads, document_templates, stats
 
 # 환경 변수 검증 (실행 시)
 try:
@@ -46,6 +46,8 @@ app.include_router(jobs.router)
 app.include_router(support_keywords.router)
 app.include_router(government_supports.router)
 app.include_router(uploads.router)
+app.include_router(document_templates.router)
+app.include_router(stats.router)
 
 # Static files for uploaded resumes
 upload_dir = os.path.join("uploads")

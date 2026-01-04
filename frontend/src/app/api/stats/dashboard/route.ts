@@ -2,28 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
+    const token = request.headers.get('authorization');
 
-    if (!authHeader) {
+    if (!token) {
       return NextResponse.json(
         { message: '인증이 필요합니다' },
         { status: 401 }
       );
     }
 
-    const { id: supportId } = await params;
-
-    const url = `${BACKEND_URL}/api/supports/${supportId}`;
-
-    const response = await fetch(url, {
+    const response = await fetch(`${BACKEND_URL}/api/stats/dashboard`, {
       method: 'GET',
       headers: {
-        'Authorization': authHeader,
+        'Authorization': token,
       },
     });
 
@@ -31,24 +24,17 @@ export async function GET(
 
     if (!response.ok) {
       return NextResponse.json(
-        { message: data.detail || data.message || '지원 상세 조회 실패' },
+        { message: data.detail || data.message || '통계 조회에 실패했습니다' },
         { status: response.status }
       );
     }
 
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error('[API Route] Support Detail GET error:', error);
+    console.error('Stats fetch error:', error);
     return NextResponse.json(
-      { message: '지원 상세 조회 중 오류가 발생했습니다' },
+      { message: '네트워크 오류가 발생했습니다' },
       { status: 500 }
     );
   }
 }
-
-
-
-
-
-
-
