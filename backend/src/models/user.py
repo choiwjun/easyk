@@ -83,7 +83,7 @@ class User(Base):
     # 제약조건
     __table_args__ = (
         CheckConstraint(
-            "role IN ('foreign', 'consultant', 'admin')",
+            "role IN ('foreign', 'consultant', 'admin', 'agency')",
             name="check_role",
         ),
     )

@@ -59,6 +59,8 @@ export default function Home() {
         router.replace('/consultations');
       } else if (userRole === 'admin') {
         router.replace('/admin/jobs');
+      } else if (userRole === 'agency') {
+        router.replace('/agency');
       }
     }
   }, [isAuthenticated, userRole, router]);
