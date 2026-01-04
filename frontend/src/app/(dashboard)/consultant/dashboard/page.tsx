@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRoleGuard } from '@/hooks/useRoleGuard';
 
 interface Consultation {
   id: string;
@@ -45,6 +46,7 @@ const CONSULTATION_TYPE_LABELS: Record<string, string> = {
 export default function ConsultantDashboardPage() {
   const router = useRouter();
   const { t } = useLanguage();
+  const isAuthorized = useRoleGuard(['consultant', 'admin']);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -149,7 +151,7 @@ export default function ConsultantDashboardPage() {
     return consultations.filter((c) => c.status === statusFilter);
   };
 
-  if (isLoading) {
+  if (!isAuthorized || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-gray-600">로딩 중...</div>

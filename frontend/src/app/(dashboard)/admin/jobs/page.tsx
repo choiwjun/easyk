@@ -8,6 +8,7 @@ import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import Badge from "@/components/ui/Badge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useRoleGuard } from "@/hooks/useRoleGuard";
 
 interface Job {
   id: string;
@@ -64,6 +65,7 @@ const APPLICANT_STATUS_LABELS: Record<string, string> = {
 export default function AdminJobsDashboard() {
   const router = useRouter();
   const { t, language } = useLanguage();
+  const isAuthorized = useRoleGuard(['admin']);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -362,7 +364,7 @@ export default function AdminJobsDashboard() {
     }).format(date);
   };
 
-  if (isLoading) {
+  if (!isAuthorized || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-gray-600">{t('common.loading')}</div>

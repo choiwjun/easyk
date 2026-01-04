@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRoleGuard } from '@/hooks/useRoleGuard';
 
 interface DashboardStats {
   users: {
@@ -34,6 +35,7 @@ interface DashboardStats {
 export default function AdminStatsPage() {
   const router = useRouter();
   const { t } = useLanguage();
+  const isAuthorized = useRoleGuard(['admin']);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -71,7 +73,7 @@ export default function AdminStatsPage() {
     }
   };
 
-  if (isLoading) {
+  if (!isAuthorized || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-gray-600">로딩 중...</div>

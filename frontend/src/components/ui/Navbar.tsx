@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Button from "./Button";
 import LanguageSelector from "./LanguageSelector";
@@ -9,6 +10,30 @@ import LanguageSelector from "./LanguageSelector";
 export default function Navbar() {
   const router = useRouter();
   const { t } = useLanguage();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch user role on mount
+    const fetchUserRole = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        if (!token) return;
+
+        const response = await fetch("/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const user = await response.json();
+          setUserRole(user.role);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user role:", error);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -45,6 +70,40 @@ export default function Navbar() {
             >
               🏛️ {t('nav.supports') || '정부 지원'}
             </Link>
+
+            {/* Role-based navigation links */}
+            {userRole === 'consultant' && (
+              <Link
+                href="/consultant/dashboard"
+                className="text-gray-700 hover:text-[#1E5BA0] transition-colors"
+              >
+                👨‍💼 전문가 대시보드
+              </Link>
+            )}
+            {userRole === 'admin' && (
+              <>
+                <Link
+                  href="/admin/stats"
+                  className="text-gray-700 hover:text-[#1E5BA0] transition-colors"
+                >
+                  📊 통계
+                </Link>
+                <Link
+                  href="/admin/jobs"
+                  className="text-gray-700 hover:text-[#1E5BA0] transition-colors"
+                >
+                  🛡️ 일자리 관리
+                </Link>
+              </>
+            )}
+            {(userRole === 'agency' || userRole === 'admin') && (
+              <Link
+                href="/agency"
+                className="text-gray-700 hover:text-[#1E5BA0] transition-colors"
+              >
+                🏢 기관 대시보드
+              </Link>
+            )}
           </div>
 
           {/* 우측 버튼 */}
@@ -85,6 +144,35 @@ export default function Navbar() {
             <span className="text-xl">🏛️</span>
             <span className="text-xs mt-1">{t('nav.supports') || '지원'}</span>
           </Link>
+
+          {/* Role-based mobile navigation */}
+          {userRole === 'consultant' && (
+            <Link
+              href="/consultant/dashboard"
+              className="flex flex-col items-center text-gray-700 hover:text-[#1E5BA0] py-2"
+            >
+              <span className="text-xl">👨‍💼</span>
+              <span className="text-xs mt-1">전문가</span>
+            </Link>
+          )}
+          {userRole === 'admin' && (
+            <Link
+              href="/admin/stats"
+              className="flex flex-col items-center text-gray-700 hover:text-[#1E5BA0] py-2"
+            >
+              <span className="text-xl">📊</span>
+              <span className="text-xs mt-1">관리</span>
+            </Link>
+          )}
+          {(userRole === 'agency' || userRole === 'admin') && (
+            <Link
+              href="/agency"
+              className="flex flex-col items-center text-gray-700 hover:text-[#1E5BA0] py-2"
+            >
+              <span className="text-xl">🏢</span>
+              <span className="text-xs mt-1">기관</span>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

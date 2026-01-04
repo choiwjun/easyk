@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Badge from "@/components/ui/Badge";
+import { useRoleGuard } from "@/hooks/useRoleGuard";
 
 interface SupportKeyword {
   id: string;
@@ -28,6 +29,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export default function SupportKeywordsPage() {
   const router = useRouter();
+  const isAuthorized = useRoleGuard(['admin']);
   const [keywords, setKeywords] = useState<SupportKeyword[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -148,7 +150,7 @@ export default function SupportKeywordsPage() {
     }).format(date);
   };
 
-  if (isLoading) {
+  if (!isAuthorized || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-gray-600">로딩 중...</div>
