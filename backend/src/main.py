@@ -30,9 +30,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Rate Limiting 미들웨어
-app.state.limiter = rate_limiter
-app.add_exception_handler(Exception, rate_limit_exceeded_handler)
+# Rate Limiting 미들웨어 (개발 환경에서 비활성화)
+# 프로덕션에서 필요시 주석 해제
+# app.state.limiter = rate_limiter
+# app.add_exception_handler(Exception, rate_limit_exceeded_handler)
 
 # 라우터 등록
 app.include_router(auth.router)
