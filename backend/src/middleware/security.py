@@ -8,11 +8,11 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import time
 
-# 요청 제한 설정 (프로덕션 vs 프로덕션)
-# 보안 강화: 시간 단위별로 제한 설정 (DOS 공격 방지)
+# 요청 제한 설정 (보안 vs 사용성 밸런스)
+# 개발 환경에서는 더 관대하게 설정
 rate_limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["100 per hour", "1000 per day"],
+    default_limits=["500 per hour", "5000 per day"],
     storage_uri="memory://",
 )
 
