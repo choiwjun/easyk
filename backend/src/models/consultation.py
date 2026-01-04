@@ -124,6 +124,7 @@ class Consultation(Base):
     # Relationships
     user = relationship("User", backref="consultations")
     consultant = relationship("Consultant", backref="consultations")
+    messages = relationship("Message", back_populates="consultation", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Consultation(id={self.id}, user_id={self.user_id}, consultant_id={self.consultant_id}, status={self.status})>"
