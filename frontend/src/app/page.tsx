@@ -14,40 +14,42 @@ export default function Home() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuth = async () => {
-    const token = localStorage.getItem('access_token');
-    
-    if (!token) {
-      setIsAuthenticated(false);
-      setLoading(false);
-      return;
-    }
-  
-    try {
-      const response = await fetch('/api/users/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setIsAuthenticated(true);
-        setUserRole(data.role || 'foreign');
-      } else {
-        localStorage.removeItem('access_token');
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('access_token');
+
+      if (!token) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/users/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsAuthenticated(true);
+          setUserRole(data.role || 'foreign');
+        } else {
+          localStorage.removeItem('access_token');
+          setIsAuthenticated(false);
+          setUserRole(null);
+        }
+      } catch (error) {
+        console.error('[Home] 인증 체크 오류:', error);
         setIsAuthenticated(false);
         setUserRole(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('[Home] 인증 체크 오류:', error);
-      setIsAuthenticated(false);
-      setUserRole(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-  checkAuth();
+    };
+    checkAuth();
+  }, []);
   // 역할별로 다른 페이지로 이동
   useEffect(() => {
     if (isAuthenticated && userRole) {
