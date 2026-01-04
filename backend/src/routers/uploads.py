@@ -22,8 +22,8 @@ router = APIRouter(prefix="/api/uploads", tags=["uploads"])
 
 @router.post("", response_model=UploadResponse, status_code=status.HTTP_201_CREATED)
 def upload_file(
-    file: UploadFile = UploadFile(...),
     file_type: str,
+    file: UploadFile,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
