@@ -2,32 +2,33 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Button from "@/components/ui/Button";
-import Badge from "@/components/ui/Badge";
-import ChatBox from "@/components/consultations/ChatBox";
+import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
+import DesignHeader from "@/components/ui/DesignHeader";
 
-const CONSULTATION_TYPE_LABELS: Record<string, string> = {
-  visa: "비자/체류",
-  labor: "노동/고용",
-  contract: "계약/법률",
-  business: "사업/창업",
-  other: "기타",
+const CONSULTATION_TYPE_LABELS: Record<string, { ko: string; en: string }> = {
+  visa: { ko: "출입국/비자", en: "Visa/Immigration" },
+  labor: { ko: "근로/노동", en: "Labor/Employment" },
+  contract: { ko: "계약/기타", en: "Contract/Other" },
+  business: { ko: "사업/창업", en: "Business/Startup" },
+  other: { ko: "기타", en: "Other" },
 };
 
-const CONSULTATION_METHOD_LABELS: Record<string, string> = {
-  email: "이메일",
-  document: "문서",
-  call: "전화",
-  video: "화상",
+const CONSULTATION_METHOD_LABELS: Record<string, { ko: string; en: string }> = {
+  email: { ko: "이메일 상담", en: "Email" },
+  document: { ko: "문서 검토", en: "Document" },
+  call: { ko: "전화 상담 (15분)", en: "Phone (15 min)" },
+  video: { ko: "화상 상담", en: "Video" },
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  requested: "요청됨",
-  matched: "매칭됨",
-  scheduled: "예약됨",
-  completed: "완료됨",
-  cancelled: "취소됨",
+const STATUS_LABELS: Record<string, { ko: string; en: string; color: string }> = {
+  requested: { ko: "요청됨", en: "Requested", color: "bg-yellow-50 text-yellow-700 border-yellow-100" },
+  matched: { ko: "매칭됨", en: "Matched", color: "bg-blue-50 text-blue-700 border-blue-100" },
+  scheduled: { ko: "예정", en: "Scheduled", color: "bg-blue-50 text-blue-700 border-blue-100" },
+  in_progress: { ko: "진행 중", en: "In Progress", color: "bg-blue-50 text-blue-700 border-blue-100" },
+  completed: { ko: "완료됨", en: "Completed", color: "bg-green-50 text-green-700 border-green-100" },
+  cancelled: { ko: "취소됨", en: "Cancelled", color: "bg-red-50 text-red-700 border-red-100" },
 };
 
 interface Consultation {
@@ -39,54 +40,27 @@ interface Consultation {
   status: string;
   payment_status: string;
   consultant_id: string | null;
-  consultant?: {
-    id: string;
-    office_name: string;
-    years_experience: number;
-    average_rating: number;
-    specialties: string[];
-  };
   created_at: string;
-  scheduled_at?: string;
+  scheduled_at: string | null;
+  updated_at: string;
 }
 
 export default function ConsultationDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
+  const { requireAuth } = useAuth();
   const consultationId = params.id as string;
 
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isCancelling, setIsCancelling] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string>("");
-  const [showChat, setShowChat] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
+    requireAuth();
     fetchConsultation();
-    fetchCurrentUser();
   }, [consultationId]);
-
-  const fetchCurrentUser = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      if (!token) return;
-
-      const response = await fetch("/api/users/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCurrentUserId(data.id);
-      }
-    } catch (error) {
-      console.error("Failed to fetch current user:", error);
-    }
-  };
 
   const fetchConsultation = async () => {
     try {
@@ -97,341 +71,388 @@ export default function ConsultationDetailPage() {
         return;
       }
 
-      const response = await fetch("/api/consultations", {
+      const response = await fetch(`/api/consultations/${consultationId}`, {
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         const data = await response.json();
-        const found = data.find((c: Consultation) => c.id === consultationId);
-        if (found) {
-          setConsultation(found);
-        } else {
-          setError("상담 정보를 찾을 수 없습니다.");
-        }
-      } else if (response.status === 403) {
+        setConsultation(data);
+      } else if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
         router.push("/login");
       } else {
-        setError("상담 정보를 불러오는데 실패했습니다.");
+        setError(language === "ko" ? "상담 정보를 불러오는데 실패했습니다." : "Failed to load consultation.");
       }
     } catch (error) {
-      setError("네트워크 오류가 발생했습니다.");
+      console.error("Failed to fetch consultation:", error);
+      setError(language === "ko" ? "네트워크 오류가 발생했습니다." : "Network error occurred.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCancel = async () => {
-    if (!confirm("정말 상담을 취소하시겠습니까?")) {
+  const handleCancelConsultation = async () => {
+    if (!confirm(language === "ko" ? "정말로 상담을 취소하시겠습니까?" : "Are you sure you want to cancel this consultation?")) {
       return;
     }
 
-    setIsCancelling(true);
-    setError("");
-
     try {
       const token = localStorage.getItem("access_token");
-
-      if (!token) {
-        router.push("/login");
-        return;
-      }
+      if (!token) return;
 
       const response = await fetch(`/api/consultations/${consultationId}`, {
-        method: "DELETE",
+        method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ status: "cancelled" }),
       });
 
       if (response.ok) {
-        router.push("/consultations");
+        alert(language === "ko" ? "상담이 취소되었습니다." : "Consultation cancelled.");
+        fetchConsultation();
       } else {
-        const errorData = await response.json();
-        setError(errorData.detail || "취소에 실패했습니다.");
+        alert(language === "ko" ? "취소에 실패했습니다." : "Failed to cancel.");
       }
     } catch (error) {
-      setError("네트워크 오류가 발생했습니다.");
-    } finally {
-      setIsCancelling(false);
+      console.error("Failed to cancel consultation:", error);
     }
-  };
-
-  const getStatusLabel = (status: string) => {
-    return STATUS_LABELS[status] || status;
-  };
-
-  const getStatusVariant = (status: string): "default" | "success" | "warning" | "error" | "info" => {
-    const variants: Record<string, "default" | "success" | "warning" | "error" | "info"> = {
-      requested: "default",
-      matched: "info",
-      scheduled: "warning",
-      completed: "success",
-      cancelled: "error",
-    };
-    return variants[status] || "default";
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat(language === 'ko' ? "ko-KR" : "en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(date);
+    if (language === "ko") {
+      return date.toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+    } else {
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    }
   };
 
-  const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat(language === 'ko' ? "ko-KR" : "en-US", {
-      style: "currency",
-      currency: "KRW",
-    }).format(amount);
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    if (language === "ko") {
+      return date.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } else {
+      return date.toLocaleString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+  };
+
+  const getTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffMs = now.getTime() - past.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+    if (diffHours < 1) return language === "ko" ? "방금 전" : "Just now";
+    if (diffHours < 24) return language === "ko" ? `${diffHours}시간 전` : `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return language === "ko" ? `${diffDays}일 전` : `${diffDays}d ago`;
+  };
+
+  const getCaseNumber = (id: string, createdAt: string) => {
+    const date = new Date(createdAt);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const shortId = id.substring(0, 3).toUpperCase();
+    return `#${year}${month}${day}-${shortId}`;
+  };
+
+  const getProgressSteps = (status: string) => {
+    const steps = [
+      { key: "requested", label: { ko: "상담 접수", en: "Received" } },
+      { key: "matched", label: { ko: "변호사 매칭", en: "Matched" } },
+      { key: "in_progress", label: { ko: "상담 진행", en: "In Progress" } },
+      { key: "completed", label: { ko: "상담 완료", en: "Completed" } },
+    ];
+
+    const currentIndex = steps.findIndex((s) => s.key === status);
+    return steps.map((step, index) => ({
+      ...step,
+      status: index < currentIndex ? "completed" : index === currentIndex ? "active" : "pending",
+    }));
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">로딩 중...</div>
-      </div>
-    );
-  }
-
-  if (!consultation) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md p-8">
-          <p className="text-red-600 mb-4">{error || "상담 정보를 찾을 수 없습니다."}</p>
-          <Button onClick={() => router.push("/consultations")}>
-            상담 목록으로 돌아가기
-          </Button>
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <div className="text-text-sub dark:text-gray-400">
+          {language === "ko" ? "로딩 중..." : "Loading..."}
         </div>
       </div>
     );
   }
 
-  const canCancel = consultation.status === "requested" || consultation.status === "matched";
-  const canPay = consultation.status === "matched" && !consultation.payment_status || consultation.payment_status === "pending";
-  const canReview = consultation.status === "completed";
+  if (error || !consultation) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col items-center justify-center gap-4">
+        <div className="text-text-sub dark:text-gray-400">
+          {error || (language === "ko" ? "상담을 찾을 수 없습니다." : "Consultation not found.")}
+        </div>
+        <Link
+          href="/consultations/my"
+          className="px-4 py-2 rounded-lg bg-primary text-white font-bold hover:bg-[#164a85] transition-colors"
+        >
+          {language === "ko" ? "목록으로 돌아가기" : "Back to List"}
+        </Link>
+      </div>
+    );
+  }
+
+  const progressSteps = getProgressSteps(consultation.status);
+  const statusInfo = STATUS_LABELS[consultation.status] || STATUS_LABELS.requested;
+  const typeLabel = CONSULTATION_TYPE_LABELS[consultation.consultation_type];
+  const methodLabel = CONSULTATION_METHOD_LABELS[consultation.consultation_method];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* 헤더 */}
-        <div className="mb-6">
-          <Button
-            variant="outline"
-            onClick={() => router.push("/consultations")}
-          >
-            ← 상담 목록으로 돌아가기
-          </Button>
-        </div>
+    <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
+      <DesignHeader />
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
+      {/* Main Content */}
+      <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 lg:px-8 lg:py-10">
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-2 text-sm text-text-sub mb-6">
+          <Link href="/" className="hover:text-primary transition-colors">
+            {language === "ko" ? "홈" : "Home"}
+          </Link>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <Link href="/profile" className="hover:text-primary transition-colors">
+            {language === "ko" ? "마이페이지" : "My Page"}
+          </Link>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <Link href="/consultations/my" className="hover:text-primary transition-colors">
+            {language === "ko" ? "상담 내역" : "Consultations"}
+          </Link>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="font-bold text-primary">{language === "ko" ? "상담 상세" : "Detail"}</span>
+        </nav>
 
-        {/* 상담 정보 */}
-        <div className="bg-white rounded-lg shadow-sm p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">상담 상세</h1>
-
-          {/* 상태 배지 */}
-          <div className="mb-6 flex items-center gap-3">
-            <span className="text-sm text-gray-600">상태:</span>
-            <Badge variant={getStatusVariant(consultation.status)}>
-              {getStatusLabel(consultation.status)}
-            </Badge>
-            {consultation.payment_status && (
-              <span className="text-sm text-gray-600">
-                ({consultation.payment_status})
+        {/* Page Heading & Actions */}
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="bg-primary/10 text-primary px-2.5 py-0.5 rounded text-xs font-bold font-display">
+                {getCaseNumber(consultation.id, consultation.created_at)}
               </span>
+              <span className={`px-2.5 py-0.5 rounded text-xs font-bold border ${statusInfo.color}`}>
+                {statusInfo[language as keyof typeof statusInfo]}
+              </span>
+            </div>
+            <h1 className="text-3xl font-extrabold text-[#121417] tracking-tight mb-2">
+              {typeLabel?.[language as keyof typeof typeLabel] || consultation.consultation_type}{" "}
+              {language === "ko" ? "법률 상담" : "Legal Consultation"}
+            </h1>
+            <p className="text-text-sub text-sm">
+              {language === "ko" ? "상담 요청일" : "Requested"}:{" "}
+              {formatDate(consultation.created_at)} | {language === "ko" ? "최근 업데이트" : "Updated"}:{" "}
+              {getTimeAgo(consultation.updated_at)}
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-text-main hover:bg-gray-50 font-bold text-sm transition-colors shadow-sm"
+            >
+              <span className="material-symbols-outlined text-[18px]">print</span>
+              {language === "ko" ? "인쇄하기" : "Print"}
+            </button>
+            {consultation.status !== "cancelled" && consultation.status !== "completed" && (
+              <button
+                onClick={handleCancelConsultation}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 font-bold text-sm transition-colors shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">cancel</span>
+                {language === "ko" ? "상담 취소" : "Cancel"}
+              </button>
             )}
           </div>
+        </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* 왼쪽: 상담 정보 */}
-            <div className="space-y-6">
-              {/* 상담 유형 */}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">상담 유형</h2>
-                <p className="text-gray-700 p-3 bg-gray-50 rounded-md">
-                  {CONSULTATION_TYPE_LABELS[consultation.consultation_type] || consultation.consultation_type}
-                </p>
-              </div>
-
-              {/* 상담 방법 */}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">상담 방법</h2>
-                <p className="text-gray-700 p-3 bg-gray-50 rounded-md">
-                  {CONSULTATION_METHOD_LABELS[consultation.consultation_method] || consultation.consultation_method}
-                </p>
-              </div>
-
-              {/* 상담 내용 */}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">상담 내용</h2>
-                <p className="text-gray-700 whitespace-pre-wrap p-3 bg-gray-50 rounded-md">
-                  {consultation.content}
-                </p>
-              </div>
-
-              {/* 상담료 */}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">상담료</h2>
-                <p className="text-2xl font-bold text-gray-900">
-                  {formatAmount(consultation.amount)}
-                </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column: Details (2/3 width) */}
+          <div className="lg:col-span-2 flex flex-col gap-6">
+            {/* Status Tracker (Horizontal) */}
+            <div className="bg-white rounded-xl p-6 shadow-card border border-gray-100">
+              <h3 className="text-lg font-bold mb-6">{language === "ko" ? "진행 상태" : "Progress Status"}</h3>
+              <div className="relative flex justify-between w-full">
+                {/* Line */}
+                <div className="absolute top-[15px] left-0 w-full h-0.5 bg-gray-100 -z-0"></div>
+                <div
+                  className="absolute top-[15px] left-0 h-0.5 bg-primary -z-0 transition-all duration-500"
+                  style={{
+                    width: `${(progressSteps.filter((s) => s.status === "completed").length / (progressSteps.length - 1)) * 100}%`,
+                  }}
+                ></div>
+                {/* Steps */}
+                {progressSteps.map((step, index) => (
+                  <div key={step.key} className="flex flex-col items-center gap-2 z-10 w-24">
+                    <div
+                      className={`size-8 rounded-full flex items-center justify-center ring-4 ring-white ${
+                        step.status === "completed"
+                          ? "bg-primary text-white"
+                          : step.status === "active"
+                          ? "bg-white border-2 border-primary text-primary shadow-sm"
+                          : "bg-gray-100 border-2 border-gray-200 text-gray-400"
+                      }`}
+                    >
+                      {step.status === "completed" ? (
+                        <span className="material-symbols-outlined text-[18px]">check</span>
+                      ) : step.status === "active" ? (
+                        <span className="material-symbols-outlined text-[18px] animate-pulse">pending</span>
+                      ) : (
+                        <span className="material-symbols-outlined text-[18px]">
+                          {index === progressSteps.length - 1 ? "flag" : "radio_button_unchecked"}
+                        </span>
+                      )}
+                    </div>
+                    <span
+                      className={`text-xs font-bold ${
+                        step.status === "completed" || step.status === "active" ? "text-primary" : "text-gray-500"
+                      }`}
+                    >
+                      {step.label[language as keyof typeof step.label]}
+                    </span>
+                    {step.status === "active" && (
+                      <span className="text-[10px] text-text-sub">{language === "ko" ? "현재 단계" : "Current"}</span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* 오른쪽: 전문가 정보 및 액션 */}
-            <div className="space-y-6">
-              {/* 전문가 정보 */}
-              {consultation.consultant ? (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">전문가 정보</h2>
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">사무소명</p>
-                      <p className="font-medium text-gray-900">
-                        {consultation.consultant.office_name}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">경력</p>
-                      <p className="font-medium text-gray-900">
-                        {consultation.consultant.years_experience}년
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">평점</p>
-                      <div className="flex items-center gap-1">
-                        <span className="text-2xl text-yellow-400">⭐</span>
-                        <span className="font-medium text-gray-900">
-                          {consultation.consultant.average_rating.toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-                    {consultation.consultant.specialties && (
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">전문 분야</p>
-                        <div className="flex flex-wrap gap-2">
-                          {consultation.consultant.specialties.map((specialty: string) => (
-                            <span
-                              key={specialty}
-                              className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs"
-                            >
-                              {specialty}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">전문가 매칭 대기</h2>
-                  <p className="text-sm text-gray-600">
-                    현재 전문가 매칭이 진행 중입니다. 일반적으로 1~2일 내에 전문가가 배정됩니다.
-                  </p>
-                </div>
-              )}
+            {/* Problem Description */}
+            <div className="bg-white rounded-xl p-6 shadow-card border border-gray-100">
+              <div className="flex items-center gap-2 mb-4 border-b border-gray-50 pb-4">
+                <span className="material-symbols-outlined text-primary">description</span>
+                <h3 className="text-lg font-bold">{language === "ko" ? "문제 내용" : "Problem Description"}</h3>
+              </div>
+              <div className="prose max-w-none text-text-main text-sm leading-relaxed whitespace-pre-line">
+                {consultation.content}
+              </div>
+            </div>
 
-              {/* 예약 정보 */}
-              {consultation.scheduled_at && (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-md">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">상담 예정</h2>
-                  <p className="font-medium text-gray-900">
-                    {formatDate(consultation.scheduled_at)}
-                  </p>
+            {/* Messages / Communication History */}
+            <div className="bg-white rounded-xl p-6 shadow-card border border-gray-100">
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-50">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">chat</span>
+                  <h3 className="text-lg font-bold">{language === "ko" ? "상담 메시지" : "Messages"}</h3>
                 </div>
-              )}
-
-              {/* 생성 일시 */}
-              <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
-                <p className="text-sm text-gray-600 mb-1">신청 일시</p>
-                <p className="font-medium text-gray-900">
-                  {formatDate(consultation.created_at)}
+              </div>
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <span className="material-symbols-outlined text-gray-300 text-5xl mb-4">chat_bubble_outline</span>
+                <p className="text-text-sub text-sm">
+                  {language === "ko"
+                    ? "아직 메시지가 없습니다. 변호사 배정 후 메시지를 주고받을 수 있습니다."
+                    : "No messages yet. You can exchange messages after lawyer assignment."}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* 채팅 섹션 */}
-          {(consultation.status === "matched" || consultation.status === "scheduled" || consultation.status === "completed") && (
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  💬 {language === 'ko' ? '상담 채팅' : 'Consultation Chat'}
-                </h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowChat(!showChat)}
-                >
-                  {showChat
-                    ? (language === 'ko' ? '채팅 닫기' : 'Close Chat')
-                    : (language === 'ko' ? '채팅 열기' : 'Open Chat')}
-                </Button>
+          {/* Right Column: Info & Lawyer (1/3 width) */}
+          <div className="lg:col-span-1 flex flex-col gap-6">
+            {/* Consultation Summary Grid */}
+            <div className="bg-white rounded-xl p-6 shadow-card border border-gray-100">
+              <h3 className="text-lg font-bold mb-4">
+                {language === "ko" ? "상담 정보 요약" : "Consultation Summary"}
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center border-b border-gray-50 pb-3">
+                  <span className="text-sm text-text-sub">{language === "ko" ? "상담 유형" : "Type"}</span>
+                  <span className="text-sm font-bold text-text-main flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]">call</span>{" "}
+                    {methodLabel?.[language as keyof typeof methodLabel]}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-50 pb-3">
+                  <span className="text-sm text-text-sub">{language === "ko" ? "상담 분야" : "Category"}</span>
+                  <span className="text-sm font-bold text-text-main bg-gray-100 px-2 py-0.5 rounded">
+                    {typeLabel?.[language as keyof typeof typeLabel]}
+                  </span>
+                </div>
+                {consultation.scheduled_at && (
+                  <div className="flex justify-between items-center border-b border-gray-50 pb-3">
+                    <span className="text-sm text-text-sub">{language === "ko" ? "상담 예정일" : "Scheduled"}</span>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-text-main font-display">
+                        {formatDateTime(consultation.scheduled_at)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-1">
+                  <span className="text-sm text-text-sub">{language === "ko" ? "결제 상태" : "Payment"}</span>
+                  <span className="text-sm font-bold text-primary flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]">
+                      {consultation.payment_status === "completed" ? "check_circle" : "pending"}
+                    </span>{" "}
+                    {consultation.payment_status === "completed"
+                      ? language === "ko"
+                        ? "결제 완료"
+                        : "Paid"
+                      : language === "ko"
+                      ? "결제 대기"
+                      : "Pending"}
+                  </span>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3 mt-2 flex justify-between items-center">
+                  <span className="text-sm font-medium">{language === "ko" ? "결제 금액" : "Amount"}</span>
+                  <span className="text-lg font-bold font-display">
+                    {consultation.amount.toLocaleString()}
+                    {language === "ko" ? "원" : " KRW"}
+                  </span>
+                </div>
               </div>
-              {showChat && (
-                <ChatBox
-                  consultationId={consultationId}
-                  currentUserId={currentUserId}
-                  isEnabled={true}
-                />
-              )}
             </div>
-          )}
 
-          {/* 액션 버튼 */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <div className="flex gap-4 flex-wrap">
-              {/* 취소 버튼 */}
-              {canCancel && (
-                <Button
-                  variant="danger"
-                  onClick={handleCancel}
-                  disabled={isCancelling}
-                  loading={isCancelling}
-                >
-                  상담 취소
-                </Button>
-              )}
-
-              {/* 결제 버튼 */}
-              {canPay && (
-                <Button
-                  variant="primary"
-                  onClick={() => router.push(`/consultations/${consultationId}/payment`)}
-                >
-                  결제하기
-                </Button>
-              )}
-
-              {/* 후기 작성 버튼 */}
-              {canReview && (
-                <Button
-                  variant="primary"
-                  onClick={() => router.push(`/consultations/${consultationId}/review`)}
-                >
-                  후기 작성하기
-                </Button>
-              )}
+            {/* Help Box */}
+            <div className="bg-[#f0f4fa] rounded-xl p-5 border border-blue-100">
+              <div className="flex items-start gap-3">
+                <span className="material-symbols-outlined text-primary mt-0.5">help</span>
+                <div>
+                  <h4 className="text-sm font-bold text-primary mb-1">
+                    {language === "ko" ? "도움이 필요하신가요?" : "Need Help?"}
+                  </h4>
+                  <p className="text-xs text-text-sub leading-relaxed mb-3">
+                    {language === "ko"
+                      ? "상담 진행에 어려움이 있거나 변호사 변경을 원하시면 고객센터로 문의해주세요."
+                      : "Contact customer service if you need assistance or want to change your lawyer."}
+                  </p>
+                  <Link href="/faq" className="text-xs font-bold text-primary hover:underline">
+                    {language === "ko" ? "고객센터 바로가기 →" : "Go to Support →"}
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
-
-
-
-
