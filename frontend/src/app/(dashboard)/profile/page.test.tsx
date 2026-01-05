@@ -90,7 +90,7 @@ describe('ProfilePage', () => {
 
       await user.click(screen.getByText(/수정/i));
 
-      await user.click(screen.getByText(/취소/i }));
+      await user.click(screen.getByText(/취소/i));
 
       await waitFor(() => {
         expect(screen.queryByDisplayValue('UK')).not.toBeInTheDocument();
@@ -109,7 +109,7 @@ describe('ProfilePage', () => {
         expect(editButton).toBeInTheDocument();
       });
 
-      await user.click(screen.getByText(/수정/i }));
+      await user.click(screen.getByText(/수정/i));
 
       const nationalityInput = await screen.findByLabelText(/국적/i);
       await user.clear(nationalityInput);
@@ -128,7 +128,7 @@ describe('ProfilePage', () => {
         expect(editButton).toBeInTheDocument();
       });
 
-      await user.click(screen.getByText(/수정/i }));
+      await user.click(screen.getByText(/수정/i));
 
       const languageSelect = await screen.findByLabelText(/선호 언어/i);
       fireEvent.change(languageSelect, { target: { value: 'ko' } });
@@ -158,7 +158,7 @@ describe('ProfilePage', () => {
         expect(editButton).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByText(/수정/i }));
+      fireEvent.click(screen.getByText(/수정/i));
 
       expect(screen.getByLabelText(/국적/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/비자 종류/i)).toBeInTheDocument();
