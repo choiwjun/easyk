@@ -333,46 +333,81 @@ export default function JobsPage() {
   const [selectedEmploymentType, setSelectedEmploymentType] = useState("");
   const [sortBy, setSortBy] = useState("latest");
 
+  // Fetch jobs on mount
   useEffect(() => {
-    // Allow viewing jobs without authentication (will show sample data)
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+
+        // If no token, use sample data instead of redirecting
+        if (!token) {
+          console.log("[Vercel Debug] No token, setting SAMPLE_JOBS. Length:", SAMPLE_JOBS.length);
+          setJobs(SAMPLE_JOBS);
+          setIsLoading(false);
+          return;
+        }
+
+        // Try to fetch from API
+        const response = await fetch("/api/jobs", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setJobs(data);
+        } else {
+          // Fallback to sample data
+          console.log("[Vercel Debug] API failed, setting SAMPLE_JOBS");
+          setJobs(SAMPLE_JOBS);
+        }
+      } catch (error) {
+        console.log("[Vercel Debug] Error, setting SAMPLE_JOBS:", error);
+        setJobs(SAMPLE_JOBS);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchJobs();
   }, []);
 
+  // Apply filters whenever dependencies change
   useEffect(() => {
-    applyFilters();
-  }, [jobs, searchKeyword, selectedJobType, selectedSalary, selectedEmploymentType, sortBy]);
+    console.log("[Vercel Debug] Applying filters. jobs.length:", jobs.length);
+    let filtered = [...jobs];
 
-  const fetchJobs = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-
-      // If no token, use sample data instead of redirecting
-      if (!token) {
-        setJobs(SAMPLE_JOBS);
-        setIsLoading(false);
-        return;
-      }
-
-      // Try to fetch from API
-      const response = await fetch("/api/jobs", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setJobs(data);
-      } else {
-        // Fallback to sample data
-        setJobs(SAMPLE_JOBS);
-      }
-    } catch (error) {
-      setJobs(SAMPLE_JOBS);
-    } finally {
-      setIsLoading(false);
+    // Search keyword filter
+    if (searchKeyword.trim()) {
+      const keyword = searchKeyword.toLowerCase();
+      filtered = filtered.filter(
+        (job) =>
+          job.position.toLowerCase().includes(keyword) ||
+          job.company_name.toLowerCase().includes(keyword) ||
+          job.location.toLowerCase().includes(keyword)
+      );
     }
-  };
+
+    // Employment type filter
+    if (selectedEmploymentType) {
+      filtered = filtered.filter((job) => job.employment_type === selectedEmploymentType);
+    }
+
+    // Sort
+    if (sortBy === "latest") {
+      filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } else if (sortBy === "salary") {
+      filtered.sort((a, b) => {
+        const salaryA = extractSalary(a.salary_range || "");
+        const salaryB = extractSalary(b.salary_range || "");
+        return salaryB - salaryA;
+      });
+    }
+
+    console.log("[Vercel Debug] After filters. filtered.length:", filtered.length);
+    setFilteredJobs(filtered);
+  }, [jobs, searchKeyword, selectedJobType, selectedSalary, selectedEmploymentType, sortBy]);
 
   const applyFilters = () => {
     let filtered = [...jobs];
