@@ -2,13 +2,15 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input, Button } from "@/components/ui";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -83,118 +85,191 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-12">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              easyK {t('auth.login')}
-            </h1>
-            <p className="text-sm text-gray-500">
-              {t('common.welcome')}
+    <div className="min-h-screen bg-background-light flex flex-col">
+      {/* Design Header */}
+      <header className="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+        <div className="max-w-[1080px] mx-auto px-5 h-16 flex items-center justify-between">
+          {/* 로고 */}
+          <Link className="flex items-center gap-2 group" href="/">
+            <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center">
+              <span className="material-symbols-outlined text-[20px]">flight_takeoff</span>
+            </div>
+            <span className="text-xl font-extrabold tracking-tight text-text-primary dark:text-white group-hover:text-primary transition-colors">
+              easyK
+            </span>
+          </Link>
+
+          {/* 우측 버튼 */}
+          <div className="flex items-center gap-3">
+            <LanguageSelector />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-grow flex items-center justify-center p-5">
+        <div className="w-full max-w-md">
+          {/* Login Card */}
+          <div className="bg-surface-light dark:bg-surface-dark rounded-3xl shadow-soft p-8 md:p-12">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-[36px] text-primary">login</span>
+              </div>
+              <h1 className="text-[28px] font-extrabold text-text-primary dark:text-white mb-2">
+                {language === 'ko' ? '환영합니다!' : 'Welcome!'}
+              </h1>
+              <p className="text-[15px] text-text-muted dark:text-gray-400">
+                {language === 'ko'
+                  ? '계정에 로그인하여 서비스를 이용하세요.'
+                  : 'Sign in to your account to access our services.'}
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              {/* General Error */}
+              {errors.general && (
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                  <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+                    <span className="material-symbols-outlined text-[18px] align-middle mr-1">error</span>
+                    {errors.general}
+                  </p>
+                </div>
+              )}
+
+              {/* Email Input */}
+              <div>
+                <label className="block text-sm font-bold text-text-primary dark:text-white mb-2">
+                  {t('auth.email')}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[20px] text-text-muted">
+                    email
+                  </span>
+                  <input
+                    type="email"
+                    placeholder="example@email.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`w-full pl-11 pr-4 py-3 rounded-xl border ${
+                      errors.email
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-primary focus:ring-primary'
+                    } focus:ring-2 focus:outline-none transition-all text-[15px] dark:bg-background-dark dark:border-gray-700 dark:text-white`}
+                  />
+                </div>
+                {errors.email && (
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.email}</p>
+                )}
+              </div>
+
+              {/* Password Input */}
+              <div>
+                <label className="block text-sm font-bold text-text-primary dark:text-white mb-2">
+                  {t('auth.password')}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[20px] text-text-muted">
+                    lock
+                  </span>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`w-full pl-11 pr-11 py-3 rounded-xl border ${
+                      errors.password
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-primary focus:ring-primary'
+                    } focus:ring-2 focus:outline-none transition-all text-[15px] dark:bg-background-dark dark:border-gray-700 dark:text-white`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[20px] text-text-muted hover:text-primary transition-colors"
+                  >
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.password}</p>
+                )}
+              </div>
+
+              {/* Forgot Password Link */}
+              <div className="text-right">
+                <a
+                  href="#"
+                  className="text-sm font-bold text-primary hover:text-primary-dark transition-colors"
+                >
+                  {language === 'ko' ? '비밀번호 찾기' : 'Forgot Password?'}
+                </a>
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                fullWidth
+                loading={loading}
+                disabled={loading}
+                className="h-12 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-[15px] shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 active:scale-95"
+              >
+                {loading ? (
+                  <span className="material-symbols-outlined text-[20px] animate-spin">refresh</span>
+                ) : (
+                  <>
+                    {language === 'ko' ? '로그인' : 'Login'}
+                    <span className="material-symbols-outlined text-[18px] ml-1">arrow_forward</span>
+                  </>
+                )}
+              </Button>
+            </form>
+
+            {/* Signup Link */}
+            <div className="text-center mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+              <p className="text-sm text-text-muted dark:text-gray-400">
+                {language === 'ko' ? '아직 계정이 없으신가요?' : "Don't have an account?"}{" "}
+                <Link
+                  href="/signup"
+                  className="text-primary font-bold hover:text-primary-dark transition-colors"
+                >
+                  {language === 'ko' ? '회원가입' : 'Sign Up'}
+                </Link>
+              </p>
+            </div>
+          </div>
+
+          {/* Footer Links */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-text-muted dark:text-gray-500">
+              {language === 'ko'
+                ? '로그인하면 다음을 동의하는 것으로 간주합니다:'
+                : 'By logging in, you agree to our:'}
+            </p>
+            <div className="flex justify-center gap-3 text-xs">
+              <a href="#" className="text-text-muted hover:text-primary transition-colors">
+                {language === 'ko' ? '이용약관' : 'Terms of Service'}
+              </a>
+              <span className="text-text-muted">•</span>
+              <a href="#" className="text-text-muted hover:text-primary transition-colors">
+                {language === 'ko' ? '개인정보처리방침' : 'Privacy Policy'}
+              </a>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-text-muted dark:text-gray-500">
+              {language === 'ko'
+                ? '© 2024 easyK Inc. 모든 권리 보유.'
+                : '© 2024 easyK Inc. All rights reserved.'}
             </p>
           </div>
-          <LanguageSelector />
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-          {/* General Error */}
-          {errors.general && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600" role="alert">{errors.general}</p>
-            </div>
-          )}
-
-          {/* Email Input */}
-          <Input
-            type="email"
-            label={t('auth.email')}
-            placeholder="example@email.com"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={errors.email}
-            icon={
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-            }
-          />
-
-          {/* Password Input */}
-          <Input
-            type={showPassword ? "text" : "password"}
-            label={t('auth.password')}
-            placeholder={t('auth.password')}
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={errors.password}
-            icon={
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="hover:text-gray-600"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  {showPassword ? (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                    />
-                  ) : (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  )}
-                </svg>
-              </button>
-            }
-          />
-
-          {/* Submit Button */}
-          <Button type="submit" fullWidth size="lg" loading={loading} disabled={loading}>
-            {t('auth.login')}
-          </Button>
-        </form>
-
-        {/* Signup Link */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            {t('common.welcome')}{" "}
-            <a href="/signup" className="text-blue-600 hover:underline font-medium">
-              {t('auth.register')}
-            </a>
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-xs text-gray-400">© 2024 easyK. All rights reserved.</p>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

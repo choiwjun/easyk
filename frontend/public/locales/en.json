@@ -21,7 +21,11 @@
     "clear": "Clear",
     "apply": "Apply",
     "detail": "Detail",
-    "list": "List"
+    "list": "List",
+    "about": "Company",
+    "company": "About Us",
+    "contact": "Contact",
+    "privacy": "Privacy Policy"
   },
   "nav": {
     "home": "Home",
@@ -58,6 +62,67 @@
     "title": "Settle comfortably in Korea",
     "subtitle": "Legal consultations, job matching, and government support information in one place",
     "cta": "Get Started",
+    "hero": {
+      "badge": "New Update 2.0",
+      "title": "Life in Korea,",
+      "titleSuffix": "Easier and Better.",
+      "description": "From legal consultation to jobs and government support. Everything you need for stable settlement on one platform.",
+      "getStarted": "Get Started",
+      "guide": "User Guide"
+    },
+    "dashboard": {
+      "myApplications": "My Applications",
+      "goToDashboard": "Go to Dashboard",
+      "newApplication": "New Application",
+      "newApplicationDesc": "Find legal consultation or jobs",
+      "consultationMatched": "Matched",
+      "consultationPending": "Under Review",
+      "wageConsultation": "Unpaid Wages Consultation",
+      "lawyer": "Lawyer:",
+      "jobApplication": "Manufacturing Position",
+      "company": "Company:"
+    },
+    "services": {
+      "title": "All Services for",
+      "titleSuffix": "Stable Settlement",
+      "subtitle": "Providing essential services for foreign residents in Korea.",
+      "legalConsultation": "Legal Consultation & Matching",
+      "legalConsultationDesc": "Get matched with expert lawyers for unpaid wages, visa issues, and more.",
+      "jobMatching": "Job Search & Application",
+      "jobMatchingDesc": "Search and apply for Korean jobs that match your preferences.",
+      "govSupport": "Government Support Information",
+      "govSupportDesc": "Browse various government support programs and benefits for foreigners."
+    },
+    "lifeGuide": {
+      "title": "Life Guide",
+      "laborLaw": "Labor Law Basics",
+      "laborLawDesc": "Essential points to check when drafting employment contracts.",
+      "visaGuide": "Employment Visa Guide",
+      "visaGuideDesc": "Guide to E-9, E-7 visa application and renewal procedures.",
+      "familySupport": "Multicultural Family Support",
+      "familySupportDesc": "Complete guide to government benefits for multicultural families.",
+      "healthInsurance": "Health Insurance Guide",
+      "healthInsuranceDesc": "Learn about health insurance benefits for foreign employees."
+    },
+    "dashboard_logged": {
+      "welcome": "Welcome back!",
+      "subtitle": "Start your settlement life with easyK.",
+      "recentActivity": "Recent Activity",
+      "recentActivityDesc": "Your recent activities will be displayed here.",
+      "noActivity": "No activities yet.",
+      "profile": "Profile",
+      "profileDesc": "Manage your profile information.",
+      "editProfile": "Edit Profile",
+      "consultationCard": "Legal Consultation",
+      "consultationCardDesc": "Consult with experts",
+      "consultationStart": "Start consultation →",
+      "jobCard": "Find Jobs",
+      "jobCardDesc": "Local government jobs",
+      "jobStart": "Find jobs →",
+      "supportCard": "Government Support",
+      "supportCardDesc": "Subsidies, education, training",
+      "supportStart": "View programs →"
+    },
     "features": {
       "consultations": {
         "title": "Legal Consultations",

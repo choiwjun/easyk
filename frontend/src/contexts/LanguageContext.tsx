@@ -5,6 +5,7 @@ import i18n from '../lib/i18n';
 
 interface LanguageContextType {
   language: string;
+  setLanguage: (lang: string) => void;
   changeLanguage: (lang: string) => void;
   t: (key: string) => string;
 }
@@ -41,7 +42,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   }
 
   return (
-    <LanguageContext.Provider value={{ language, changeLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: changeLanguage, changeLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -53,6 +54,7 @@ export const useLanguage = () => {
     // Return default values during SSR
     return {
       language: 'ko',
+      setLanguage: () => {},
       changeLanguage: () => {},
       t: (key: string) => key,
     };

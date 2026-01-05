@@ -19,7 +19,7 @@ from ..services.document_template_service import (
     update_document_template as update_document_template_service,
     delete_document_template as delete_document_template_service,
 )
-from ..middleware.auth import get_current_user, get_current_admin
+from ..middleware.auth import get_current_user, get_current_admin_user
 
 
 router = APIRouter(prefix="/api/document-templates", tags=["document-templates"])
@@ -79,7 +79,7 @@ def get_document_template(
 @router.post("", response_model=DocumentTemplateResponse, status_code=status.HTTP_201_CREATED)
 def create_document_template(
     template_data: DocumentTemplateCreate,
-    current_user: User = Depends(get_current_admin),
+    current_user: User = Depends(get_current_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -103,7 +103,7 @@ def create_document_template(
 def update_document_template(
     template_id: UUID,
     template_data: DocumentTemplateUpdate,
-    current_user: User = Depends(get_current_admin),
+    current_user: User = Depends(get_current_admin_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -127,7 +127,7 @@ def update_document_template(
 @router.delete("/{template_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_document_template(
     template_id: UUID,
-    current_user: User = Depends(get_current_admin),
+    current_user: User = Depends(get_current_admin_user),
     db: Session = Depends(get_db),
 ):
     """

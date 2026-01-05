@@ -2,14 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Input, Button } from "@/components/ui";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
+import Link from "next/link";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { t } = useLanguage();
-  const [userType, setUserType] = useState<"foreign" | "organization">("foreign");
+  const { t, language } = useLanguage();
+  const [userType, setUserType] = useState<"foreign" | "consultant">("foreign");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,7 +39,6 @@ export default function SignupPage() {
   };
 
   const validatePassword = (password: string): boolean => {
-    // At least 8 characters, contains letter, number, and special character
     return (
       password.length >= 8 &&
       /[a-zA-Z]/.test(password) &&
@@ -46,7 +47,6 @@ export default function SignupPage() {
     );
   };
 
-  // 이메일 중복 실시간 체크
   useEffect(() => {
     const checkEmailAvailability = async () => {
       if (!validateEmail(email) || emailChecking) {
@@ -80,10 +80,10 @@ export default function SignupPage() {
       return t('common.loading');
     }
     if (emailAvailable === false) {
-      return '이미 사용 중인 이메일입니다.';
+      return language === 'ko' ? '이미 사용 중인 이메일입니다.' : 'Email already in use.';
     }
     if (emailAvailable === true) {
-      return '사용 가능한 이메일입니다.';
+      return language === 'ko' ? '사용 가능한 이메일입니다.' : 'Email available.';
     }
     return '';
   };
@@ -92,7 +92,6 @@ export default function SignupPage() {
     e.preventDefault();
     setErrors({});
 
-    // Validation
     const newErrors: typeof errors = {};
 
     if (!firstName.trim()) {
@@ -106,7 +105,7 @@ export default function SignupPage() {
     if (!validateEmail(email)) {
       newErrors.email = t('auth.emailInvalid');
     } else if (emailAvailable === false) {
-      newErrors.email = '이미 사용 중인 이메일입니다.';
+      newErrors.email = language === 'ko' ? '이미 사용 중인 이메일입니다.' : 'Email already in use.';
     }
 
     if (!validatePassword(password)) {
@@ -126,7 +125,6 @@ export default function SignupPage() {
       return;
     }
 
-    // API call
     setLoading(true);
     try {
       const response = await fetch("/api/auth/signup", {
@@ -139,7 +137,7 @@ export default function SignupPage() {
           password,
           first_name: firstName,
           last_name: lastName,
-          role: userType === "foreign" ? "foreign" : "consultant",
+          role: userType,
         }),
       });
 
@@ -150,8 +148,7 @@ export default function SignupPage() {
         return;
       }
 
-      // Redirect to home on success
-      router.push("/");
+      router.push("/login");
     } catch (error) {
       setErrors({ general: t('errors.networkError') });
     } finally {
@@ -160,249 +157,330 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-12">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              easyK {t('auth.register')}
-            </h1>
-            <p className="text-sm text-gray-500">
-              {t('common.welcome')}
+    <div className="min-h-screen bg-background-light flex flex-col">
+      {/* Design Header */}
+      <header className="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+        <div className="max-w-[1080px] mx-auto px-5 h-16 flex items-center justify-between">
+          <Link className="flex items-center gap-2 group" href="/">
+            <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center">
+              <span className="material-symbols-outlined text-[20px]">flight_takeoff</span>
+            </div>
+            <span className="text-xl font-extrabold tracking-tight text-text-primary dark:text-white group-hover:text-primary transition-colors">
+              easyK
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <LanguageSelector />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-grow flex items-center justify-center p-5">
+        <div className="w-full max-w-lg">
+          {/* Signup Card */}
+          <div className="bg-surface-light dark:bg-surface-dark rounded-3xl shadow-soft p-8 md:p-12">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-[36px] text-primary">person_add</span>
+              </div>
+              <h1 className="text-[28px] font-extrabold text-text-primary dark:text-white mb-2">
+                {language === 'ko' ? '회원가입' : 'Sign Up'}
+              </h1>
+              <p className="text-[15px] text-text-muted dark:text-gray-400">
+                {language === 'ko'
+                  ? 'easyK 서비스를 이용하려면 계정을 생성하세요.'
+                  : 'Create an account to start using easyK services.'}
+              </p>
+            </div>
+
+            {/* User Type Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-bold text-text-primary dark:text-white mb-3">
+                {language === 'ko' ? '회원 유형 선택' : 'Select User Type'}
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setUserType("foreign")}
+                  className={`
+                    h-12 rounded-xl font-bold text-[14px] transition-all flex items-center justify-center gap-2
+                    ${
+                      userType === "foreign"
+                        ? "bg-primary text-white shadow-lg shadow-primary/30"
+                        : "bg-[#f2f4f6] dark:bg-gray-800 text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
+                    }
+                  `}
+                >
+                  <span className="material-symbols-outlined text-[20px]">public</span>
+                  {language === 'ko' ? '외국인 회원' : 'Foreign Member'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserType("consultant")}
+                  className={`
+                    h-12 rounded-xl font-bold text-[14px] transition-all flex items-center justify-center gap-2
+                    ${
+                      userType === "consultant"
+                        ? "bg-primary text-white shadow-lg shadow-primary/30"
+                        : "bg-[#f2f4f6] dark:bg-gray-800 text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
+                    }
+                  `}
+                >
+                  <span className="material-symbols-outlined text-[20px]">badge</span>
+                  {language === 'ko' ? '전문가 회원' : 'Professional'}
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+              {/* General Error */}
+              {errors.general && (
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                  <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+                    <span className="material-symbols-outlined text-[18px] align-middle mr-1">error</span>
+                    {errors.general}
+                  </p>
+                </div>
+              )}
+
+              {/* Name Inputs */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-text-primary dark:text-white mb-2">
+                    {language === 'ko' ? '이름' : 'First Name'}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={language === 'ko' ? '길동' : 'John'}
+                    required
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                      errors.firstName
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-primary focus:ring-primary'
+                    } focus:ring-2 focus:outline-none transition-all text-[15px] dark:bg-background-dark dark:border-gray-700 dark:text-white`}
+                  />
+                  {errors.firstName && (
+                    <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.firstName}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-text-primary dark:text-white mb-2">
+                    {language === 'ko' ? '성' : 'Last Name'}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={language === 'ko' ? '김' : 'Doe'}
+                    required
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                      errors.lastName
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-primary focus:ring-primary'
+                    } focus:ring-2 focus:outline-none transition-all text-[15px] dark:bg-background-dark dark:border-gray-700 dark:text-white`}
+                  />
+                  {errors.lastName && (
+                    <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.lastName}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Email Input */}
+              <div>
+                <label className="block text-sm font-bold text-text-primary dark:text-white mb-2">
+                  {t('auth.email')}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[20px] text-text-muted">
+                    email
+                  </span>
+                  <input
+                    type="email"
+                    placeholder="example@email.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`w-full pl-11 pr-4 py-3 rounded-xl border ${
+                      errors.email
+                        ? 'border-red-500 focus:ring-red-500'
+                        : emailAvailable === false
+                        ? 'border-red-500 focus:ring-red-500'
+                        : emailAvailable === true
+                        ? 'border-green-500 focus:ring-green-500'
+                        : 'border-gray-300 focus:border-primary focus:ring-primary'
+                    } focus:ring-2 focus:outline-none transition-all text-[15px] dark:bg-background-dark dark:border-gray-700 dark:text-white`}
+                  />
+                </div>
+                {errors.email && (
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.email}</p>
+                )}
+                {email && getEmailStatusMessage() && !errors.email && (
+                  <p className={`mt-1.5 text-xs ${
+                    emailAvailable === false ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'
+                  }`}>
+                    {getEmailStatusMessage()}
+                  </p>
+                )}
+              </div>
+
+              {/* Password Input */}
+              <div>
+                <label className="block text-sm font-bold text-text-primary dark:text-white mb-2">
+                  {t('auth.password')}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[20px] text-text-muted">
+                    lock
+                  </span>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder={language === 'ko' ? '8자 이상, 영문/숫자/특수문자 포함' : '8+ chars, letters/numbers/symbols'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`w-full pl-11 pr-11 py-3 rounded-xl border ${
+                      errors.password
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-primary focus:ring-primary'
+                    } focus:ring-2 focus:outline-none transition-all text-[15px] dark:bg-background-dark dark:border-gray-700 dark:text-white`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[20px] text-text-muted hover:text-primary transition-colors"
+                  >
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.password}</p>
+                )}
+              </div>
+
+              {/* Confirm Password Input */}
+              <div>
+                <label className="block text-sm font-bold text-text-primary dark:text-white mb-2">
+                  {t('auth.confirmPassword')}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[20px] text-text-muted">
+                    lock
+                  </span>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="•••••••••"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={`w-full pl-11 pr-11 py-3 rounded-xl border ${
+                      errors.confirmPassword
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-primary focus:ring-primary'
+                    } focus:ring-2 focus:outline-none transition-all text-[15px] dark:bg-background-dark dark:border-gray-700 dark:text-white`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[20px] text-text-muted hover:text-primary transition-colors"
+                  >
+                    {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{errors.confirmPassword}</p>
+                )}
+              </div>
+
+              {/* Terms Agreement */}
+              <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={agreed}
+                  onChange={(e) => setAgreed(e.target.checked)}
+                  className="mt-1 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer"
+                />
+                <label htmlFor="terms" className="text-sm text-text-secondary dark:text-gray-300 cursor-pointer">
+                  {language === 'ko' ? (
+                    <>
+                      <a href="#" className="text-primary font-bold hover:text-primary-dark transition-colors">
+                        이용약관
+                      </a>
+                      {" "}및{" "}
+                      <a href="#" className="text-primary font-bold hover:text-primary-dark transition-colors">
+                        개인정보처리방침
+                      </a>
+                      에 동의합니다.
+                    </>
+                  ) : (
+                    <>
+                      I agree to the{" "}
+                      <a href="#" className="text-primary font-bold hover:text-primary-dark transition-colors">
+                        Terms of Service
+                      </a>
+                      {" "}and{" "}
+                      <a href="#" className="text-primary font-bold hover:text-primary-dark transition-colors">
+                        Privacy Policy
+                      </a>
+                      .
+                    </>
+                  )}
+                </label>
+              </div>
+              {errors.terms && (
+                <p className="text-xs text-red-600 dark:text-red-400" role="alert">{errors.terms}</p>
+              )}
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                fullWidth
+                loading={loading}
+                disabled={loading}
+                className="h-12 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-[15px] shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 active:scale-95"
+              >
+                {loading ? (
+                  <span className="material-symbols-outlined text-[20px] animate-spin">refresh</span>
+                ) : (
+                  <>
+                    {language === 'ko' ? '회원가입' : 'Sign Up'}
+                    <span className="material-symbols-outlined text-[18px] ml-1">arrow_forward</span>
+                  </>
+                )}
+              </Button>
+            </form>
+
+            {/* Login Link */}
+            <div className="text-center mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+              <p className="text-sm text-text-muted dark:text-gray-400">
+                {language === 'ko' ? '이미 계정이 있으신가요?' : 'Already have an account?'}{" "}
+                <Link
+                  href="/login"
+                  className="text-primary font-bold hover:text-primary-dark transition-colors"
+                >
+                  {language === 'ko' ? '로그인' : 'Login'}
+                </Link>
+              </p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-text-muted dark:text-gray-500">
+              {language === 'ko'
+                ? '© 2024 easyK Inc. 모든 권리 보유.'
+                : '© 2024 easyK Inc. All rights reserved.'}
             </p>
           </div>
-          <LanguageSelector />
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-          {/* General Error */}
-          {errors.general && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600" role="alert">{errors.general}</p>
-            </div>
-          )}
-
-          {/* User Type Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
-              {t('profile.name')}
-            </label>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setUserType("foreign")}
-                className={`
-                  flex-1 h-12 rounded-lg font-medium transition-all
-                  ${
-                    userType === "foreign"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }
-                `}
-              >
-                {userType === "foreign" ? "외국인 회원" : "Foreign Member"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setUserType("organization")}
-                className={`
-                  flex-1 h-12 rounded-lg font-medium transition-all
-                  ${
-                    userType === "organization"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }
-                `}
-              >
-                {userType === "organization" ? "지원 기관" : "Support Org"}
-              </button>
-            </div>
-          </div>
-
-          {/* First Name Input */}
-          <Input
-            type="text"
-            label={t('profile.name')}
-            placeholder="홍길동"
-            required
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            error={errors.firstName}
-          />
-
-          {/* Last Name Input */}
-          <Input
-            type="text"
-            label={t('profile.name')}
-            placeholder="Kim"
-            required
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            error={errors.lastName}
-          />
-
-          {/* Email Input */}
-          <div>
-            <Input
-              type="email"
-              label={t('auth.email')}
-              placeholder="example@email.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              icon={
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              }
-            />
-            {/* 이메일 중복 체크 메시지 */}
-            {email && getEmailStatusMessage() && (
-              <p className={`mt-1 text-sm ${emailAvailable === false ? 'text-red-600' : 'text-green-600'}`}>
-                {getEmailStatusMessage()}
-              </p>
-            )}
-          </div>
-
-          {/* Password Input */}
-          <Input
-            type={showPassword ? "text" : "password"}
-            label={t('auth.password')}
-            placeholder="8자 이상, 영문/숫자/특수문자 포함"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={errors.password}
-            icon={
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="hover:text-gray-600"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  {showPassword ? (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                    />
-                  ) : (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  )}
-                </svg>
-              </button>
-            }
-          />
-
-          {/* Confirm Password Input */}
-          <Input
-            type={showConfirmPassword ? "text" : "password"}
-            label={t('auth.confirmPassword')}
-            placeholder="비밀번호를 한번 더 입력해주세요"
-            required
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            error={errors.confirmPassword}
-            icon={
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="hover:text-gray-600"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  {showConfirmPassword ? (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                    />
-                  ) : (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5,12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  )}
-                </svg>
-              </button>
-            }
-          />
-
-          {/* Terms Agreement */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="terms"
-                checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
-                className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label htmlFor="terms" className="text-sm text-gray-600">
-                {t('auth.required')}{" "}
-                <a href="#" className="text-blue-600 hover:underline">
-                  {t('common.confirm')}
-                </a>
-                .
-              </label>
-            </div>
-            {errors.terms && (
-              <p className="text-sm text-red-500" role="alert">{errors.terms}</p>
-            )}
-          </div>
-
-          {/* Submit Button */}
-          <Button type="submit" fullWidth size="lg" loading={loading} disabled={loading}>
-            {t('auth.register')} →
-          </Button>
-        </form>
-
-        {/* Login Link */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            {t('common.welcome')}{" "}
-            <a href="/login" className="text-blue-600 hover:underline font-medium">
-              {t('auth.login')}
-            </a>
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-xs text-gray-400">© 2024 easyK. All rights reserved.</p>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

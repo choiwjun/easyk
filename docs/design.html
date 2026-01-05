@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>easyK - 로그인/회원가입</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1E5BA0",
+                        "primary-hover": "#174882",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#121920",
+                        "kakao": "#FEE500",
+                        "kakao-text": "#191919",
+                    },
+                    fontFamily: {
+                        "sans": ["Nanum Gothic", "sans-serif"],
+                        "display": ["Nanum Gothic", "sans-serif"],
+                        "body": ["Nanum Gothic", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                    boxShadow: {
+                        "toss": "0 2px 8px 0 rgba(0,0,0,0.05)",
+                        "toss-hover": "0 4px 12px 0 rgba(0,0,0,0.08)",
+                    }
+                },
+            },
+        }
+    </script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#121417] dark:text-white min-h-screen flex flex-col items-center justify-center p-4">
+<div class="w-full max-w-[480px] flex flex-col gap-6">
+<div class="flex flex-col items-center justify-center gap-3 py-4">
+<div class="flex items-center gap-2 select-none">
+<span class="text-4xl font-extrabold tracking-tight text-primary">easyK</span>
+</div>
+<p class="text-center text-[#657486] dark:text-[#9aaebf] text-sm font-medium">한국 생활 정착의 시작, easyK에 오신 것을 환영합니다</p>
+</div>
+<div class="bg-white dark:bg-[#1a222d] rounded-2xl shadow-toss p-6 sm:p-8 w-full border border-gray-100 dark:border-gray-800">
+<div class="bg-[#f0f2f4] dark:bg-[#2a3441] p-1 rounded-xl mb-8 flex relative">
+<button class="flex-1 py-2.5 text-sm font-bold rounded-lg bg-white dark:bg-[#1a222d] text-primary shadow-sm transition-all duration-200">
+                    로그인
+                </button>
+<button class="flex-1 py-2.5 text-sm font-medium rounded-lg text-[#657486] dark:text-[#9aaebf] hover:text-[#121417] dark:hover:text-white transition-all duration-200">
+                    회원가입
+                </button>
+</div>
+<form class="flex flex-col gap-5">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-bold text-[#121417] dark:text-white" for="email">아이디 (이메일)</label>
+<div class="relative group">
+<div class="absolute left-3 top-1/2 -translate-y-1/2 text-[#657486] transition-colors group-focus-within:text-primary">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+<input class="w-full h-12 rounded-xl border border-[#e5e8eb] dark:border-gray-700 bg-white dark:bg-[#1a222d] px-10 text-base outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-[#9aa0a6]" id="email" placeholder="example@easyk.com" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-bold text-[#121417] dark:text-white" for="password">비밀번호</label>
+<div class="relative group">
+<div class="absolute left-3 top-1/2 -translate-y-1/2 text-[#657486] transition-colors group-focus-within:text-primary">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<input class="w-full h-12 rounded-xl border border-[#e5e8eb] dark:border-gray-700 bg-white dark:bg-[#1a222d] px-10 text-base outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-[#9aa0a6]" id="password" placeholder="비밀번호를 입력해주세요" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-[#657486] hover:text-[#121417] dark:hover:text-white transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<label class="flex items-center gap-2 cursor-pointer group">
+<div class="relative flex items-center">
+<input class="peer size-4 appearance-none rounded border border-[#d1d5db] checked:bg-primary checked:border-primary focus:ring-offset-0 focus:ring-0 transition-all" type="checkbox"/>
+<span class="material-symbols-outlined absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-[14px] opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
+</div>
+<span class="text-sm text-[#657486] dark:text-[#9aaebf] group-hover:text-[#121417] dark:group-hover:text-white transition-colors">로그인 상태 유지</span>
+</label>
+<a class="text-sm text-[#657486] dark:text-[#9aaebf] hover:text-primary dark:hover:text-primary underline decoration-transparent hover:decoration-current transition-all" href="#">
+                        비밀번호 찾기
+                    </a>
+</div>
+<button class="mt-2 w-full h-12 bg-primary hover:bg-primary-hover text-white text-[15px] font-bold rounded-xl transition-all shadow-md active:scale-[0.98] flex items-center justify-center gap-2" type="button">
+                    로그인
+                </button>
+</form>
+<div class="flex items-center gap-4 my-8">
+<div class="h-px bg-[#f0f2f4] dark:bg-gray-700 flex-1"></div>
+<span class="text-xs text-[#9aa0a6] font-medium">SNS 계정으로 간편 로그인</span>
+<div class="h-px bg-[#f0f2f4] dark:bg-gray-700 flex-1"></div>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full h-12 bg-[#FEE500] hover:bg-[#ebd300] text-[#191919] text-[15px] font-medium rounded-xl transition-all active:scale-[0.98] flex items-center justify-center relative">
+<div class="absolute left-4 size-5 flex items-center justify-center">
+<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 3C7.58 3 4 5.79 4 9.24C4 11.27 5.29 13.08 7.33 14.22C7.19 14.73 6.95 15.65 6.64 16.78C6.58 17.02 6.84 17.21 7.05 17.08C8.24 16.32 10.32 14.94 11.24 14.28C11.49 14.3 11.74 14.32 12 14.32C16.42 14.32 20 11.53 20 8.08C20 4.64 16.42 3 12 3Z"></path>
+</svg>
+</div>
+                    카카오 로그인
+                </button>
+<button class="w-full h-12 bg-white dark:bg-[#2a3441] border border-[#e5e8eb] dark:border-gray-700 hover:bg-[#f8f9fa] dark:hover:bg-[#323d4b] text-[#121417] dark:text-white text-[15px] font-medium rounded-xl transition-all active:scale-[0.98] flex items-center justify-center relative">
+<div class="absolute left-4 size-5 flex items-center justify-center">
+<img alt="Google G Logo" class="w-5 h-5" data-alt="Google Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3h73BvdnJIgqangsQP2SZ5S1doip0FfCv7WaQzhVYf1EM-odBZrFIOhiaWGAVDPk0izHQmUBHnu8YqLSmpcPCAeanTNevpyWdyg6hJEdahprapUwaxCXKqGcGs9Ipf6EGvSjP7nHFKxOrR0MIlh0Ilg9BnwmmK_Q2dLsWy1RbS40Evl03NtygSD8fKpsn8ltnDZ0B3Amgj1QwfLEQzi3l7uamWf0i7mzz7X2yWaDHTeZoG88RJi4fJ9GTxfPNTBRl4ewiWN4HT1rN"/>
+</div>
+                    구글 로그인
+                </button>
+</div>
+</div>
+<div class="text-center space-y-4">
+<p class="text-sm text-[#657486]">
+                아직 계정이 없으신가요? 
+                <a class="text-primary font-bold hover:underline ml-1" href="#">회원가입 하기</a>
+</p>
+<div class="flex items-center justify-center gap-6 text-xs text-[#9aa0a6]">
+<a class="hover:text-[#657486]" href="#">이용약관</a>
+<a class="hover:text-[#657486]" href="#">개인정보처리방침</a>
+<a class="hover:text-[#657486]" href="#">고객센터</a>
+</div>
+</div>
+</div>
+
+</body></html>

@@ -21,7 +21,11 @@
     "clear": "초기화",
     "apply": "적용",
     "detail": "상세",
-    "list": "목록"
+    "list": "목록",
+    "about": "회사",
+    "company": "회사 소개",
+    "contact": "문의하기",
+    "privacy": "개인정보처리방침"
   },
   "nav": {
     "home": "홈",
@@ -58,6 +62,67 @@
     "title": "한국에서 안정적으로 정착하세요",
     "subtitle": "법률 상담, 일자리 매칭, 정부 지원 정보를 한 곳에서",
     "cta": "시작하기",
+    "hero": {
+      "badge": "새로운 업데이트 2.0",
+      "title": "한국 생활,",
+      "titleSuffix": "더 쉽고 편하게.",
+      "description": "법률 상담부터 일자리, 정부 지원 혜택까지. 안정적인 정착에 필요한 모든 것을 하나의 플랫폼에서 해결하세요.",
+      "getStarted": "지금 시작하기",
+      "guide": "이용 가이드"
+    },
+    "dashboard": {
+      "myApplications": "나의 신청 현황",
+      "goToDashboard": "대시보드 바로가기",
+      "newApplication": "새 신청하기",
+      "newApplicationDesc": "법률 상담이나 일자리를 찾아보세요",
+      "consultationMatched": "매칭 완료",
+      "consultationPending": "검토 중",
+      "wageConsultation": "임금 체불 법률 상담",
+      "lawyer": "담당 변호사:",
+      "jobApplication": "제조업 현장직 지원",
+      "company": "지원 기업:"
+    },
+    "services": {
+      "title": "안정적인 정착을 위한",
+      "titleSuffix": "모든 서비스",
+      "subtitle": "한국 거주 외국인을 위한 필수 서비스를 제공합니다.",
+      "legalConsultation": "법률 상담 신청 & 매칭",
+      "legalConsultationDesc": "임금 체불, 비자 문제 등 전문 변호사와 매칭하고 상담을 신청하세요.",
+      "jobMatching": "일자리 검색 & 지원",
+      "jobMatchingDesc": "희망 조건에 맞는 한국 일자리를 검색하고 간편하게 지원하세요.",
+      "govSupport": "정부 지원 정보 조회",
+      "govSupportDesc": "외국인을 위한 다양한 정부 지원 프로그램 및 혜택을 조회하세요."
+    },
+    "lifeGuide": {
+      "title": "생활 가이드",
+      "laborLaw": "노동법 기초 상식",
+      "laborLawDesc": "근로계약서 작성 시 꼭 확인해야 할 사항들.",
+      "visaGuide": "취업 비자 가이드",
+      "visaGuideDesc": "E-9, E-7 비자 신청 및 연장 절차 안내.",
+      "familySupport": "다문화 가족 지원",
+      "familySupportDesc": "정부에서 제공하는 다문화 가정 혜택 총정리.",
+      "healthInsurance": "건강보험 안내",
+      "healthInsuranceDesc": "외국인 직장가입자 건강보험 혜택 알아보기."
+    },
+    "dashboard_logged": {
+      "welcome": "안녕하세요!",
+      "subtitle": "easyK에서 편리한 정착 생활을 시작하세요.",
+      "recentActivity": "최근 활동",
+      "recentActivityDesc": "최근 활동 내역이 여기에 표시됩니다.",
+      "noActivity": "아직 활동이 없습니다.",
+      "profile": "프로필",
+      "profileDesc": "프로필 정보를 관리하세요.",
+      "editProfile": "프로필 수정",
+      "consultationCard": "법률 상담",
+      "consultationCardDesc": "전문가와 상담하기",
+      "consultationStart": "상담 시작하기 →",
+      "jobCard": "일자리 찾기",
+      "jobCardDesc": "지자체 채용 공고",
+      "jobStart": "일자리 찾기 →",
+      "supportCard": "정부 지원",
+      "supportCardDesc": "장려금, 교육, 훈련",
+      "supportStart": "지원 프로그램 보기 →"
+    },
     "features": {
       "consultations": {
         "title": "법률 상담",
