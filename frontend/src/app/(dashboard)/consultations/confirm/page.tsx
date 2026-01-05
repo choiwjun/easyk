@@ -24,11 +24,11 @@ const CONSULTATION_METHOD_LABELS: Record<string, { ko: string; en: string }> = {
 };
 
 interface UserInfo {
-  name_eng: string;
-  name_kor: string;
-  phone: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string | null;
   email: string;
-  residence_area: string;
+  residential_area: string | null;
 }
 
 export default function ConsultationConfirmPage() {
@@ -65,7 +65,7 @@ export default function ConsultationConfirmPage() {
         return;
       }
 
-      const response = await fetch("/api/users/profile", {
+      const response = await fetch("/api/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -261,7 +261,7 @@ export default function ConsultationConfirmPage() {
                     {language === "ko" ? "이름" : "Name"}
                   </span>
                   <span className="text-sm md:text-base font-medium text-text-main dark:text-gray-200">
-                    {userInfo.name_kor} ({userInfo.name_eng})
+                    {userInfo.last_name} {userInfo.first_name}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -269,7 +269,7 @@ export default function ConsultationConfirmPage() {
                     {language === "ko" ? "연락처" : "Contact"}
                   </span>
                   <span className="text-sm md:text-base font-medium text-text-main dark:text-gray-200">
-                    {userInfo.phone}
+                    {userInfo.phone_number || "-"}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -285,7 +285,7 @@ export default function ConsultationConfirmPage() {
                     {language === "ko" ? "거주 지역" : "Residence"}
                   </span>
                   <span className="text-sm md:text-base font-medium text-text-main dark:text-gray-200">
-                    {userInfo.residence_area || "-"}
+                    {userInfo.residential_area || "-"}
                   </span>
                 </div>
               </div>
