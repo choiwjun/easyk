@@ -340,7 +340,7 @@ export default function ConsultationProcessingPage() {
             {/* Action Buttons */}
             <div className="px-6 md:px-10 pb-10 flex flex-col gap-3">
               <Link
-                href="/consultations"
+                href="/consultations/my"
                 className="w-full h-12 flex items-center justify-center rounded-lg bg-primary hover:bg-[#164a85] text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-sm"
               >
                 {language === "ko" ? "내 상담 내역 확인" : "View My Consultations"}

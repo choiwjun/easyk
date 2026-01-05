@@ -246,7 +246,7 @@ export default function ConsultationCompletePage() {
                 {language === "ko" ? "상담 내역 상세 보기" : "View Consultation Details"}
               </Link>
               <Link
-                href="/consultations"
+                href="/consultations/my"
                 className="w-full h-12 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-transparent text-text-main dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 text-base font-medium leading-normal transition-colors"
               >
                 {language === "ko" ? "내 상담 목록으로" : "Back to My Consultations"}
