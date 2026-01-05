@@ -70,13 +70,16 @@ export default function LoginPage() {
         return;
       }
 
-      // Store token in localStorage
+      // Store token and user info in localStorage
       if (data.access_token) {
         localStorage.setItem('access_token', data.access_token);
       }
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
 
-      // Redirect to home (dashboard for logged in users)
-      router.push("/");
+      // Force a page reload to update auth state
+      window.location.href = "/";
     } catch (error) {
       setErrors({ general: t('errors.networkError') });
     } finally {

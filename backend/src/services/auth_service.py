@@ -65,11 +65,11 @@ def authenticate_user(email: str, password: str, db: Session, request: Optional[
         request: FastAPI Request 객체 (다국어 지원)
 
     Returns:
-        TokenResponse: JWT 토큰 또는 None (인증 실패 시)
+        TokenResponse: JWT 토큰 및 사용자 정보 또는 None (인증 실패 시)
     """
     # 언어 추출
     language = request.headers.get("Accept-Language", "ko").split("-")[0].lower() if request else "ko"
-    
+
     # 사용자 조회
     user = db.query(User).filter(User.email == email).first()
     if not user:
@@ -82,4 +82,4 @@ def authenticate_user(email: str, password: str, db: Session, request: Optional[
     # JWT 토큰 생성
     access_token = create_access_token(data={"sub": user.email, "user_id": str(user.id)})
 
-    return TokenResponse(access_token=access_token, token_type="bearer")
+    return TokenResponse(access_token=access_token, token_type="bearer", user=user)

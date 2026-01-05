@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DesignHeader() {
   const { t, language, setLanguage } = useLanguage();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const toggleLanguage = () => {
     setLanguage(language === 'ko' ? 'en' : 'ko');
@@ -57,13 +59,29 @@ export default function DesignHeader() {
             {language === 'ko' ? t('language.english') : t('language.korean')}
           </button>
 
-          {/* 로그인 버튼 */}
-          <Link
-            href="/login"
-            className="flex items-center justify-center h-9 px-4 rounded-lg bg-primary hover:bg-primary-dark text-white text-[14px] font-bold shadow-sm hover:shadow-md transition-all active:scale-95"
-          >
-            {t('nav.login')}
-          </Link>
+          {/* 로그인/로그아웃 버튼 */}
+          {isAuthenticated ? (
+            <div className="flex items-center gap-3">
+              {/* 사용자 이름 */}
+              <span className="hidden md:block text-sm text-text-primary dark:text-white">
+                {user?.first_name} {user?.last_name}
+              </span>
+              {/* 로그아웃 버튼 */}
+              <button
+                onClick={logout}
+                className="flex items-center justify-center h-9 px-4 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-text-primary dark:text-white text-[14px] font-bold transition-all active:scale-95"
+              >
+                {t('nav.logout')}
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="flex items-center justify-center h-9 px-4 rounded-lg bg-primary hover:bg-primary-dark text-white text-[14px] font-bold shadow-sm hover:shadow-md transition-all active:scale-95"
+            >
+              {t('nav.login')}
+            </Link>
+          )}
         </div>
       </div>
     </header>
