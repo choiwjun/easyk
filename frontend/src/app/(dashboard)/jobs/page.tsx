@@ -341,7 +341,6 @@ export default function JobsPage() {
 
         // If no token, use sample data instead of redirecting
         if (!token) {
-          console.log("[Vercel Debug] No token, setting SAMPLE_JOBS. Length:", SAMPLE_JOBS.length);
           setJobs(SAMPLE_JOBS);
           setIsLoading(false);
           return;
@@ -359,11 +358,9 @@ export default function JobsPage() {
           setJobs(data);
         } else {
           // Fallback to sample data
-          console.log("[Vercel Debug] API failed, setting SAMPLE_JOBS");
           setJobs(SAMPLE_JOBS);
         }
       } catch (error) {
-        console.log("[Vercel Debug] Error, setting SAMPLE_JOBS:", error);
         setJobs(SAMPLE_JOBS);
       } finally {
         setIsLoading(false);
@@ -375,7 +372,11 @@ export default function JobsPage() {
 
   // Apply filters whenever dependencies change
   useEffect(() => {
-    console.log("[Vercel Debug] Applying filters. jobs.length:", jobs.length);
+    // Don't apply filters while loading or if jobs haven't been loaded yet
+    if (isLoading || jobs.length === 0) {
+      return;
+    }
+
     let filtered = [...jobs];
 
     // Search keyword filter
@@ -405,9 +406,8 @@ export default function JobsPage() {
       });
     }
 
-    console.log("[Vercel Debug] After filters. filtered.length:", filtered.length);
     setFilteredJobs(filtered);
-  }, [jobs, searchKeyword, selectedJobType, selectedSalary, selectedEmploymentType, sortBy]);
+  }, [jobs, searchKeyword, selectedJobType, selectedSalary, selectedEmploymentType, sortBy, isLoading]);
 
   const applyFilters = () => {
     let filtered = [...jobs];
@@ -711,7 +711,16 @@ export default function JobsPage() {
           </div>
 
           {/* Job Cards Grid */}
-          {filteredJobs.length === 0 ? (
+          {isLoading ? (
+            <div className="bg-white dark:bg-surface-dark rounded-xl p-12 text-center border border-border-light dark:border-border-dark">
+              <div className="size-20 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-400 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <span className="material-symbols-outlined text-4xl">hourglass_empty</span>
+              </div>
+              <h3 className="text-xl font-bold text-text-main dark:text-white mb-2">
+                {language === "ko" ? "일자리 정보를 불러오는 중..." : "Loading jobs..."}
+              </h3>
+            </div>
+          ) : filteredJobs.length === 0 ? (
             <div className="bg-white dark:bg-surface-dark rounded-xl p-12 text-center border border-border-light dark:border-border-dark">
               <div className="size-20 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-400 flex items-center justify-center mx-auto mb-4">
                 <span className="material-symbols-outlined text-4xl">work_off</span>
