@@ -351,7 +351,7 @@ export default function ConsultationDetailPage() {
                 <span className="material-symbols-outlined text-primary">description</span>
                 <h3 className="text-lg font-bold">{language === "ko" ? "문제 내용" : "Problem Description"}</h3>
               </div>
-              <div className="prose max-w-none text-text-main text-sm leading-relaxed whitespace-pre-line">
+              <div className="prose max-w-none text-text-main text-sm leading-relaxed whitespace-pre-line break-words overflow-wrap-anywhere">
                 {consultation.content}
               </div>
             </div>
