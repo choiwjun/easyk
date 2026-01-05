@@ -119,8 +119,9 @@ export default function NewConsultationPage() {
       });
 
       if (response.ok) {
-        // 성공 시 상담 목록으로 이동
-        router.push("/consultations?success=true");
+        // 성공 시 처리 중 페이지로 이동
+        const data = await response.json();
+        router.push(`/consultations/${data.id}/processing`);
       } else if (response.status === 401 || response.status === 403) {
         // 인증 실패 시 로그인 페이지로 리다이렉트
         localStorage.removeItem("access_token");
