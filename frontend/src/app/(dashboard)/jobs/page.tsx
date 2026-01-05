@@ -343,15 +343,11 @@ export default function JobsPage() {
   }, [jobs, searchKeyword, selectedJobType, selectedSalary, selectedEmploymentType, sortBy]);
 
   const fetchJobs = async () => {
-    console.log("[Jobs] fetchJobs called");
     try {
       const token = localStorage.getItem("access_token");
-      console.log("[Jobs] Token:", token ? "exists" : "missing");
 
       // If no token, use sample data instead of redirecting
       if (!token) {
-        console.warn("[Jobs] No token, using sample data");
-        console.log("[Jobs] SAMPLE_JOBS length:", SAMPLE_JOBS.length);
         setJobs(SAMPLE_JOBS);
         setIsLoading(false);
         return;
@@ -369,11 +365,9 @@ export default function JobsPage() {
         setJobs(data);
       } else {
         // Fallback to sample data
-        console.warn("[Jobs] API failed, using sample data");
         setJobs(SAMPLE_JOBS);
       }
     } catch (error) {
-      console.warn("[Jobs] Network error, using sample data");
       setJobs(SAMPLE_JOBS);
     } finally {
       setIsLoading(false);
@@ -381,7 +375,6 @@ export default function JobsPage() {
   };
 
   const applyFilters = () => {
-    console.log("[Jobs] applyFilters called, jobs.length:", jobs.length);
     let filtered = [...jobs];
 
     // Search keyword filter
@@ -411,7 +404,6 @@ export default function JobsPage() {
       });
     }
 
-    console.log("[Jobs] After filters, filtered.length:", filtered.length);
     setFilteredJobs(filtered);
   };
 
