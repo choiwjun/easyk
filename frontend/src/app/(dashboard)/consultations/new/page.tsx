@@ -121,8 +121,13 @@ export default function NewConsultationPage() {
       if (response.ok) {
         // 성공 시 상담 목록으로 이동
         router.push("/consultations?success=true");
+      } else if (response.status === 401 || response.status === 403) {
+        // 인증 실패 시 로그인 페이지로 리다이렉트
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
+        router.push("/login");
       } else {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         setError(errorData.message || (language === 'ko' ? '상담 신청에 실패했습니다.' : 'Failed to submit consultation.'));
       }
     } catch (error) {

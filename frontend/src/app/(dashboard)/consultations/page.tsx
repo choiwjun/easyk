@@ -52,7 +52,10 @@ export default function ConsultationsPage() {
       if (response.ok) {
         const data = await response.json();
         setConsultations(data);
-      } else if (response.status === 403) {
+      } else if (response.status === 401 || response.status === 403) {
+        // 인증 실패 시 로그인 페이지로 리다이렉트
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
         router.push("/login");
       } else {
         setError(language === 'ko' ? '데이터를 불러오는데 실패했습니다.' : 'Failed to load data.');
