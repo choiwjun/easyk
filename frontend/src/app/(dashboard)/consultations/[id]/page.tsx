@@ -424,7 +424,7 @@ export default function ConsultationDetailPage() {
                 <div className="bg-gray-50 rounded-lg p-3 mt-2 flex justify-between items-center">
                   <span className="text-sm font-medium">{language === "ko" ? "결제 금액" : "Amount"}</span>
                   <span className="text-lg font-bold font-display">
-                    {consultation.amount.toLocaleString()}
+                    {Math.floor(consultation.amount).toLocaleString()}
                     {language === "ko" ? "원" : " KRW"}
                   </span>
                 </div>
