@@ -353,14 +353,27 @@ export default function JobsPage() {
           },
         });
 
+        console.log("[Jobs Debug] API response status:", response.status);
+
         if (response.ok) {
           const data = await response.json();
-          setJobs(data);
+          console.log("[Jobs Debug] API returned data:", data);
+          console.log("[Jobs Debug] Data length:", Array.isArray(data) ? data.length : 'not an array');
+
+          // If API returns empty array or no data, use sample data
+          if (!data || (Array.isArray(data) && data.length === 0)) {
+            console.log("[Jobs Debug] API returned empty, using SAMPLE_JOBS");
+            setJobs(SAMPLE_JOBS);
+          } else {
+            setJobs(data);
+          }
         } else {
           // Fallback to sample data
+          console.log("[Jobs Debug] API failed with status", response.status, "using SAMPLE_JOBS");
           setJobs(SAMPLE_JOBS);
         }
       } catch (error) {
+        console.log("[Jobs Debug] API error:", error);
         setJobs(SAMPLE_JOBS);
       } finally {
         setIsLoading(false);
@@ -372,12 +385,16 @@ export default function JobsPage() {
 
   // Apply filters whenever dependencies change
   useEffect(() => {
-    // Don't apply filters while loading or if jobs haven't been loaded yet
-    if (isLoading || jobs.length === 0) {
+    console.log("[Jobs Debug] Filter useEffect triggered. isLoading:", isLoading, "jobs.length:", jobs.length);
+
+    // Don't apply filters while loading
+    if (isLoading) {
+      console.log("[Jobs Debug] Skipping filter - still loading");
       return;
     }
 
     let filtered = [...jobs];
+    console.log("[Jobs Debug] Starting filter. Initial count:", filtered.length);
 
     // Search keyword filter
     if (searchKeyword.trim()) {
@@ -406,6 +423,7 @@ export default function JobsPage() {
       });
     }
 
+    console.log("[Jobs Debug] Final filtered count:", filtered.length);
     setFilteredJobs(filtered);
   }, [jobs, searchKeyword, selectedJobType, selectedSalary, selectedEmploymentType, sortBy, isLoading]);
 
