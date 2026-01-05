@@ -56,7 +56,8 @@ export default function NewConsultationPage() {
   }, [searchParams]);
 
   const getTypeLabel = (type: string) => {
-    return CONSULTATION_TYPE_LABELS[type]?.[language] || type;
+    const typeLabels = CONSULTATION_TYPE_LABELS[type as keyof typeof CONSULTATION_TYPE_LABELS];
+    return typeLabels?.[language as keyof typeof typeLabels] || type;
   };
 
   const getPlaceholder = () => {
@@ -229,7 +230,7 @@ export default function NewConsultationPage() {
                   >
                     {CONSULTATION_METHODS.map((method) => (
                       <option key={method.value} value={method.value}>
-                        {method.label[language]}
+                        {method.label[language as keyof typeof method.label]}
                       </option>
                     ))}
                   </select>
@@ -256,7 +257,7 @@ export default function NewConsultationPage() {
                   >
                     {MOCK_LAWYERS.map((lawyer) => (
                       <option key={lawyer.id} value={lawyer.id}>
-                        {lawyer.name[language]}
+                        {lawyer.name[language as keyof typeof lawyer.name]}
                       </option>
                     ))}
                   </select>
