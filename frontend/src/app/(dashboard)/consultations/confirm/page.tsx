@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
-import DesignHeader from "@/components/ui/DesignHeader";
 import DesignFooter from "@/components/ui/DesignFooter";
 
 const CONSULTATION_TYPE_LABELS: Record<string, { ko: string; en: string }> = {
@@ -157,8 +156,6 @@ export default function ConsultationConfirmPage() {
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
-      <DesignHeader />
-
       {/* Header */}
       <header className="sticky top-0 z-50 flex items-center justify-between border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-6 py-4 lg:px-10">
         <div className="flex items-center gap-4 text-text-main dark:text-white">
