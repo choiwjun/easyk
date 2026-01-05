@@ -39,12 +39,6 @@ export default function Home() {
                 </div>
               </div>
               <div className="relative z-20 px-8 md:px-12 lg:px-16 py-10 max-w-2xl flex flex-col gap-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 w-fit">
-                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                  <span className="text-white text-xs font-bold tracking-wide">
-                    {t('home.hero.badge')}
-                  </span>
-                </div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.2] tracking-tight drop-shadow-sm">
                   {t('home.hero.title')}<br className="hidden md:block" /> {t('home.hero.titleSuffix')}
                 </h1>
