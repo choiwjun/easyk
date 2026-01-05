@@ -76,7 +76,8 @@ export default function JobDetailPage() {
       if (response.ok) {
         const data = await response.json();
         setJob(data);
-      } else if (response.status === 403) {
+      } else if (response.status === 401 || response.status === 403) {
+        // 인증 오류: 로그인 페이지로 리다이렉트
         router.push("/login");
       } else if (response.status === 404) {
         setError("일자리를 찾을 수 없습니다.");
