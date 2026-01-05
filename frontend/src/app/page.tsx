@@ -14,22 +14,7 @@ export default function Home() {
   const { isAuthenticated, user, isLoading } = useAuth();
   const router = useRouter();
 
-  // 역할별로 다른 페이지로 이동
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && user) {
-      const roleRoutes: Record<string, string> = {
-        foreign: '/jobs',
-        consultant: '/consultations',
-        admin: '/admin/jobs',
-        agency: '/agency',
-      };
-
-      const route = roleRoutes[user.role];
-      if (route) {
-        router.replace(route);
-      }
-    }
-  }, [isAuthenticated, user, isLoading, router]);
+  // 자동 리다이렉트 제거 - 사용자가 직접 선택하도록 함
 
   if (isLoading) {
     return (
@@ -39,11 +24,10 @@ export default function Home() {
     );
   }
 
-  // 비로그인 사용자: 디자인 적용된 랜딩 페이지
-  if (!isAuthenticated) {
-    return (
-      <div className="relative flex flex-col min-h-screen w-full bg-background-light dark:bg-background-dark">
-        <DesignHeader />
+  // 모든 사용자에게 동일한 메인 페이지 표시 (로그인 여부 무관)
+  return (
+    <div className="relative flex flex-col min-h-screen w-full bg-background-light dark:bg-background-dark">
+      <DesignHeader />
 
         <main className="flex-grow w-full max-w-[1080px] mx-auto px-5 py-8 flex flex-col gap-12">
           {/* Hero 섹션 */}
@@ -319,120 +303,4 @@ export default function Home() {
         <ChatButton />
       </div>
     );
-  }
-
-  // 로그인 사용자: 대시보드 메인 페이지 (기존 디자인 유지)
-  return (
-    <div className="min-h-screen bg-background-light">
-      <div className="py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          {/* 헤더 */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {t('home.dashboard_logged.welcome')}
-            </h1>
-            <p className="text-gray-600">
-              {t('home.dashboard_logged.subtitle')}
-            </p>
-          </div>
-
-          {/* 빠른 접근 카드 */}
-          <div className="grid gap-6 md:grid-cols-3 mb-12">
-            <a
-              href="/consultations"
-              className="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-blue-600"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl">⚖️</div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {t('home.dashboard_logged.consultationCard')}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {t('home.dashboard_logged.consultationCardDesc')}
-                  </p>
-                </div>
-              </div>
-              <div className="text-sm text-blue-600 font-medium">
-                {t('home.dashboard_logged.consultationStart')}
-              </div>
-            </a>
-
-            <a
-              href="/jobs"
-              className="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-green-600"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl">💼</div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {t('home.dashboard_logged.jobCard')}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {t('home.dashboard_logged.jobCardDesc')}
-                  </p>
-                </div>
-              </div>
-              <div className="text-sm text-green-600 font-medium">
-                {t('home.dashboard_logged.jobStart')}
-              </div>
-            </a>
-
-            <a
-              href="/supports"
-              className="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-purple-600"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl">🏛️</div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {t('home.dashboard_logged.supportCard')}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {t('home.dashboard_logged.supportCardDesc')}
-                  </p>
-                </div>
-              </div>
-              <div className="text-sm text-purple-600 font-medium">
-                {t('home.dashboard_logged.supportStart')}
-              </div>
-            </a>
-          </div>
-
-          {/* 추가 정보 섹션 */}
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                {t('home.dashboard_logged.recentActivity')}
-              </h3>
-              <p className="text-gray-600">
-                {t('home.dashboard_logged.recentActivityDesc')}
-              </p>
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg text-center text-gray-500 text-sm">
-                {t('home.dashboard_logged.noActivity')}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                {t('home.dashboard_logged.profile')}
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {t('home.dashboard_logged.profileDesc')}
-              </p>
-              <a
-                href="/profile"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors text-sm font-medium"
-              >
-                {t('home.dashboard_logged.editProfile')}
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }
