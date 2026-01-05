@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/hooks/useAuth";
 import DesignHeader from "@/components/ui/DesignHeader";
 import DesignFooter from "@/components/ui/DesignFooter";
 
@@ -321,7 +320,6 @@ const QUICK_FILTERS = [
 export default function JobsPage() {
   const router = useRouter();
   const { language } = useLanguage();
-  const { requireAuth } = useAuth();
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
@@ -336,7 +334,7 @@ export default function JobsPage() {
   const [sortBy, setSortBy] = useState("latest");
 
   useEffect(() => {
-    requireAuth();
+    // Allow viewing jobs without authentication (will show sample data)
     fetchJobs();
   }, []);
 
@@ -347,8 +345,12 @@ export default function JobsPage() {
   const fetchJobs = async () => {
     try {
       const token = localStorage.getItem("access_token");
+
+      // If no token, use sample data instead of redirecting
       if (!token) {
-        router.push("/login");
+        console.warn("[Jobs] No token, using sample data");
+        setJobs(SAMPLE_JOBS);
+        setIsLoading(false);
         return;
       }
 
@@ -364,7 +366,7 @@ export default function JobsPage() {
         setJobs(data);
       } else {
         // Fallback to sample data
-        console.warn("[Jobs] Using sample data");
+        console.warn("[Jobs] API failed, using sample data");
         setJobs(SAMPLE_JOBS);
       }
     } catch (error) {
