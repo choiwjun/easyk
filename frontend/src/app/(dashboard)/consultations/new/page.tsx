@@ -94,48 +94,15 @@ export default function NewConsultationPage() {
       return;
     }
 
-    setIsLoading(true);
+    // Redirect to confirmation page with form data
+    const params = new URLSearchParams({
+      type: consultationType,
+      content: content.trim(),
+      method: consultationMethod,
+      lawyer: preferredLawyer,
+    });
 
-    try {
-      const token = localStorage.getItem("access_token");
-
-      if (!token) {
-        router.push("/login");
-        return;
-      }
-
-      const response = await fetch("/api/consultations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          consultation_type: consultationType,
-          content: content.trim(),
-          consultation_method: consultationMethod,
-          amount: 50000, // 기본 상담료 (추후 유형별로 차등 적용 가능)
-        }),
-      });
-
-      if (response.ok) {
-        // 성공 시 처리 중 페이지로 이동
-        const data = await response.json();
-        router.push(`/consultations/${data.id}/processing`);
-      } else if (response.status === 401 || response.status === 403) {
-        // 인증 실패 시 로그인 페이지로 리다이렉트
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("user");
-        router.push("/login");
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        setError(errorData.message || (language === 'ko' ? '상담 신청에 실패했습니다.' : 'Failed to submit consultation.'));
-      }
-    } catch (error) {
-      setError(language === 'ko' ? '네트워크 오류가 발생했습니다.' : 'Network error occurred.');
-    } finally {
-      setIsLoading(false);
-    }
+    router.push(`/consultations/confirm?${params.toString()}`);
   };
 
   if (!consultationType) {
@@ -289,17 +256,8 @@ export default function NewConsultationPage() {
                   type="submit"
                   disabled={isLoading}
                 >
-                  {isLoading ? (
-                    <>
-                      <span className="material-symbols-outlined animate-spin">refresh</span>
-                      <span>{language === 'ko' ? '제출 중...' : 'Submitting...'}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{language === 'ko' ? '상담 신청 제출' : 'Submit Application'}</span>
-                      <span className="material-symbols-outlined">send</span>
-                    </>
-                  )}
+                  <span>{language === 'ko' ? '다음 단계 (내용 확인)' : 'Next (Confirm)'}</span>
+                  <span className="material-symbols-outlined">arrow_forward</span>
                 </button>
                 <p className="text-text-sub dark:text-gray-500 text-xs text-center">
                   {language === 'ko' ? (

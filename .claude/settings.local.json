@@ -58,7 +58,8 @@
       "Bash(where:*)",
       "Bash(\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\" -m venv venv)",
       "Bash(venvScriptspip install -r requirements.txt)",
-      "Bash(cmd.exe /c \"taskkill /F /PID 39524\")"
+      "Bash(cmd.exe /c \"taskkill /F /PID 39524\")",
+      "Bash(Select-Object -First 50)"
     ]
   }
 }
