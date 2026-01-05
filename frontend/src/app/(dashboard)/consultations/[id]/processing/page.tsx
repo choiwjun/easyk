@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -13,6 +13,7 @@ interface Consultation {
   consultation_type: string;
   created_at: string;
   status: string;
+  consultant_id: string | null;
 }
 
 export default function ConsultationProcessingPage() {
@@ -22,10 +23,23 @@ export default function ConsultationProcessingPage() {
   const { requireAuth } = useAuth();
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     requireAuth();
     fetchConsultation();
+
+    // 5초마다 상태 폴링 (매칭 완료 시 자동 리다이렉트)
+    pollingInterval.current = setInterval(() => {
+      fetchConsultation();
+    }, 5000);
+
+    // 컴포넌트 언마운트 시 폴링 중지
+    return () => {
+      if (pollingInterval.current) {
+        clearInterval(pollingInterval.current);
+      }
+    };
   }, []);
 
   const fetchConsultation = async () => {
@@ -45,6 +59,17 @@ export default function ConsultationProcessingPage() {
       if (response.ok) {
         const data = await response.json();
         setConsultation(data);
+
+        // 상태에 따른 자동 리다이렉트
+        if (data.status === "matched" || data.status === "scheduled") {
+          // 매칭 완료 시 3초 후 결제 페이지로 이동
+          setTimeout(() => {
+            router.push(`/consultations/${params.id}/payment`);
+          }, 3000);
+        } else if (data.status === "completed") {
+          // 상담 완료 시 완료 페이지로 이동
+          router.push(`/consultations/${params.id}/complete`);
+        }
       } else if (response.status === 401 || response.status === 403) {
         localStorage.removeItem("access_token");
         localStorage.removeItem("user");
@@ -101,6 +126,10 @@ export default function ConsultationProcessingPage() {
     );
   }
 
+  // 상태에 따른 UI 설정
+  const isMatched = consultation.status === "matched" || consultation.status === "scheduled";
+  const progressWidth = isMatched ? "100%" : "50%";
+
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
       <DesignHeader />
@@ -110,14 +139,40 @@ export default function ConsultationProcessingPage() {
           <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             {/* Header Section */}
             <div className="flex flex-col items-center text-center px-6 pt-10 pb-8">
-              <div className="size-20 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6 animate-pulse text-primary">
-                <span className="material-symbols-outlined text-4xl">manage_search</span>
+              <div
+                className={`size-20 rounded-full flex items-center justify-center mb-6 ${
+                  isMatched
+                    ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400"
+                    : "bg-blue-50 dark:bg-blue-900/20 text-primary animate-pulse"
+                }`}
+              >
+                <span className="material-symbols-outlined text-4xl" style={isMatched ? { fontVariationSettings: "'FILL' 1" } : {}}>
+                  {isMatched ? "check_circle" : "manage_search"}
+                </span>
               </div>
               <h1 className="text-text-main dark:text-white text-2xl md:text-3xl font-bold leading-tight mb-3">
-                {language === "ko" ? "변호사 매칭 중입니다" : "Matching with a Lawyer"}
+                {isMatched
+                  ? language === "ko"
+                    ? "변호사 매칭 완료!"
+                    : "Lawyer Matched!"
+                  : language === "ko"
+                  ? "변호사 매칭 중입니다"
+                  : "Matching with a Lawyer"}
               </h1>
               <p className="text-text-sub dark:text-gray-400 text-base font-normal leading-relaxed max-w-md mb-6">
-                {language === "ko" ? (
+                {isMatched ? (
+                  language === "ko" ? (
+                    <>
+                      전문 변호사와의 매칭이 완료되었습니다! <br className="hidden sm:block" />
+                      잠시 후 결제 페이지로 이동합니다.
+                    </>
+                  ) : (
+                    <>
+                      Successfully matched with a professional lawyer! <br className="hidden sm:block" />
+                      Redirecting to payment page shortly.
+                    </>
+                  )
+                ) : language === "ko" ? (
                   <>
                     상담 신청이 성공적으로 접수되었습니다. <br className="hidden sm:block" />
                     현재 귀하의 사건에 적합한 전문 변호사를 찾고 있습니다.
@@ -129,19 +184,32 @@ export default function ConsultationProcessingPage() {
                   </>
                 )}
               </p>
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 shadow-sm">
-                <span className="material-symbols-outlined text-primary dark:text-blue-400 text-[20px]">timer</span>
-                <span className="text-sm font-bold text-primary dark:text-blue-100 tracking-tight">
-                  {language === "ko" ? "예상 대기 시간 : 약 24시간 이내" : "Expected Wait : Within 24 hours"}
-                </span>
-              </div>
+              {!isMatched && (
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 shadow-sm">
+                  <span className="material-symbols-outlined text-primary dark:text-blue-400 text-[20px]">timer</span>
+                  <span className="text-sm font-bold text-primary dark:text-blue-100 tracking-tight">
+                    {language === "ko" ? "예상 대기 시간 : 약 24시간 이내" : "Expected Wait : Within 24 hours"}
+                  </span>
+                </div>
+              )}
+              {isMatched && (
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/50 shadow-sm">
+                  <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-[20px]">rocket_launch</span>
+                  <span className="text-sm font-bold text-green-600 dark:text-green-100 tracking-tight">
+                    {language === "ko" ? "3초 후 자동 이동..." : "Auto redirect in 3 seconds..."}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Progress Bar */}
             <div className="px-6 py-2">
               <div className="relative flex justify-between items-center max-w-[400px] mx-auto mb-8">
                 <div className="absolute top-1/2 left-0 w-full h-[2px] bg-gray-200 dark:bg-gray-700 -z-10 -translate-y-1/2"></div>
-                <div className="absolute top-1/2 left-0 w-1/2 h-[2px] bg-primary -z-10 -translate-y-1/2"></div>
+                <div
+                  className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 -translate-y-1/2 transition-all duration-1000"
+                  style={{ width: progressWidth }}
+                ></div>
 
                 {/* Step 1: 신청 접수 (완료) */}
                 <div className="flex flex-col items-center gap-2 bg-white dark:bg-gray-800 px-2">
@@ -153,22 +221,48 @@ export default function ConsultationProcessingPage() {
                   </span>
                 </div>
 
-                {/* Step 2: 매칭 중 (현재) */}
+                {/* Step 2: 매칭 중/완료 */}
                 <div className="flex flex-col items-center gap-2 bg-white dark:bg-gray-800 px-2">
-                  <div className="size-8 rounded-full bg-white dark:bg-gray-800 border-2 border-primary flex items-center justify-center">
-                    <div className="size-2.5 rounded-full bg-primary animate-pulse"></div>
+                  <div
+                    className={`size-8 rounded-full flex items-center justify-center ${
+                      isMatched
+                        ? "bg-primary text-white"
+                        : "bg-white dark:bg-gray-800 border-2 border-primary"
+                    }`}
+                  >
+                    {isMatched ? (
+                      <span className="material-symbols-outlined text-sm">check</span>
+                    ) : (
+                      <div className="size-2.5 rounded-full bg-primary animate-pulse"></div>
+                    )}
                   </div>
-                  <span className="text-xs font-bold text-primary dark:text-white">
+                  <span
+                    className={`text-xs font-bold ${
+                      isMatched ? "text-primary dark:text-blue-400" : "text-primary dark:text-white"
+                    }`}
+                  >
                     {language === "ko" ? "매칭 중" : "Matching"}
                   </span>
                 </div>
 
-                {/* Step 3: 매칭 완료 (대기) */}
+                {/* Step 3: 매칭 완료 */}
                 <div className="flex flex-col items-center gap-2 bg-white dark:bg-gray-800 px-2">
-                  <div className="size-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500">
-                    <span className="material-symbols-outlined text-sm">person_search</span>
+                  <div
+                    className={`size-8 rounded-full flex items-center justify-center ${
+                      isMatched
+                        ? "bg-primary text-white"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      {isMatched ? "check" : "person_search"}
+                    </span>
                   </div>
-                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
+                  <span
+                    className={`text-xs font-medium ${
+                      isMatched ? "text-primary dark:text-blue-400" : "text-gray-400 dark:text-gray-500"
+                    }`}
+                  >
                     {language === "ko" ? "매칭 완료" : "Completed"}
                   </span>
                 </div>
@@ -177,15 +271,37 @@ export default function ConsultationProcessingPage() {
 
             {/* Info Section */}
             <div className="px-6 md:px-10 pb-8">
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
+              <div className={`rounded-xl p-5 border ${
+                isMatched
+                  ? "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800/50"
+                  : "bg-gray-50 dark:bg-gray-900 border-gray-100 dark:border-gray-700"
+              }`}>
                 <div className="flex items-start gap-4 mb-4">
-                  <span className="material-symbols-outlined text-primary mt-0.5">info</span>
+                  <span className={`material-symbols-outlined mt-0.5 ${
+                    isMatched ? "text-green-600 dark:text-green-400" : "text-primary"
+                  }`}>
+                    {isMatched ? "celebration" : "info"}
+                  </span>
                   <div>
                     <h4 className="text-sm font-bold text-text-main dark:text-white mb-1">
-                      {language === "ko" ? "다음 단계 안내" : "Next Steps"}
+                      {isMatched
+                        ? language === "ko" ? "매칭 성공!" : "Match Successful!"
+                        : language === "ko" ? "다음 단계 안내" : "Next Steps"}
                     </h4>
                     <p className="text-sm text-text-sub dark:text-gray-400 leading-relaxed">
-                      {language === "ko" ? (
+                      {isMatched ? (
+                        language === "ko" ? (
+                          <>
+                            귀하의 사건에 가장 적합한 전문 변호사가 배정되었습니다.
+                            결제를 완료하시면 상담을 시작하실 수 있습니다.
+                          </>
+                        ) : (
+                          <>
+                            A lawyer most suitable for your case has been assigned.
+                            You can start the consultation after completing payment.
+                          </>
+                        )
+                      ) : language === "ko" ? (
                         <>
                           전문 변호사가 배정되면 <strong>카카오톡 알림톡</strong>과 <strong>이메일</strong>로 즉시
                           안내해 드립니다.
