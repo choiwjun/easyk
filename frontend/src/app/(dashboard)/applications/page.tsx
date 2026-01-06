@@ -247,7 +247,7 @@ export default function ApplicationsPage() {
       <DesignHeader />
 
       <main className="flex-1 flex flex-col items-center">
-        <div className="w-full max-w-[1024px] flex-1 px-4 py-8 lg:px-8">
+        <div className="w-full max-w-[1280px] flex-1 px-4 md:px-10 py-8">
           {/* Breadcrumbs */}
           <nav className="flex flex-wrap gap-2 pb-4">
             <Link href="/" className="text-[#657486] dark:text-gray-400 text-sm font-medium leading-normal hover:underline">
@@ -472,7 +472,7 @@ export default function ApplicationsPage() {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-[#f0f2f4] dark:border-[#2a3441] bg-white dark:bg-[#1a222b] py-8">
-        <div className="px-4 md:px-10 flex flex-col md:flex-row justify-between items-center gap-4 max-w-[1024px] mx-auto">
+        <div className="px-4 md:px-10 flex flex-col md:flex-row justify-between items-center gap-4 max-w-[1280px] mx-auto">
           <p className="text-[#657486] dark:text-gray-500 text-sm font-medium">© 2026 easyK. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="#" className="text-[#657486] dark:text-gray-500 text-sm font-medium hover:text-primary transition-colors">

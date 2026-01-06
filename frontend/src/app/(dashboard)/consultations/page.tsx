@@ -79,8 +79,8 @@ export default function ConsultationsPage() {
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
       <DesignHeader />
 
-      <main className="flex-1 flex flex-col items-center py-8 md:py-12 px-4 sm:px-6">
-        <div className="w-full max-w-[960px] flex flex-col gap-8">
+      <main className="flex-1 flex flex-col items-center py-8 md:py-12 px-4 md:px-10">
+        <div className="w-full max-w-[1280px] flex flex-col gap-8">
           {/* Progress Bar */}
           <div className="flex flex-col gap-3 px-4">
             <div className="flex gap-6 justify-between items-end">

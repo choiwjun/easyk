@@ -193,9 +193,9 @@ export default function ApplicationDetailPage() {
     <div className="min-h-screen bg-[#f6f7f8] dark:bg-[#121920] text-[#121417] dark:text-white flex flex-col">
       <DesignHeader />
 
-      <main className="flex-1 py-8 px-4 md:px-40">
+      <main className="flex-1 py-8 px-4 md:px-10">
         <div className="flex justify-center">
-          <div className="max-w-[960px] flex-1 flex flex-col gap-6">
+          <div className="max-w-[1280px] flex-1 flex flex-col gap-6">
             {/* Page Header */}
             <div className="flex flex-col gap-2">
               <Link

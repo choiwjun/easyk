@@ -234,7 +234,7 @@ export default function ConsultationDetailPage() {
       <DesignHeader />
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 py-6 lg:px-8 lg:py-10">
+      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 md:px-10 py-6 lg:py-10">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm text-text-sub mb-6">
           <Link href="/" className="hover:text-primary transition-colors">
