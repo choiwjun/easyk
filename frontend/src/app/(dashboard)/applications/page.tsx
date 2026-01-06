@@ -427,10 +427,10 @@ export default function ApplicationsPage() {
                       </Link>
                     ) : application.status === "rejected" ? (
                       <Link
-                        href={`/applications/${application.id}`}
+                        href={`/applications/${application.id}/rejected`}
                         className="h-10 flex-1 md:flex-none px-4 rounded-lg bg-[#f0f2f4] dark:bg-[#2a3441] text-[#657486] dark:text-gray-400 text-sm font-bold transition-colors flex items-center justify-center"
                       >
-                        상세 보기
+                        결과 확인
                       </Link>
                     ) : (
                       <Link

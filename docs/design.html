@@ -3,148 +3,126 @@
 <html class="light" lang="ko"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>easyK - 채용 확정 알림</title>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Nanum+Gothic:wght@400;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<title>easyK - 지원 결과 안내</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;family=Nanum+Gothic:wght@400;700;800&amp;family=Noto+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Tailwind Config -->
+<!-- Theme Config -->
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1E5BA0", // User requested primary color
-                        "primary-dark": "#16457a",
-                        "background-light": "#f7f6f8",
-                        "background-dark": "#191220",
-                        "text-main": "#141217",
-                        "text-sub": "#746586",
+                        "primary": "#1e549f",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#121820",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"],
-                        "body": ["Nanum Gothic", "sans-serif"],
+                        "korean": ["Nanum Gothic", "sans-serif"],
                     },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "2xl": "1rem",
-                        "full": "9999px"
-                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
                 },
             },
         }
     </script>
 <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
         body {
             font-family: 'Nanum Gothic', 'Inter', sans-serif;
         }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-text-main min-h-screen flex flex-col">
-<!-- Navigation -->
-<header class="w-full bg-white border-b border-[#f2f0f4] sticky top-0 z-50">
-<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-<div class="flex items-center justify-between h-16">
-<!-- Logo -->
-<div class="flex items-center gap-2">
-<div class="flex items-center justify-center size-8 bg-primary rounded-lg text-white">
-<span class="material-symbols-outlined text-[20px]">handshake</span>
+<body class="bg-background-light dark:bg-background-dark text-[#121417] dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-b-gray-800 bg-white dark:bg-[#1a222c] px-4 md:px-10 py-3 transition-colors duration-200">
+<div class="flex items-center gap-4 text-[#121417] dark:text-white">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">language</span>
 </div>
-<span class="text-xl font-bold tracking-tight text-text-main font-display">easyK</span>
+<h2 class="text-[#121417] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display">easyK</h2>
 </div>
-<!-- Desktop Menu -->
-<nav class="hidden md:flex items-center gap-8">
-<a class="text-sm font-bold text-text-main hover:text-primary transition-colors" href="#">채용 공고</a>
-<a class="text-sm font-medium text-text-sub hover:text-primary transition-colors" href="#">커뮤니티</a>
-<a class="text-sm font-medium text-text-sub hover:text-primary transition-colors" href="#">비자 정보</a>
-</nav>
-<!-- Icons -->
-<div class="flex items-center gap-3">
-<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-100 text-text-main transition-colors relative">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white"></span>
+<!-- Desktop Nav -->
+<div class="hidden md:flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-[#121417] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold leading-normal" href="#">채용 공고</a>
+<a class="text-[#121417] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">지원 현황</a>
+<a class="text-[#121417] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">커뮤니티</a>
+<a class="text-[#121417] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">고객센터</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-gray-700 text-[#121417] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+<span class="truncate">로그아웃</span>
 </button>
-<button class="flex items-center justify-center size-10 rounded-full bg-gray-100 text-text-main hover:bg-gray-200 transition-colors">
-<span class="material-symbols-outlined">person</span>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-gray-200 dark:border-gray-700" data-alt="User profile picture placeholder with abstract pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNaUYcCMh1N-sPQ22mcvhwUU3bwhPORO36zguX64AunwMN12UrI1WVqgfcXVBMwqTf8Cg7_WcF3XYX79T7mSdHqFxupcpv81DH4pFFfwim-QSeKkJEcCZmNiHUlHMXYPeasD4M20Vj7afLUKlQOo1Hs9jRJ5fWkxPq-scPJfHJY4qiGkdiya9QLlhPf5S50319ePVTpnrgVySzIz9ZeuNYz6_E_drC9Ndu7sF9XPklVZPLd_N8hVMszzHK7yuqScIiDjWn83D4WxzJ");'></div>
+</div>
+</div>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden p-2 text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined">menu</span>
 </button>
-</div>
-</div>
-</div>
 </header>
 <!-- Main Content -->
-<main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6">
-<div class="w-full max-w-[640px] flex flex-col gap-6">
-<!-- Success Card -->
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
-<!-- Decorative Top Bar -->
-<div class="h-2 w-full bg-primary"></div>
-<div class="p-8 sm:p-12 flex flex-col items-center text-center">
-<!-- Icon Animation Wrapper -->
-<div class="mb-6 relative">
-<div class="absolute inset-0 bg-blue-100 rounded-full scale-150 opacity-20 animate-pulse"></div>
-<div class="size-20 bg-blue-50 rounded-full flex items-center justify-center relative z-10 text-primary">
-<span class="material-symbols-outlined text-[48px]">verified</span>
+<main class="flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-20">
+<div class="w-full max-w-[560px] flex flex-col gap-6">
+<!-- Notification Card -->
+<div class="bg-white dark:bg-[#1e2732] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-700 p-8 md:p-10 text-center animate-fade-in-up">
+<!-- Icon Status -->
+<div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary dark:text-blue-400">
+<span class="material-symbols-outlined text-[32px]">info</span>
 </div>
-</div>
-<!-- Heading -->
-<h1 class="text-2xl sm:text-3xl font-extrabold text-text-main mb-3 leading-tight">
-                        축하합니다!<br/>채용이 확정되었습니다!
-                    </h1>
-<p class="text-text-sub text-base sm:text-lg mb-8 font-medium">
-                        easyK와 함께하는 <span class="text-text-main font-bold">김철수</span>님의<br class="sm:hidden"/> 새로운 시작을 응원합니다.
+<h1 class="mb-3 text-2xl md:text-[28px] font-bold text-[#121417] dark:text-white font-korean">지원 결과 안내</h1>
+<p class="text-gray-600 dark:text-gray-300 text-base leading-relaxed mb-8 font-korean px-2">
+                        아쉽지만, 지원하신 공고에 대한 결과가 거절되었습니다.<br class="hidden md:block"/>
+                        더 좋은 기회가 회원님을 기다리고 있을 거예요. <br class="hidden md:block"/>
+                        easyK가 회원님의 앞날을 항상 응원합니다.
                     </p>
-<!-- Job Details Box -->
-<div class="w-full bg-background-light rounded-xl p-6 sm:p-8 mb-8 border border-gray-100">
-<div class="grid grid-cols-1 gap-y-4">
-<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-<span class="text-text-sub text-sm mb-1 sm:mb-0">기업명</span>
-<span class="text-text-main font-bold text-base">(주)글로벌네트웍스</span>
+<!-- Job Summary Box -->
+<div class="mb-8 rounded-xl bg-gray-50 dark:bg-[#121820] border border-gray-100 dark:border-gray-700 p-4 text-left">
+<div class="flex items-start gap-4">
+<div class="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-white border border-gray-200 dark:border-gray-600">
+<div class="h-full w-full bg-contain bg-center bg-no-repeat" data-alt="Company logo for Samsung C&amp;T" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCv2JPU_aZJOV9LAY8BDHbS6pSj0-qSWMUqz-tEXpdM1zWbPASLX8x9Ho90tVbmMbiq31nv3WsR7epwWk7W9v0LZujVSv41xcHIBOePsJz-BA77KrM9X_ZqBQPfRt1OcGWG7ucwi70GqRXEHl36iMId7HCk2YG6jXLuBKUtzbmZFGxnxKsMHNpoOKMWYtbVMwLZpRURG4Kw3viBuDGuetakKZ0cqHKwxBc4TQbf0TVg8dJrGrIp6At3PzB4rTOnO94-rHbebViOkBp7");'></div>
 </div>
-<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-<span class="text-text-sub text-sm mb-1 sm:mb-0">직무</span>
-<span class="text-text-main font-bold text-base">마케팅 매니저 (Marketing Manager)</span>
-</div>
-<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-<span class="text-text-sub text-sm mb-1 sm:mb-0">입사 예정일</span>
-<span class="text-primary font-bold text-base">2023년 11월 1일</span>
+<div class="flex flex-col justify-center h-16">
+<h3 class="font-bold text-[#121417] dark:text-white text-base md:text-lg truncate line-clamp-1 font-korean">웹 개발자 (Web Developer)</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium font-korean">삼성물산 (Samsung C&amp;T)</p>
 </div>
 </div>
+<div class="mt-3 flex items-center gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+<span class="material-symbols-outlined text-gray-400 text-[16px]">calendar_today</span>
+<span class="text-xs text-gray-500 dark:text-gray-400 font-display">지원일: 2023. 10. 24</span>
 </div>
-<!-- Body Text / Instructions -->
-<div class="flex gap-3 items-start text-left bg-blue-50/50 p-4 rounded-lg mb-8 w-full">
-<span class="material-symbols-outlined text-primary text-xl mt-0.5">info</span>
-<p class="text-text-main text-sm leading-relaxed">
-                            입사 준비에 필요한 계약서 및 안내 사항은 <strong>가입하신 이메일</strong>로 발송되었습니다.<br class="hidden sm:block"/>
-                            자세한 진행 상황은 마이페이지 내 [지원 내역]에서 확인하실 수 있습니다.
-                        </p>
 </div>
-<!-- Actions -->
-<div class="flex flex-col w-full gap-3 sm:flex-row sm:justify-center">
-<button class="w-full sm:w-auto min-w-[200px] h-12 bg-primary hover:bg-primary-dark text-white text-base font-bold rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-<span>내 지원 내역 확인하기</span>
-<span class="material-symbols-outlined text-sm">arrow_forward</span>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3">
+<button class="flex w-full items-center justify-center rounded-xl bg-primary hover:bg-blue-700 text-white h-12 md:h-14 px-6 text-base font-bold transition-all shadow-md hover:shadow-lg font-korean group">
+<span class="mr-2">새로운 일자리 검색</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
 </button>
-<button class="w-full sm:w-auto min-w-[140px] h-12 bg-white border border-gray-200 hover:bg-gray-50 text-text-main text-base font-bold rounded-lg transition-colors flex items-center justify-center">
-                            메인으로
+<button class="flex w-full items-center justify-center rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-transparent text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 h-12 md:h-14 px-6 text-base font-bold transition-all font-korean">
+                            내 지원 내역 확인
                         </button>
 </div>
 </div>
-</div>
-<!-- Help Footer -->
+<!-- Footer / Help Link -->
 <div class="text-center">
-<p class="text-xs text-text-sub">
-                    채용 과정에 대해 궁금한 점이 있으신가요? <a class="text-primary font-bold hover:underline" href="#">고객센터 문의하기</a>
-</p>
+<a class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary underline decoration-1 underline-offset-4 transition-colors font-korean" href="#">
+                        채용 결과에 대해 궁금한 점이 있으신가요?
+                    </a>
 </div>
 </div>
 </main>
+</div>
 </body></html>
