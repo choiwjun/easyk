@@ -8,7 +8,7 @@ from uuid import UUID
 from ..database import get_db
 from ..models.user import User
 from ..schemas.job import JobResponse, JobDetailResponse, JobCreate, JobUpdate
-from ..middleware.auth import get_current_user
+from ..middleware.auth import get_current_user, get_current_user_optional
 from ..services.job_service import (
     get_jobs as get_jobs_service,
     get_job_detail as get_job_detail_service,
@@ -45,11 +45,10 @@ def get_jobs(
     keyword: Optional[str] = Query(None, description="키워드 검색 (직종, 회사명)"),
     limit: int = Query(20, ge=1, le=100, description="조회할 최대 개수"),
     offset: int = Query(0, ge=0, description="건너뛸 개수"),
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
-    일자리 목록 조회 엔드포인트
+    일자리 목록 조회 엔드포인트 (비로그인 접근 가능)
 
     Args:
         location: 지역 필터 (optional)
@@ -57,7 +56,6 @@ def get_jobs(
         keyword: 키워드 검색 (position, company_name) (optional)
         limit: 조회할 최대 개수 (기본값: 20, 최대: 100)
         offset: 건너뛸 개수 (기본값: 0)
-        current_user: 현재 인증된 사용자
         db: 데이터베이스 세션
 
     Returns:
@@ -69,22 +67,23 @@ def get_jobs(
 @router.get("/{job_id}", response_model=JobDetailResponse)
 def get_job_detail(
     job_id: UUID,
-    current_user: User = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db),
 ):
     """
-    일자리 상세 조회 엔드포인트
+    일자리 상세 조회 엔드포인트 (비로그인 접근 가능)
 
     Args:
         job_id: 일자리 ID
-        current_user: 현재 인증된 사용자
+        current_user: 현재 인증된 사용자 (optional)
         db: 데이터베이스 세션
 
     Returns:
         JobDetailResponse: 일자리 상세 정보 (지원 여부 포함)
     """
-    job, has_applied = get_job_detail_service(job_id, current_user.id, db)
-    
+    user_id = current_user.id if current_user else None
+    job, has_applied = get_job_detail_service(job_id, user_id, db)
+
     # JobDetailResponse로 변환
     job_response = JobResponse.model_validate(job)
     return JobDetailResponse(**job_response.model_dump(), has_applied=has_applied)

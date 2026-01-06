@@ -6,13 +6,6 @@ export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
 
-    if (!authHeader) {
-      return NextResponse.json(
-        { message: '인증이 필요합니다' },
-        { status: 401 }
-      );
-    }
-
     // Query parameters
     const searchParams = request.nextUrl.searchParams;
     const location = searchParams.get('location');
@@ -32,11 +25,15 @@ export async function GET(request: NextRequest) {
     const queryString = queryParams.toString();
     const url = `${BACKEND_URL}/api/jobs${queryString ? `?${queryString}` : ''}`;
 
+    // 인증 헤더는 선택적으로 전달 (비로그인도 접근 가능)
+    const headers: HeadersInit = {};
+    if (authHeader) {
+      headers['Authorization'] = authHeader;
+    }
+
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Authorization': authHeader,
-      },
+      headers,
     });
 
     const data = await response.json();

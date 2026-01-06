@@ -88,7 +88,7 @@ def get_jobs(
 
 def get_job_detail(
     job_id: UUID,
-    user_id: UUID,
+    user_id: Optional[UUID],
     db: Session,
 ) -> tuple[Job, bool]:
     """
@@ -96,7 +96,7 @@ def get_job_detail(
 
     Args:
         job_id: 일자리 ID
-        user_id: 현재 사용자 ID
+        user_id: 현재 사용자 ID (None이면 비로그인 사용자)
         db: 데이터베이스 세션
 
     Returns:
@@ -116,11 +116,13 @@ def get_job_detail(
             detail="Job not found"
         )
 
-    # 지원 여부 확인
-    has_applied = db.query(JobApplication).filter(
-        JobApplication.job_id == job_id,
-        JobApplication.user_id == user_id,
-    ).first() is not None
+    # 지원 여부 확인 (비로그인 사용자는 False)
+    has_applied = False
+    if user_id:
+        has_applied = db.query(JobApplication).filter(
+            JobApplication.job_id == job_id,
+            JobApplication.user_id == user_id,
+        ).first() is not None
 
     return job, has_applied
 

@@ -61,22 +61,19 @@ export default function JobDetailPage() {
     try {
       const token = localStorage.getItem("access_token");
 
-      if (!token) {
-        router.push("/login");
-        return;
+      // 인증 헤더는 선택적으로 전달 (비로그인도 접근 가능)
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
 
       const response = await fetch(`/api/jobs/${jobId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       });
 
       if (response.ok) {
         const data = await response.json();
         setJob(data);
-      } else if (response.status === 401 || response.status === 403) {
-        router.push("/login");
       } else if (response.status === 404) {
         setError("일자리를 찾을 수 없습니다.");
       } else {
@@ -442,7 +439,15 @@ export default function JobDetailPage() {
                     </div>
                   ) : job.status === "active" && daysRemaining > 0 ? (
                     <button
-                      onClick={() => setShowApplyModal(true)}
+                      onClick={() => {
+                        const token = localStorage.getItem("access_token");
+                        if (!token) {
+                          // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
+                          router.push(`/login?redirect=/jobs/${jobId}`);
+                          return;
+                        }
+                        setShowApplyModal(true);
+                      }}
                       className="w-full h-12 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg shadow-md shadow-primary/20 transition-all transform active:scale-95 flex items-center justify-center gap-2"
                     >
                       <span>지원하기</span>

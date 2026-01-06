@@ -83,3 +83,41 @@ def get_current_admin_user(
 
 # 별칭: require_admin
 require_admin = get_current_admin_user
+
+
+# Optional 인증용 security (auto_error=False)
+optional_security = HTTPBearer(auto_error=False)
+
+
+def get_current_user_optional(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
+    db: Session = Depends(get_db)
+) -> Optional[User]:
+    """현재 인증된 사용자 조회 (선택적)
+
+    토큰이 없거나 유효하지 않으면 None을 반환합니다.
+    비로그인 사용자도 접근 가능한 엔드포인트에서 사용합니다.
+
+    Args:
+        credentials: HTTP Bearer 토큰 (optional)
+        db: 데이터베이스 세션
+
+    Returns:
+        Optional[User]: 현재 사용자 객체 또는 None
+    """
+    if not credentials:
+        return None
+
+    # JWT 토큰 검증
+    payload = verify_access_token(credentials.credentials)
+    if not payload:
+        return None
+
+    # 페이로드에서 이메일 추출
+    email: Optional[str] = payload.get("sub")
+    if not email:
+        return None
+
+    # 사용자 조회
+    user = db.query(User).filter(User.email == email).first()
+    return user
