@@ -40,10 +40,161 @@ interface Consultation {
   status: string;
   payment_status: string;
   consultant_id: string | null;
+  consultant_name?: string;
   created_at: string;
   scheduled_at: string | null;
   updated_at: string;
+  user?: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    nationality?: string;
+  };
 }
+
+// 샘플 상담 상세 데이터
+const SAMPLE_CONSULTATIONS: Record<string, Consultation> = {
+  "sample-1": {
+    id: "sample-1",
+    consultation_type: "visa",
+    consultation_method: "video",
+    content: "E-9 비자 연장 절차와 필요 서류에 대해 상담 요청드립니다. 현재 체류 기간이 2개월 후 만료됩니다.\n\n구체적으로 알고 싶은 내용:\n1. 비자 연장 신청 가능 시기\n2. 필요한 서류 목록\n3. 처리 소요 기간\n4. 수수료 및 비용\n\n현재 제조업체에서 근무 중이며, 고용주가 연장을 지원해 줄 예정입니다.",
+    amount: 50000,
+    status: "matched",
+    payment_status: "completed",
+    consultant_id: "consultant-1",
+    consultant_name: "김민수 변호사",
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    scheduled_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    user: {
+      first_name: "Nguyen",
+      last_name: "Van Minh",
+      email: "nguyen.minh@email.com",
+      nationality: "Vietnam",
+    },
+  },
+  "sample-2": {
+    id: "sample-2",
+    consultation_type: "labor",
+    consultation_method: "chat",
+    content: "임금 체불 문제로 상담 요청드립니다. 3개월째 급여를 받지 못하고 있으며 법적 대응 방법을 알고 싶습니다.\n\n상황 설명:\n- 근무 기간: 2023년 3월 ~ 현재\n- 체불 기간: 2025년 10월, 11월, 12월 (3개월)\n- 총 체불 금액: 약 650만원\n- 회사 측 반응: 자금 사정이 어렵다며 기다려달라고 함\n\n노동청 진정이나 소송을 고려하고 있는데, 어떤 방법이 효과적일지 조언 부탁드립니다.",
+    amount: 30000,
+    status: "matched",
+    payment_status: "completed",
+    consultant_id: "consultant-2",
+    consultant_name: "박지영 변호사",
+    created_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    scheduled_at: null,
+    updated_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    user: {
+      first_name: "Maria",
+      last_name: "Santos",
+      email: "maria.santos@email.com",
+      nationality: "Philippines",
+    },
+  },
+  "sample-3": {
+    id: "sample-3",
+    consultation_type: "real_estate",
+    consultation_method: "video",
+    content: "전세 계약 만료 후 보증금 반환 문제가 발생했습니다. 집주인이 보증금 일부만 돌려주겠다고 합니다.\n\n계약 정보:\n- 보증금: 5,000만원\n- 계약 기간: 2023년 2월 ~ 2025년 2월\n- 집주인 주장: 벽지 훼손, 바닥 스크래치로 500만원 공제\n\n입주 시 사진을 찍어두었고, 정상적인 사용에 의한 마모라고 생각합니다. 어떻게 대응해야 할까요?",
+    amount: 50000,
+    status: "matched",
+    payment_status: "completed",
+    consultant_id: "consultant-3",
+    consultant_name: "이준호 변호사",
+    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    scheduled_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    user: {
+      first_name: "Zhang",
+      last_name: "Wei",
+      email: "zhang.wei@email.com",
+      nationality: "China",
+    },
+  },
+  "sample-4": {
+    id: "sample-4",
+    consultation_type: "visa",
+    consultation_method: "phone",
+    content: "F-2 비자(거주) 자격 변경 조건과 절차에 대해 알고 싶습니다. 현재 E-7 비자로 5년째 체류 중입니다.\n\n현재 상황:\n- 현재 비자: E-7 (특정활동)\n- 체류 기간: 5년 2개월\n- 연봉: 약 5,500만원\n- 한국어 능력: TOPIK 4급\n\n사회통합프로그램(KIIP)은 아직 이수하지 않았는데, 필수인지 궁금합니다.",
+    amount: 40000,
+    status: "scheduled",
+    payment_status: "completed",
+    consultant_id: "consultant-1",
+    consultant_name: "김민수 변호사",
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    scheduled_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    user: {
+      first_name: "Tanaka",
+      last_name: "Yuki",
+      email: "tanaka.yuki@email.com",
+      nationality: "Japan",
+    },
+  },
+  "sample-5": {
+    id: "sample-5",
+    consultation_type: "labor",
+    consultation_method: "video",
+    content: "산업재해를 당했는데 회사에서 산재 처리를 거부하고 있습니다. 어떻게 해야 하나요?\n\n사고 내용:\n- 발생일: 2025년 12월 15일\n- 장소: 공장 내 작업장\n- 부상: 왼쪽 손목 골절\n- 치료 중: 현재 깁스 착용, 6주 진단\n\n회사 측에서는 개인 부주의라며 산재 신청을 해주지 않고 있습니다. 직접 신청이 가능한지, 어떤 절차를 밟아야 하는지 알고 싶습니다.",
+    amount: 50000,
+    status: "scheduled",
+    payment_status: "completed",
+    consultant_id: "consultant-2",
+    consultant_name: "박지영 변호사",
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    scheduled_at: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    user: {
+      first_name: "Budi",
+      last_name: "Santoso",
+      email: "budi.santoso@email.com",
+      nationality: "Indonesia",
+    },
+  },
+  "sample-6": {
+    id: "sample-6",
+    consultation_type: "tax",
+    consultation_method: "chat",
+    content: "한국에서 프리랜서로 일하고 있는데 세금 신고 방법과 공제 항목에 대해 알고 싶습니다.\n\n현재 상황:\n- 직업: IT 프리랜서 (웹 개발)\n- 연 소득: 약 8,000만원\n- 비자: E-7\n- 사업자등록: 미등록\n\n질문:\n1. 사업자등록을 해야 하나요?\n2. 종합소득세 신고 방법\n3. 공제받을 수 있는 항목\n4. 미국과의 이중과세 방지 협정 적용 여부",
+    amount: 30000,
+    status: "completed",
+    payment_status: "completed",
+    consultant_id: "consultant-4",
+    consultant_name: "최서연 변호사",
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    scheduled_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    user: {
+      first_name: "John",
+      last_name: "Smith",
+      email: "john.smith@email.com",
+      nationality: "USA",
+    },
+  },
+  "sample-7": {
+    id: "sample-7",
+    consultation_type: "visa",
+    consultation_method: "video",
+    content: "결혼 비자(F-6) 신청 절차와 필요 서류에 대해 상담받고 싶습니다.\n\n상황:\n- 현재 비자: 관광 (B-2)\n- 한국인 배우자와 결혼 예정\n- 결혼 예정일: 2026년 3월\n\n궁금한 점:\n1. F-6 비자 신청 시기\n2. 필요 서류 목록 (태국 측, 한국 측)\n3. 초청장 작성 방법\n4. 심사 기간 및 통과율",
+    amount: 50000,
+    status: "completed",
+    payment_status: "completed",
+    consultant_id: "consultant-1",
+    consultant_name: "김민수 변호사",
+    created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    scheduled_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    user: {
+      first_name: "Somchai",
+      last_name: "Prasert",
+      email: "somchai.p@email.com",
+      nationality: "Thailand",
+    },
+  },
+};
 
 export default function ConsultationDetailPage() {
   const router = useRouter();
@@ -64,6 +215,16 @@ export default function ConsultationDetailPage() {
 
   const fetchConsultation = async () => {
     try {
+      // 샘플 ID인 경우 샘플 데이터 사용
+      if (consultationId.startsWith("sample-")) {
+        const sampleData = SAMPLE_CONSULTATIONS[consultationId];
+        if (sampleData) {
+          setConsultation(sampleData);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const token = localStorage.getItem("access_token");
 
       if (!token) {
@@ -430,6 +591,52 @@ export default function ConsultationDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Client Info (for consultants) */}
+            {consultation.user && (
+              <div className="bg-white rounded-xl p-6 shadow-card border border-gray-100">
+                <h3 className="text-lg font-bold mb-4">
+                  {language === "ko" ? "의뢰인 정보" : "Client Information"}
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 pb-4 border-b border-gray-50">
+                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-lg">
+                      {consultation.user.first_name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-bold text-text-main">
+                        {consultation.user.first_name} {consultation.user.last_name}
+                      </p>
+                      <p className="text-sm text-text-sub">{consultation.user.email}</p>
+                    </div>
+                  </div>
+                  {consultation.user.nationality && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-text-sub">{language === "ko" ? "국적" : "Nationality"}</span>
+                      <span className="text-sm font-medium text-text-main">{consultation.user.nationality}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Assigned Consultant Info */}
+            {consultation.consultant_name && (
+              <div className="bg-white rounded-xl p-6 shadow-card border border-gray-100">
+                <h3 className="text-lg font-bold mb-4">
+                  {language === "ko" ? "담당 변호사" : "Assigned Lawyer"}
+                </h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold text-lg">
+                    <span className="material-symbols-outlined">gavel</span>
+                  </div>
+                  <div>
+                    <p className="font-bold text-text-main">{consultation.consultant_name}</p>
+                    <p className="text-sm text-text-sub">{language === "ko" ? "법률 전문가" : "Legal Expert"}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Help Box */}
             <div className="bg-[#f0f4fa] rounded-xl p-5 border border-blue-100">
