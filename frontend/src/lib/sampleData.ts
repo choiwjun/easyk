@@ -5,7 +5,7 @@
 
 export const SAMPLE_JOBS = [
   {
-    id: "1",
+    id: "00000000-0000-0000-0000-000000000001",
     position: "시설 관리 인력 (외국인)",
     company_name: "고양시청",
     location: "경기도 고양시 덕양구",
@@ -16,7 +16,7 @@ export const SAMPLE_JOBS = [
     created_at: "2026-01-03T10:00:00",
   },
   {
-    id: "2",
+    id: "00000000-0000-0000-0000-000000000002",
     position: "도시 계획 연구원 (다문화 번역)",
     company_name: "서울특별시",
     location: "서울특별시 서대문구",
@@ -27,7 +27,7 @@ export const SAMPLE_JOBS = [
     created_at: "2026-01-02T15:30:00",
   },
   {
-    id: "3",
+    id: "00000000-0000-0000-0000-000000000003",
     position: "외국인 상담 지원사",
     company_name: "한국이주재단",
     location: "서울특별시 용산구",
@@ -38,7 +38,7 @@ export const SAMPLE_JOBS = [
     created_at: "2026-01-05T09:00:00",
   },
   {
-    id: "4",
+    id: "00000000-0000-0000-0000-000000000004",
     position: "제조업 생산 현장 인력",
     company_name: "자동차 부품 제조사 A",
     location: "경기도 부천시",
@@ -49,7 +49,7 @@ export const SAMPLE_JOBS = [
     created_at: "2026-01-08T14:20:00",
   },
   {
-    id: "5",
+    id: "00000000-0000-0000-0000-000000000005",
     position: "호텔 프론트 데스크 (다언어)",
     company_name: "호텔 B",
     location: "서울특별시 강남구",
@@ -60,7 +60,7 @@ export const SAMPLE_JOBS = [
     created_at: "2026-01-10T11:00:00",
   },
   {
-    id: "6",
+    id: "00000000-0000-0000-0000-000000000006",
     position: "식음료 배달 및 물류 지원",
     company_name: "물류 센터 C",
     location: "경기도 파주시",
@@ -74,7 +74,7 @@ export const SAMPLE_JOBS = [
 
 export const SAMPLE_SUPPORTS = [
   {
-    id: "1",
+    id: "00000000-0000-0000-0000-000000000011",
     title: "외국인 장려금 지원사업",
     category: "subsidy",
     description: "경기도에 거주하는 외국인 근로자에게 생활 안정을 위한 장려금을 지원합니다.",
@@ -91,7 +91,7 @@ export const SAMPLE_SUPPORTS = [
     created_at: "2026-01-01T09:00:00",
   },
   {
-    id: "2",
+    id: "00000000-0000-0000-0000-000000000012",
     title: "다문화 가정 아동 한국어 교육 지원",
     category: "education",
     description: "다문화 가정의 아동에게 무료 한국어 교육 프로그램을 제공합니다.",
@@ -108,7 +108,7 @@ export const SAMPLE_SUPPORTS = [
     created_at: "2026-01-05T10:00:00",
   },
   {
-    id: "3",
+    id: "00000000-0000-0000-0000-000000000013",
     title: "외국인 취업 성장 지원 사업",
     category: "training",
     description: "외국인 근로자의 한국어 능력 및 직무 스킬 향상을 위한 맞춤형 직무 훈련 프로그램.",
@@ -125,7 +125,7 @@ export const SAMPLE_SUPPORTS = [
     created_at: "2026-01-10T11:00:00",
   },
   {
-    id: "4",
+    id: "00000000-0000-0000-0000-000000000014",
     title: "F-2 비자 체류 기간 연장 지원",
     category: "visa",
     description: "F-2 비자 소지자가 체류 기간 연장을 위한 법률 상담 및 문서 작성 지원.",
@@ -142,7 +142,7 @@ export const SAMPLE_SUPPORTS = [
     created_at: "2026-01-03T13:00:00",
   },
   {
-    id: "5",
+    id: "00000000-0000-0000-0000-000000000015",
     title: "새터민 청소년 입주자 임대 주택 지원",
     category: "housing",
     description: "거주지가 없는 새터민 청소년에게 임대 주택을 무료 제공합니다.",
@@ -162,36 +162,36 @@ export const SAMPLE_SUPPORTS = [
 
 export const SAMPLE_CONSULTATIONS = [
   {
-    id: "1",
+    id: "00000000-0000-0000-0000-000000000021",
     consultation_type: "visa",
     consultation_method: "call",
     content: "F-2 비자 체류 기간 연장 절차에 대해 알고 싶습니다. 현재 체류 기간이 3개월 남았습니다.",
     amount: 50000,
     status: "matched",
     payment_status: "pending",
-    consultant_id: "consultant-1",
+    consultant_id: "00000000-0000-0000-0000-000000000031",
     created_at: "2026-01-05T10:00:00",
   },
   {
-    id: "2",
+    id: "00000000-0000-0000-0000-000000000022",
     consultation_type: "labor",
     consultation_method: "video",
     content: "고용계약서 작성 및 임금 체불 관련 법률 상담이 필요합니다.",
     amount: 30000,
     status: "scheduled",
     payment_status: "completed",
-    consultant_id: "consultant-2",
+    consultant_id: "00000000-0000-0000-0000-000000000032",
     created_at: "2026-01-08T14:00:00",
   },
   {
-    id: "3",
+    id: "00000000-0000-0000-0000-000000000023",
     consultation_type: "contract",
     consultation_method: "document",
     content: "임대차 계약서 내용 검토 및 수정 요청",
     amount: 40000,
     status: "completed",
     payment_status: "completed",
-    consultant_id: "consultant-3",
+    consultant_id: "00000000-0000-0000-0000-000000000033",
     created_at: "2026-01-02T09:00:00",
   },
 ];

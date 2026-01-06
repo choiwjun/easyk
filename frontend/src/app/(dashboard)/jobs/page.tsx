@@ -26,7 +26,7 @@ interface Job {
 // Sample jobs for UI demonstration
 const SAMPLE_JOBS: Job[] = [
   {
-    id: "1",
+    id: "00000000-0000-0000-0000-000000000101",
     position: "자동차 부품 조립 생산직",
     company_name: "(주)한성모터스",
     location: "경기 평택시 포승읍",
@@ -39,7 +39,7 @@ const SAMPLE_JOBS: Job[] = [
     is_visa_supported: true,
   },
   {
-    id: "2",
+    id: "00000000-0000-0000-0000-000000000102",
     position: "식품 가공 및 포장 (초보가능)",
     company_name: "그린푸드 시스템",
     location: "충북 음성군",
@@ -51,7 +51,7 @@ const SAMPLE_JOBS: Job[] = [
     is_dormitory_provided: true,
   },
   {
-    id: "3",
+    id: "00000000-0000-0000-0000-000000000103",
     position: "반도체 장비 배관 조공",
     company_name: "케이테크 엔지니어링",
     location: "경기 화성시",
@@ -63,7 +63,7 @@ const SAMPLE_JOBS: Job[] = [
     visa_type: "F-4",
   },
   {
-    id: "4",
+    id: "00000000-0000-0000-0000-000000000104",
     position: "물류센터 상하차 및 분류",
     company_name: "스피드 로지스틱스",
     location: "인천 서구",
@@ -74,7 +74,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-04",
   },
   {
-    id: "5",
+    id: "00000000-0000-0000-0000-000000000105",
     position: "건설 현장 철근공",
     company_name: "대한건설",
     location: "서울 강서구",
@@ -86,7 +86,7 @@ const SAMPLE_JOBS: Job[] = [
     is_visa_supported: true,
   },
   {
-    id: "6",
+    id: "00000000-0000-0000-0000-000000000106",
     position: "제조업 기계 조작원",
     company_name: "테크산업",
     location: "경기 안산시",
@@ -97,7 +97,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-06",
   },
   {
-    id: "7",
+    id: "00000000-0000-0000-0000-000000000107",
     position: "호텔 하우스키핑 및 룸메이드",
     company_name: "스카이 호텔 서비스",
     location: "서울 중구",
@@ -108,7 +108,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-07",
   },
   {
-    id: "8",
+    id: "00000000-0000-0000-0000-000000000108",
     position: "용접 및 제관 기술자",
     company_name: "(주)우성테크",
     location: "충남 천안시",
@@ -120,7 +120,7 @@ const SAMPLE_JOBS: Job[] = [
     is_visa_supported: true,
   },
   {
-    id: "9",
+    id: "00000000-0000-0000-0000-000000000109",
     position: "단순 물류 상하차 (야간)",
     company_name: "대한로지스틱스",
     location: "경기 이천시",
@@ -131,7 +131,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-09",
   },
   {
-    id: "10",
+    id: "00000000-0000-0000-0000-000000000110",
     position: "레스토랑 주방 보조",
     company_name: "맛고을 레스토랑",
     location: "서울 강남구",
@@ -142,7 +142,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-10",
   },
   {
-    id: "11",
+    id: "00000000-0000-0000-0000-000000000111",
     position: "농장 작물 재배 및 수확",
     company_name: "그린팜",
     location: "전남 나주시",
@@ -154,7 +154,7 @@ const SAMPLE_JOBS: Job[] = [
     is_dormitory_provided: true,
   },
   {
-    id: "12",
+    id: "00000000-0000-0000-0000-000000000112",
     position: "전자제품 조립 생산직",
     company_name: "삼일전자",
     location: "경기 수원시",
@@ -167,7 +167,7 @@ const SAMPLE_JOBS: Job[] = [
     is_dormitory_provided: true,
   },
   {
-    id: "13",
+    id: "00000000-0000-0000-0000-000000000113",
     position: "청소 및 시설관리",
     company_name: "클린서비스",
     location: "서울 송파구",
@@ -178,7 +178,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-13",
   },
   {
-    id: "14",
+    id: "00000000-0000-0000-0000-000000000114",
     position: "타이어 제조 생산직",
     company_name: "한국타이어공업",
     location: "대전 유성구",
@@ -191,7 +191,7 @@ const SAMPLE_JOBS: Job[] = [
     is_dormitory_provided: true,
   },
   {
-    id: "15",
+    id: "00000000-0000-0000-0000-000000000115",
     position: "편의점 판매직",
     company_name: "24시 편의점",
     location: "경기 고양시",
@@ -203,7 +203,7 @@ const SAMPLE_JOBS: Job[] = [
     visa_type: "F-4",
   },
   {
-    id: "16",
+    id: "00000000-0000-0000-0000-000000000116",
     position: "플라스틱 사출 기계 조작",
     company_name: "동양플라스틱",
     location: "경북 구미시",
@@ -215,7 +215,7 @@ const SAMPLE_JOBS: Job[] = [
     is_dormitory_provided: true,
   },
   {
-    id: "17",
+    id: "00000000-0000-0000-0000-000000000117",
     position: "배달 라이더 (오토바이)",
     company_name: "퀵서비스",
     location: "서울 마포구",
@@ -226,7 +226,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-17",
   },
   {
-    id: "18",
+    id: "00000000-0000-0000-0000-000000000118",
     position: "양계장 관리 및 사육",
     company_name: "행복양계",
     location: "충북 진천군",
@@ -238,7 +238,7 @@ const SAMPLE_JOBS: Job[] = [
     is_dormitory_provided: true,
   },
   {
-    id: "19",
+    id: "00000000-0000-0000-0000-000000000119",
     position: "페인트 도장 작업자",
     company_name: "코리아페인트",
     location: "경기 시흥시",
@@ -250,7 +250,7 @@ const SAMPLE_JOBS: Job[] = [
     is_visa_supported: true,
   },
   {
-    id: "20",
+    id: "00000000-0000-0000-0000-000000000120",
     position: "카페 바리스타",
     company_name: "커피하우스",
     location: "서울 용산구",
@@ -261,7 +261,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-20",
   },
   {
-    id: "21",
+    id: "00000000-0000-0000-0000-000000000121",
     position: "조선소 용접공",
     company_name: "한국조선",
     location: "울산 동구",
@@ -274,7 +274,7 @@ const SAMPLE_JOBS: Job[] = [
     is_urgent: true,
   },
   {
-    id: "22",
+    id: "00000000-0000-0000-0000-000000000122",
     position: "세차장 세차원",
     company_name: "프리미엄 세차장",
     location: "경기 성남시",
@@ -285,7 +285,7 @@ const SAMPLE_JOBS: Job[] = [
     created_at: "2026-01-22",
   },
   {
-    id: "23",
+    id: "00000000-0000-0000-0000-000000000123",
     position: "섬유 염색 작업자",
     company_name: "대구섬유",
     location: "대구 서구",
@@ -297,7 +297,7 @@ const SAMPLE_JOBS: Job[] = [
     is_dormitory_provided: true,
   },
   {
-    id: "24",
+    id: "00000000-0000-0000-0000-000000000124",
     position: "창고 관리 및 포장",
     company_name: "스마트물류",
     location: "경기 용인시",
@@ -316,6 +316,11 @@ const QUICK_FILTERS = [
   { label: { ko: "#초보가능", en: "#Entry Level" }, value: "entry_level" },
   { label: { ko: "#건설현장", en: "#Construction" }, value: "construction" },
 ];
+
+// Helper function to check if job is sample data
+const isSampleJob = (jobId: string): boolean => {
+  return jobId.startsWith("00000000-0000-0000-0000-");
+};
 
 export default function JobsPage() {
   const router = useRouter();
@@ -822,11 +827,20 @@ export default function JobsPage() {
                     </div>
                   </div>
 
-                  <Link href={`/jobs/${job.id}`}>
-                    <button className="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
-                      {language === "ko" ? "상세 보기" : "View Details"}
+                  {isSampleJob(job.id) ? (
+                    <button
+                      onClick={() => alert(language === "ko" ? "샘플 데이터입니다. 실제 데이터가 등록되면 상세 정보를 확인할 수 있습니다." : "This is sample data. You can view details once real data is registered.")}
+                      className="w-full py-2.5 rounded-lg border border-gray-300 text-gray-500 font-bold text-sm cursor-not-allowed"
+                    >
+                      {language === "ko" ? "샘플 데이터" : "Sample Data"}
                     </button>
-                  </Link>
+                  ) : (
+                    <Link href={`/jobs/${job.id}`}>
+                      <button className="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
+                        {language === "ko" ? "상세 보기" : "View Details"}
+                      </button>
+                    </Link>
+                  )}
                 </article>
               ))}
             </div>
