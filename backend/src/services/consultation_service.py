@@ -2,7 +2,7 @@
 
 from typing import List, Optional
 from uuid import UUID
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from ..models.user import User
 from ..models.consultation import Consultation
@@ -95,8 +95,10 @@ def get_incoming_consultations(
     if not consultant:
         return []
 
-    # 기본 쿼리: 해당 전문가에게 매칭된 상담
-    query = db.query(Consultation).filter(
+    # 기본 쿼리: 해당 전문가에게 매칭된 상담 (user 관계 eager loading)
+    query = db.query(Consultation).options(
+        joinedload(Consultation.user)
+    ).filter(
         Consultation.consultant_id == consultant.id
     )
 

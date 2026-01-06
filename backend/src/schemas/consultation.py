@@ -8,6 +8,18 @@ from uuid import UUID
 from pydantic import BaseModel, Field, field_validator
 
 
+class UserBasicInfo(BaseModel):
+    """상담 응답에 포함될 사용자 기본 정보"""
+
+    first_name: str
+    last_name: str
+    email: str
+    nationality: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class ConsultationCreate(BaseModel):
     """상담 신청 생성 스키마"""
 
@@ -51,6 +63,7 @@ class ConsultationResponse(BaseModel):
     payment_status: str
     created_at: datetime
     updated_at: datetime
+    user: Optional[UserBasicInfo] = None  # 의뢰인 정보
 
     class Config:
         from_attributes = True  # Pydantic v2: ORM 모드 활성화
