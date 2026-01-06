@@ -217,69 +217,41 @@ export default function JobApplyPage() {
       return;
     }
 
-    setIsSubmitting(true);
-    setError("");
+    const token = localStorage.getItem("access_token");
 
-    try {
-      const token = localStorage.getItem("access_token");
-
-      if (!token) {
-        router.push("/login");
-        return;
-      }
-
-      // 샘플 데이터인 경우 API 호출 없이 바로 성공 처리 (데모용)
-      if (isSampleJobId(jobId)) {
-        const params = new URLSearchParams({
-          position: job?.position || "",
-          company: job?.company_name || "",
-        });
-        router.push(`/jobs/${jobId}/apply/success?${params.toString()}`);
-        return;
-      }
-
-      // FormData 생성
-      const formData = new FormData();
-      formData.append("resume", resumeFile);
-      if (coverLetterFile) {
-        formData.append("cover_letter_file", coverLetterFile);
-      }
-      formData.append("cover_letter", additionalInfo);
-
-      const response = await fetch(`/api/jobs/${jobId}/apply`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        // 성공 페이지로 이동 (포지션과 회사명 전달)
-        const params = new URLSearchParams({
-          position: job?.position || "",
-          company: job?.company_name || "",
-        });
-        router.push(`/jobs/${jobId}/apply/success?${params.toString()}`);
-      } else {
-        const errorData = await response.json();
-        setError(
-          errorData.detail ||
-            errorData.message ||
-            (language === "ko"
-              ? "지원에 실패했습니다. 다시 시도해주세요."
-              : "Application failed. Please try again.")
-        );
-      }
-    } catch {
-      setError(
-        language === "ko"
-          ? "네트워크 오류가 발생했습니다. 다시 시도해주세요."
-          : "A network error occurred. Please try again."
-      );
-    } finally {
-      setIsSubmitting(false);
+    if (!token) {
+      router.push("/login");
+      return;
     }
+
+    // 파일 크기 포맷팅
+    const formatFileSize = (bytes: number) => {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
+    // 최종 확인 페이지(review)로 이동 - 입력 데이터를 URL 파라미터로 전달
+    const params = new URLSearchParams({
+      position: job?.position || "",
+      company: job?.company_name || "",
+      resume: resumeFile.name,
+      resumeSize: formatFileSize(resumeFile.size),
+      additionalInfo: additionalInfo,
+    });
+
+    if (coverLetterFile) {
+      params.set("coverLetter", coverLetterFile.name);
+      params.set("coverLetterSize", formatFileSize(coverLetterFile.size));
+    }
+
+    // 사용자 정보도 전달 (실제로는 프로필에서 가져와야 함)
+    if (userProfile) {
+      params.set("userName", userProfile.name);
+      params.set("userEmail", userProfile.email);
+    }
+
+    router.push(`/jobs/${jobId}/apply/review?${params.toString()}`);
   };
 
   const handleSaveDraft = () => {
