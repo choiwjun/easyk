@@ -3,345 +3,208 @@
 <html class="light" lang="ko"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>easyK - 프로그램 상세</title>
-<!-- Fonts -->
+<title>easyK 자격 확인 폼</title>
+<!-- Google Fonts: Public Sans and Nanum Gothic -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700;900&amp;family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&amp;family=Public+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Theme Configuration -->
+<!-- Tailwind Config -->
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#5a1e9f",
-                        "background-light": "#f7f6f8",
-                        "background-dark": "#191220",
+                        "primary": "#1e5a9f",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#121920",
                     },
                     fontFamily: {
-                        "display": ["Public Sans", "Noto Sans KR", "sans-serif"],
-                        "sans": ["Public Sans", "Noto Sans KR", "sans-serif"]
+                        "display": ["Public Sans", "sans-serif"],
+                        "korean": ["Nanum Gothic", "sans-serif"],
                     },
                     borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
                 },
             },
         }
     </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-    </style>
+<style>body {
+    font-family: "Nanum Gothic", "Public Sans", sans-serif
+    }
+/* Custom select arrow style reused from examples */
+.select-chevron {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuC2crtP4aQqTr0goDyadQ7voPvLE9eZ4mLJaEGhHEDpq7noroM7pyn02b3uSOWNW_yNBxLMYYyAbL1d9ItM_2YW1kacJKerSLo7rhYljRh6h8Lu5VV9nzVWFhbGbfCDHt0ro-e2LS63bwjKKKyP0oXtquR13ZZURBY8rrEBfkaTXt2J3wUcG2Gf5Oabk9oqe2Iq2wFJBHIp3USkIR4uqgu_TNYLGmRt_Aeb8uddAHp_W2cpDuofQoE6kvtBwKeV45N7Fmt8j8tBZXAI);
+    background-position: right 1rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5rem
+    }</style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-[#141217] dark:text-white font-display antialiased min-h-screen flex flex-col">
-<!-- Top Navbar -->
-<header class="sticky top-0 z-50 bg-white dark:bg-[#191220] border-b border-[#f2f0f4] dark:border-[#2d2438]">
-<div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-<div class="flex items-center justify-between h-16">
-<!-- Logo & Nav -->
-<div class="flex items-center gap-8">
-<a class="flex items-center gap-2 group" href="#">
-<div class="w-8 h-8 flex items-center justify-center bg-primary rounded-lg text-white">
-<span class="material-symbols-outlined">diversity_3</span>
-</div>
-<span class="text-xl font-bold tracking-tight text-[#141217] dark:text-white group-hover:text-primary transition-colors">easyK</span>
-</a>
-<nav class="hidden md:flex items-center gap-6">
-<a class="text-sm font-medium text-primary dark:text-white" href="#">지원 프로그램</a>
-<a class="text-sm font-medium text-[#746586] dark:text-[#a095b0] hover:text-primary dark:hover:text-white transition-colors" href="#">커뮤니티</a>
-<a class="text-sm font-medium text-[#746586] dark:text-[#a095b0] hover:text-primary dark:hover:text-white transition-colors" href="#">공지사항</a>
-<a class="text-sm font-medium text-[#746586] dark:text-[#a095b0] hover:text-primary dark:hover:text-white transition-colors" href="#">마이페이지</a>
-</nav>
-</div>
-<!-- Right Actions -->
+<body class="bg-background-light dark:bg-background-dark text-[#121417] dark:text-white min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="w-full bg-white dark:bg-[#1a202c] border-b border-[#f0f2f4] dark:border-gray-800">
+<div class="max-w-[1200px] mx-auto px-4 md:px-10 h-16 flex items-center justify-between">
 <div class="flex items-center gap-4">
-<div class="hidden sm:flex items-center bg-[#f2f0f4] dark:bg-[#2d2438] rounded-full px-4 py-2 h-10 w-64">
-<span class="material-symbols-outlined text-[#746586] text-[20px]">search</span>
-<input class="bg-transparent border-none focus:ring-0 text-sm w-full text-[#141217] dark:text-white placeholder-[#746586]" placeholder="프로그램 검색" type="text"/>
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">verified_user</span>
 </div>
-<button class="w-10 h-10 rounded-full bg-cover bg-center border border-[#e0dce5] dark:border-[#3d3448]" data-alt="User profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBrSE9mAFK3QF882yeqYYxzlC7bYdkqlidlrLDp-qsviZLX-Pir0xniTZ1rJfoPdGrqxYm0BMOblWB1aRbydkmtTT2YadaR3mgm7WQdqTB4Z6eLFMoKjPhAdrRCFjnYBTNBcrZlNHEY9_pKsC4k6Z_zshyauuYO6lWVRTXuKmFCnHKgN1ALOq_qCnpwTaBNpOS6OBBg1BfJWHD2Z9GFhdST5pSAM5-6qbUqvzFdv9ZXXv_bFi2DpwelnhoYCS8CRCFSHsKgoBw5ZmhB');">
+<h2 class="text-[#121417] dark:text-white text-xl font-bold tracking-tight">easyK</h2>
+</div>
+<!-- Desktop Navigation -->
+<div class="hidden md:flex flex-1 justify-end items-center gap-8">
+<nav class="flex items-center gap-8">
+<a class="text-[#121417] dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">프로그램 찾기</a>
+<a class="text-[#121417] dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">커뮤니티</a>
+<a class="text-[#121417] dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">고객지원</a>
+</nav>
+<button class="flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-primary/10 hover:bg-primary/20 text-primary text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-lg">language</span>
+<span>Language</span>
 </button>
 </div>
+<!-- Mobile Menu Icon -->
+<div class="md:hidden flex items-center">
+<button class="text-[#121417] dark:text-white p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
 </div>
 </div>
 </header>
 <!-- Main Content -->
-<main class="flex-grow py-8 px-4 sm:px-6 lg:px-8">
-<div class="max-w-[1120px] mx-auto">
-<!-- Breadcrumbs -->
-<nav aria-label="Breadcrumb" class="flex mb-6">
-<ol class="flex items-center space-x-2">
-<li><a class="text-[#746586] hover:text-primary" href="#">홈</a></li>
-<li><span class="text-[#746586]">/</span></li>
-<li><a class="text-[#746586] hover:text-primary" href="#">지원 프로그램</a></li>
-<li><span class="text-[#746586]">/</span></li>
-<li class="font-medium text-[#141217] dark:text-white">프로그램 상세</li>
-</ol>
-</nav>
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-<!-- Left Column: Main Details (8 cols) -->
-<div class="lg:col-span-8 flex flex-col gap-8">
-<!-- Header Section -->
-<div class="bg-white dark:bg-[#1f1a26] rounded-xl p-6 sm:p-8 shadow-sm">
-<div class="flex flex-col gap-4">
-<!-- Chips -->
-<div class="flex flex-wrap gap-2">
-<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">#비자</span>
-<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">#취업</span>
-<span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">#서울</span>
+<main class="flex-grow flex flex-col items-center justify-start pt-10 pb-20 px-4 md:px-6">
+<!-- Page Heading -->
+<div class="w-full max-w-[800px] flex flex-col items-center text-center mb-10 gap-3 animate-fade-in-up">
+<h1 class="text-[#121417] dark:text-white text-3xl md:text-4xl font-extrabold leading-tight tracking-tight">
+                정부 지원 프로그램 자격 확인
+            </h1>
+<p class="text-[#657486] dark:text-gray-400 text-base md:text-lg font-normal leading-relaxed max-w-[600px]">
+                간단한 정보를 입력하고 신청 가능한 지원 혜택을 확인해보세요.<br class="hidden md:block"/>
+                입력하신 정보는 자격 확인 용도로만 사용됩니다.
+            </p>
 </div>
-<!-- Title -->
-<div>
-<h1 class="text-3xl sm:text-4xl font-black text-[#141217] dark:text-white leading-tight mb-2">F-2-7 비자 점수제 워크샵</h1>
-<p class="text-[#746586] text-lg">점수제 거주 비자 취득을 위한 실전 전략 가이드</p>
+<!-- Form Card -->
+<div class="w-full max-w-[800px] bg-white dark:bg-[#1a202c] rounded-xl shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] border border-[#e5e7eb] dark:border-gray-800 p-6 md:p-10">
+<form action="#" class="flex flex-col gap-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+<!-- Field: Visa Type -->
+<label class="flex flex-col gap-2">
+<span class="text-[#121417] dark:text-gray-200 text-sm font-bold flex items-center gap-1">
+                            비자 종류
+                            <span class="text-red-500">*</span>
+</span>
+<div class="relative">
+<select class="select-chevron form-select appearance-none w-full h-12 md:h-14 pl-4 pr-10 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-[#2d3748] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base">
+<option disabled="" selected="" value="">비자 타입을 선택하세요</option>
+<option value="E-7">E-7 (특정활동)</option>
+<option value="F-2">F-2 (거주)</option>
+<option value="D-2">D-2 (유학)</option>
+<option value="E-9">E-9 (비전문취업)</option>
+<option value="F-5">F-5 (영주)</option>
+<option value="F-6">F-6 (결혼이민)</option>
+<option value="other">기타</option>
+</select>
 </div>
-<!-- Meta Info Horizontal -->
-<div class="flex items-center gap-4 text-sm text-[#746586] mt-2">
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span>서울특별시 종로구</span>
+</label>
+<!-- Field: Residence -->
+<label class="flex flex-col gap-2">
+<span class="text-[#121417] dark:text-gray-200 text-sm font-bold flex items-center gap-1">
+                            거주지
+                            <span class="text-red-500">*</span>
+</span>
+<div class="relative">
+<select class="select-chevron form-select appearance-none w-full h-12 md:h-14 pl-4 pr-10 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-[#2d3748] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base">
+<option disabled="" selected="" value="">거주 지역을 선택하세요</option>
+<option value="seoul">서울</option>
+<option value="gyeonggi">경기</option>
+<option value="incheon">인천</option>
+<option value="busan">부산</option>
+<option value="daegu">대구</option>
+<option value="gwangju">광주</option>
+<option value="daejeon">대전</option>
+<option value="ulsan">울산</option>
+<option value="sejong">세종</option>
+<option value="gangwon">강원</option>
+<option value="chungbuk">충북</option>
+<option value="chungnam">충남</option>
+<option value="jeonbuk">전북</option>
+<option value="jeonnam">전남</option>
+<option value="gyeongbuk">경북</option>
+<option value="gyeongnam">경남</option>
+<option value="jeju">제주</option>
+</select>
 </div>
-<div class="w-px h-3 bg-[#e0dce5]"></div>
-<div class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]">domain</span>
-<span>법무부 주관</span>
+</label>
+<!-- Field: Age -->
+<label class="flex flex-col gap-2">
+<span class="text-[#121417] dark:text-gray-200 text-sm font-bold flex items-center gap-1">
+                            나이
+                            <span class="text-red-500">*</span>
+</span>
+<div class="relative">
+<input class="form-input w-full h-12 md:h-14 px-4 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-[#2d3748] text-[#121417] dark:text-white placeholder:text-[#9aa2ac] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base" placeholder="만 나이를 입력하세요 (예: 28)" type="number"/>
 </div>
+</label>
+<!-- Field: Career -->
+<label class="flex flex-col gap-2">
+<span class="text-[#121417] dark:text-gray-200 text-sm font-bold">
+                            경력
+                        </span>
+<div class="relative">
+<select class="select-chevron form-select appearance-none w-full h-12 md:h-14 pl-4 pr-10 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-[#2d3748] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base">
+<option disabled="" selected="" value="">경력 기간을 선택하세요</option>
+<option value="new">신입 (1년 미만)</option>
+<option value="1-3">1년 이상 ~ 3년 미만</option>
+<option value="3-5">3년 이상 ~ 5년 미만</option>
+<option value="5-7">5년 이상 ~ 7년 미만</option>
+<option value="7+">7년 이상</option>
+</select>
 </div>
+</label>
 </div>
-</div>
-<!-- Hero Image -->
-<div class="aspect-video w-full rounded-xl overflow-hidden shadow-sm bg-gray-100 relative group">
-<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Diverse group of people attending a workshop in a bright modern room" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLGolHh4-WMH4S5JxQxQIVr7Bh4qP_Mn9Ol3ODsILI2Xh5sXyES-zvnmUXBmIWxstX6uLyeZpn4p5rOTF1WehFC8vpsLsilbHjn2RaDi94aFvpmwj8dlbZlgRJgDCyxJRTThId3YWLDmS1o5vk1Umd4AWlZYtEiB-g3jtlNKRbsIzeod_iysZYWBU49jA2-AixEOOV9EGw1wL9e7z3gKXznmsDApx55fjzJvTRVMBzkqIeQubAWLy_kqlqP1aTrgFmej_oSwDDu30O');">
-</div>
-<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-<div class="absolute bottom-6 left-6 text-white">
-<p class="font-bold text-lg">성공적인 한국 정착을 위한 첫걸음</p>
-</div>
-</div>
-<!-- Detail Sections -->
-<div class="bg-white dark:bg-[#1f1a26] rounded-xl shadow-sm divide-y divide-[#f2f0f4] dark:divide-[#2d2438]">
-<!-- Target Audience -->
-<div class="p-6 sm:p-8">
-<div class="flex items-start gap-4">
-<div class="p-2 bg-[#f2f0f4] dark:bg-[#2d2438] rounded-lg text-primary">
-<span class="material-symbols-outlined">group</span>
-</div>
-<div class="flex-1">
-<h3 class="text-xl font-bold text-[#141217] dark:text-white mb-4">모집 대상</h3>
-<ul class="space-y-3 text-[#534e59] dark:text-[#a095b0]">
-<li class="flex items-start gap-3">
-<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
-<span>국내 거주 중인 외국인 유학생 (D-2) 및 구직자 (D-10)</span>
-</li>
-<li class="flex items-start gap-3">
-<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
-<span>한국어 의사소통이 가능한 자 (TOPIK 3급 이상 권장)</span>
-</li>
-<li class="flex items-start gap-3">
-<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
-<span>향후 1년 이내 취업 및 비자 변경 계획이 있는 분</span>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<!-- Conditions -->
-<div class="p-6 sm:p-8">
-<div class="flex items-start gap-4">
-<div class="p-2 bg-[#f2f0f4] dark:bg-[#2d2438] rounded-lg text-primary">
-<span class="material-symbols-outlined">assignment_turned_in</span>
-</div>
-<div class="flex-1">
-<h3 class="text-xl font-bold text-[#141217] dark:text-white mb-4">신청 조건</h3>
-<p class="mb-4 text-[#534e59] dark:text-[#a095b0] leading-relaxed">
-                                        본 프로그램은 서울특별시와 법무부가 공동 주관하는 정착 지원 사업의 일환으로, 아래 요건을 충족해야 신청이 가능합니다.
-                                    </p>
-<div class="bg-[#f7f6f8] dark:bg-[#2d2438] rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<p class="text-xs font-semibold text-[#746586] uppercase mb-1">필수 서류</p>
-<p class="text-[#141217] dark:text-white font-medium">외국인등록증(ARC) 사본</p>
-</div>
-<div>
-<p class="text-xs font-semibold text-[#746586] uppercase mb-1">우대 사항</p>
-<p class="text-[#141217] dark:text-white font-medium">사회통합프로그램 이수자</p>
-</div>
-</div>
+<!-- Info Box -->
+<div class="bg-primary/5 dark:bg-primary/10 rounded-lg p-4 flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<div class="flex flex-col gap-1">
+<p class="text-sm font-bold text-[#121417] dark:text-white">안내사항</p>
+<p class="text-sm text-[#657486] dark:text-gray-300">
+                            제출된 정보는 프로그램 매칭 알고리즘을 위해서만 사용되며, 외부에 공개되지 않습니다. 정확한 매칭을 위해 실제 정보를 입력해주세요.
+                        </p>
 </div>
 </div>
-</div>
-<!-- Support Content -->
-<div class="p-6 sm:p-8">
-<div class="flex items-start gap-4">
-<div class="p-2 bg-[#f2f0f4] dark:bg-[#2d2438] rounded-lg text-primary">
-<span class="material-symbols-outlined">card_giftcard</span>
-</div>
-<div class="flex-1">
-<h3 class="text-xl font-bold text-[#141217] dark:text-white mb-4">지원 내용</h3>
-<div class="space-y-6">
-<div class="border-l-2 border-primary pl-4">
-<h4 class="font-bold text-[#141217] dark:text-white text-lg">F-2-7 점수제 심층 분석 강의</h4>
-<p class="text-[#534e59] dark:text-[#a095b0] mt-1">최신 개정 법령을 반영한 점수 산정 방식 및 가점 항목 상세 안내</p>
-</div>
-<div class="border-l-2 border-primary pl-4">
-<h4 class="font-bold text-[#141217] dark:text-white text-lg">1:1 모의 점수 컨설팅</h4>
-<p class="text-[#534e59] dark:text-[#a095b0] mt-1">전문 행정사와 함께 현재 점수를 계산하고 부족한 점수 보완 전략 수립</p>
-</div>
-<div class="border-l-2 border-primary pl-4">
-<h4 class="font-bold text-[#141217] dark:text-white text-lg">취업 비자 멘토링</h4>
-<p class="text-[#534e59] dark:text-[#a095b0] mt-1">실제 비자 변경 성공 사례 공유 및 Q&amp;A 세션</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- How to Apply -->
-<div class="p-6 sm:p-8">
-<div class="flex items-start gap-4">
-<div class="p-2 bg-[#f2f0f4] dark:bg-[#2d2438] rounded-lg text-primary">
-<span class="material-symbols-outlined">mouse</span>
-</div>
-<div class="flex-1">
-<h3 class="text-xl font-bold text-[#141217] dark:text-white mb-4">신청 방법</h3>
-<ol class="relative border-l border-[#e0dce5] dark:border-[#3d3448] ml-3">
-<li class="mb-8 ml-6">
-<span class="absolute flex items-center justify-center w-6 h-6 bg-primary rounded-full -left-3 ring-4 ring-white dark:ring-[#1f1a26] text-white text-xs font-bold">1</span>
-<h3 class="font-medium leading-tight text-[#141217] dark:text-white">자격 확인하기</h3>
-<p class="text-sm text-[#746586] mt-1">우측 상단의 '자격 확인하기' 버튼을 눌러 기본 요건을 확인합니다.</p>
-</li>
-<li class="mb-8 ml-6">
-<span class="absolute flex items-center justify-center w-6 h-6 bg-[#e0dce5] dark:bg-[#3d3448] rounded-full -left-3 ring-4 ring-white dark:ring-[#1f1a26] text-[#746586] text-xs font-bold">2</span>
-<h3 class="font-medium leading-tight text-[#141217] dark:text-white">신청서 작성</h3>
-<p class="text-sm text-[#746586] mt-1">온라인 신청 양식에 맞춰 정보를 입력하고 증빙 서류를 업로드합니다.</p>
-</li>
-<li class="ml-6">
-<span class="absolute flex items-center justify-center w-6 h-6 bg-[#e0dce5] dark:bg-[#3d3448] rounded-full -left-3 ring-4 ring-white dark:ring-[#1f1a26] text-[#746586] text-xs font-bold">3</span>
-<h3 class="font-medium leading-tight text-[#141217] dark:text-white">선발 결과 확인</h3>
-<p class="text-sm text-[#746586] mt-1">접수 마감 후 3일 이내에 이메일 및 문자로 결과를 안내드립니다.</p>
-</li>
-</ol>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Right Column: Sticky Summary Card (4 cols) -->
-<div class="lg:col-span-4 sticky top-24">
-<div class="bg-white dark:bg-[#1f1a26] rounded-xl shadow-lg border border-[#f2f0f4] dark:border-[#2d2438] overflow-hidden">
-<!-- Status Bar -->
-<div class="bg-primary px-6 py-3 flex items-center justify-between">
-<span class="text-white font-medium text-sm flex items-center gap-2">
-<span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                                모집중
-                            </span>
-<span class="text-white/80 text-sm">D-7</span>
-</div>
-<div class="p-6">
-<h2 class="text-lg font-bold text-[#141217] dark:text-white mb-6">프로그램 요약</h2>
-<!-- Summary List -->
-<div class="space-y-4 mb-8">
-<div class="flex justify-between items-center py-2 border-b border-[#f2f0f4] dark:border-[#2d2438]">
-<span class="text-[#746586] text-sm">신청 기간</span>
-<span class="text-[#141217] dark:text-white text-sm font-medium">23.10.01 - 23.10.15</span>
-</div>
-<div class="flex justify-between items-center py-2 border-b border-[#f2f0f4] dark:border-[#2d2438]">
-<span class="text-[#746586] text-sm">모집 인원</span>
-<span class="text-[#141217] dark:text-white text-sm font-medium">30명 (선착순)</span>
-</div>
-<div class="flex justify-between items-center py-2 border-b border-[#f2f0f4] dark:border-[#2d2438]">
-<span class="text-[#746586] text-sm">참가비</span>
-<span class="text-primary text-sm font-bold">무료</span>
-</div>
-<div class="flex justify-between items-center py-2 border-b border-[#f2f0f4] dark:border-[#2d2438]">
-<span class="text-[#746586] text-sm">문의처</span>
-<span class="text-[#141217] dark:text-white text-sm font-medium">02-1234-5678</span>
-</div>
-</div>
-<!-- CTAs -->
-<div class="flex flex-col gap-3">
-<button class="w-full bg-primary hover:bg-[#4a1885] text-white font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+<!-- Submit Button -->
+<div class="pt-2">
+<button class="w-full h-14 bg-primary hover:bg-[#164882] active:bg-[#123b6b] text-white text-lg font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 group" type="button">
 <span>자격 확인하기</span>
-<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
 </button>
-<button class="w-full bg-[#f2f0f4] dark:bg-[#2d2438] hover:bg-[#e6e2ea] dark:hover:bg-[#3d3448] text-[#141217] dark:text-white font-medium py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2">
-<span class="material-symbols-outlined text-[20px]">download</span>
-<span>모집 공고문 다운로드</span>
-</button>
+<p class="text-center mt-4 text-sm text-[#657486] dark:text-gray-500">
+                        버튼을 누르면 <a class="underline hover:text-primary" href="#">이용약관</a> 및 <a class="underline hover:text-primary" href="#">개인정보처리방침</a>에 동의하게 됩니다.
+                    </p>
 </div>
-<!-- Share -->
-<div class="mt-6 flex justify-center gap-4">
-<button class="p-2 text-[#746586] hover:text-primary transition-colors" title="공유하기">
-<span class="material-symbols-outlined">share</span>
-</button>
-<button class="p-2 text-[#746586] hover:text-primary transition-colors" title="저장하기">
-<span class="material-symbols-outlined">bookmark</span>
-</button>
-<button class="p-2 text-[#746586] hover:text-primary transition-colors" title="인쇄하기">
-<span class="material-symbols-outlined">print</span>
-</button>
-</div>
-</div>
-</div>
-<!-- Related Info Card -->
-<div class="mt-6 bg-[#f0f4ff] dark:bg-[#1a2035] rounded-xl p-5 border border-primary/20">
-<div class="flex gap-3">
-<span class="material-symbols-outlined text-primary">info</span>
-<div>
-<p class="text-sm font-bold text-[#141217] dark:text-white mb-1">알려드립니다</p>
-<p class="text-xs text-[#534e59] dark:text-[#a095b0] leading-relaxed">
-                                    본 프로그램 수료 시, 향후 F-2-7 비자 신청 시 가점 1점이 부여됩니다. 출석률 80% 이상 달성 시에만 수료증이 발급됩니다.
-                                </p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Suggestion / Footer area for this page -->
-<div class="mt-16 pt-8 border-t border-[#e0dce5] dark:border-[#2d2438]">
-<h3 class="text-xl font-bold text-[#141217] dark:text-white mb-6">비슷한 지원 프로그램</h3>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<!-- Card 1 -->
-<a class="group block bg-white dark:bg-[#1f1a26] rounded-xl border border-[#f2f0f4] dark:border-[#2d2438] overflow-hidden hover:shadow-md transition-shadow" href="#">
-<div class="h-40 bg-cover bg-center" data-alt="University students studying together" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCAff8969i-NzIz_t-TjL04Wb4b-Kc99aexm2EKAeGoZ9d4HADGpT9hHyodCp4H6-iX2Fq54z9uqyZekd3QoXWgX8YSfiKCc0NPejzi1qR8aN8ms8l6dhlkeITvsAjUDa_hHSm_pCZGhCAehRGNAX4nrq5kA-flse24xzpaurkfTvS_zXE2aYgf6DOJ3tW9_kjWQQgsskdB1xEjP6BJ5c30isRaHCFiG3k9jMGFNw8F5XF6dy9uQd0_GuYO2S6vvUB9npQP0dgUuWP2');"></div>
-<div class="p-5">
-<div class="flex items-center gap-2 mb-2">
-<span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded">모집중</span>
-<span class="text-xs text-[#746586]">서울글로벌센터</span>
-</div>
-<h4 class="font-bold text-[#141217] dark:text-white group-hover:text-primary mb-1 truncate">외국인 창업 아카데미 심화과정</h4>
-<p class="text-sm text-[#746586]">2023.11.01 ~ 2023.11.30</p>
-</div>
-</a>
-<!-- Card 2 -->
-<a class="group block bg-white dark:bg-[#1f1a26] rounded-xl border border-[#f2f0f4] dark:border-[#2d2438] overflow-hidden hover:shadow-md transition-shadow" href="#">
-<div class="h-40 bg-cover bg-center" data-alt="Office meeting with sticky notes on glass wall" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAK3NceEOuJciQcgFU354pNEPAPDtjBqVstrxzioj2_bKCBkfQNqBmWCY1L2L-TdZWQxraeHXRDwnW6oW5yPjPkd3S9hCET_Yb3PZ-fwzMMZwMXlWs3fVNwKA7WjnWvEXmOzEQ4vGyCzMgmfu0yGBRB1uoYSyaKW3h2K9yOlhAzQ5AmcWVBaYvTEh0_fnxkC30jT1RBBbEkI3Ux3-gtALVV1r0aWOKJvymF8c4s80VeQc_zPgWd92O1cvsWAL3Tw46ySzA95kaCmjHV');"></div>
-<div class="p-5">
-<div class="flex items-center gap-2 mb-2">
-<span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-bold rounded">마감임박</span>
-<span class="text-xs text-[#746586]">경기도청</span>
-</div>
-<h4 class="font-bold text-[#141217] dark:text-white group-hover:text-primary mb-1 truncate">취업 역량 강화 멘토링</h4>
-<p class="text-sm text-[#746586]">2023.10.20 ~ 2023.10.22</p>
-</div>
-</a>
-<!-- Card 3 -->
-<a class="group block bg-white dark:bg-[#1f1a26] rounded-xl border border-[#f2f0f4] dark:border-[#2d2438] overflow-hidden hover:shadow-md transition-shadow" href="#">
-<div class="h-40 bg-cover bg-center" data-alt="Conference room presentation" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCyMfzei6CR8iPF6Aml0OSh3-W68VyS0jK5h36Io4ZxbWclMsqFJkpjzzcjHl6r1vKI8zVfVXYRo7TwrMngjAFF-SYZXidXMDnDViML9oB59mL20_y2lAYbvE1dDndaYLV3U-3-8HmMIRH_ltvZzIgYI1Qx5FEc4XabVGSIZSWAgTbDWML7DE0QFUmf4nOeRlaRq79Sn-4118qj3ONNhnzz680UcXozopFZqbv03Nm2QsyqaMHx-H0n13-h4C2ZE5iGs8rpTHRndhBV');"></div>
-<div class="p-5">
-<div class="flex items-center gap-2 mb-2">
-<span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded">모집중</span>
-<span class="text-xs text-[#746586]">법무부</span>
-</div>
-<h4 class="font-bold text-[#141217] dark:text-white group-hover:text-primary mb-1 truncate">사회통합프로그램 5단계</h4>
-<p class="text-sm text-[#746586]">상시 모집</p>
-</div>
-</a>
-</div>
-</div>
+</form>
 </div>
 </main>
+<!-- Footer -->
+<footer class="w-full py-8 bg-white dark:bg-[#1a202c] border-t border-[#f0f2f4] dark:border-gray-800 mt-auto">
+<div class="max-w-[960px] mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex flex-col gap-1 items-center md:items-start">
+<div class="flex items-center gap-2 mb-2">
+<div class="size-5 text-gray-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">verified_user</span>
+</div>
+<span class="text-gray-500 font-bold text-sm">easyK</span>
+</div>
+<p class="text-xs text-[#9aa2ac]">© 2024 easyK Inc. All rights reserved.</p>
+</div>
+<div class="flex gap-6">
+<a class="text-xs text-[#657486] hover:text-primary transition-colors" href="#">이용약관</a>
+<a class="text-xs text-[#657486] hover:text-primary transition-colors" href="#">개인정보처리방침</a>
+<a class="text-xs text-[#657486] hover:text-primary transition-colors" href="#">고객센터</a>
+</div>
+</div>
+</footer>
 </body></html>
