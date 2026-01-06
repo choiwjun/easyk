@@ -40,28 +40,6 @@ def create_consultation(
     return create_consultation_service(consultation_data, current_user, db)
 
 
-@router.get("/{consultation_id}", response_model=ConsultationResponse)
-def get_consultation_detail(
-    consultation_id: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """
-    상담 상세 정보 조회
-
-    Args:
-        consultation_id: 상담 ID
-        current_user: 현재 인증된 사용자
-        db: 데이터베이스 세션
-
-    Returns:
-        ConsultationResponse: 상담 상세 정보
-    """
-    from uuid import UUID
-    from ..services.consultation_service import get_consultation_by_id as get_consultation_by_id_service
-    return get_consultation_by_id_service(UUID(consultation_id), current_user, db)
-
-
 @router.get("", response_model=List[ConsultationResponse])
 def get_user_consultations(
     status: Optional[str] = Query(None, description="상태 필터 (requested, matched, scheduled, completed 등)"),
@@ -102,48 +80,6 @@ def get_incoming_consultations(
     return get_incoming_consultations_service(current_user, db, status)
 
 
-@router.post("/{consultation_id}/accept", response_model=ConsultationResponse)
-def accept_consultation(
-    consultation_id: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """
-    전문가가 상담 요청 수락
-
-    Args:
-        consultation_id: 상담 ID
-        current_user: 현재 인증된 사용자 (전문가)
-        db: 데이터베이스 세션
-
-    Returns:
-        ConsultationResponse: 수락된 상담 정보
-    """
-    from uuid import UUID
-    return accept_consultation_service(UUID(consultation_id), current_user, db)
-
-
-@router.post("/{consultation_id}/reject", response_model=ConsultationResponse)
-def reject_consultation(
-    consultation_id: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """
-    전문가가 상담 요청 거절
-
-    Args:
-        consultation_id: 상담 ID
-        current_user: 현재 인증된 사용자 (전문가)
-        db: 데이터베이스 세션
-
-    Returns:
-        ConsultationResponse: 거절된 상담 정보
-    """
-    from uuid import UUID
-    return reject_consultation_service(UUID(consultation_id), current_user, db)
-
-
 @router.get("/dashboard/stats", response_model=dict)
 def get_dashboard_stats(
     current_user: User = Depends(get_current_user),
@@ -163,7 +99,6 @@ def get_dashboard_stats(
     from ..models.consultant import Consultant
     from ..models.review import Review
     from sqlalchemy import func
-    from datetime import datetime, timedelta
 
     # 전문가 정보 조회
     consultant = db.query(Consultant).filter(
@@ -246,3 +181,67 @@ def get_dashboard_stats(
         "average_rating": round(avg_rating, 1),
         "total_reviews": total_reviews,
     }
+
+
+@router.get("/{consultation_id}", response_model=ConsultationResponse)
+def get_consultation_detail(
+    consultation_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    상담 상세 정보 조회
+
+    Args:
+        consultation_id: 상담 ID
+        current_user: 현재 인증된 사용자
+        db: 데이터베이스 세션
+
+    Returns:
+        ConsultationResponse: 상담 상세 정보
+    """
+    from uuid import UUID
+    from ..services.consultation_service import get_consultation_by_id as get_consultation_by_id_service
+    return get_consultation_by_id_service(UUID(consultation_id), current_user, db)
+
+
+@router.post("/{consultation_id}/accept", response_model=ConsultationResponse)
+def accept_consultation(
+    consultation_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    전문가가 상담 요청 수락
+
+    Args:
+        consultation_id: 상담 ID
+        current_user: 현재 인증된 사용자 (전문가)
+        db: 데이터베이스 세션
+
+    Returns:
+        ConsultationResponse: 수락된 상담 정보
+    """
+    from uuid import UUID
+    return accept_consultation_service(UUID(consultation_id), current_user, db)
+
+
+@router.post("/{consultation_id}/reject", response_model=ConsultationResponse)
+def reject_consultation(
+    consultation_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    전문가가 상담 요청 거절
+
+    Args:
+        consultation_id: 상담 ID
+        current_user: 현재 인증된 사용자 (전문가)
+        db: 데이터베이스 세션
+
+    Returns:
+        ConsultationResponse: 거절된 상담 정보
+    """
+    from uuid import UUID
+    return reject_consultation_service(UUID(consultation_id), current_user, db)
