@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRoleGuard } from '@/hooks/useRoleGuard';
-import DesignHeader from '@/components/layout/DesignHeader';
-import DesignFooter from '@/components/layout/DesignFooter';
+import DesignHeader from '@/components/ui/DesignHeader';
+import DesignFooter from '@/components/ui/DesignFooter';
 
 interface Consultation {
   id: string;

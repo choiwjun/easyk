@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
-import DesignHeader from "@/components/layout/DesignHeader";
-import DesignFooter from "@/components/layout/DesignFooter";
+import DesignHeader from "@/components/ui/DesignHeader";
+import DesignFooter from "@/components/ui/DesignFooter";
 
 interface Job {
     id: string;
