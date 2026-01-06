@@ -317,11 +317,6 @@ const QUICK_FILTERS = [
   { label: { ko: "#건설현장", en: "#Construction" }, value: "construction" },
 ];
 
-// Helper function to check if job is sample data
-const isSampleJob = (jobId: string): boolean => {
-  return jobId.startsWith("00000000-0000-0000-0000-");
-};
-
 export default function JobsPage() {
   const router = useRouter();
   const { language } = useLanguage();
@@ -827,20 +822,11 @@ export default function JobsPage() {
                     </div>
                   </div>
 
-                  {isSampleJob(job.id) ? (
-                    <button
-                      onClick={() => alert(language === "ko" ? "샘플 데이터입니다. 실제 데이터가 등록되면 상세 정보를 확인할 수 있습니다." : "This is sample data. You can view details once real data is registered.")}
-                      className="w-full py-2.5 rounded-lg border border-gray-300 text-gray-500 font-bold text-sm cursor-not-allowed"
-                    >
-                      {language === "ko" ? "샘플 데이터" : "Sample Data"}
+                  <Link href={`/jobs/${job.id}`}>
+                    <button className="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
+                      {language === "ko" ? "상세 보기" : "View Details"}
                     </button>
-                  ) : (
-                    <Link href={`/jobs/${job.id}`}>
-                      <button className="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
-                        {language === "ko" ? "상세 보기" : "View Details"}
-                      </button>
-                    </Link>
-                  )}
+                  </Link>
                 </article>
               ))}
             </div>

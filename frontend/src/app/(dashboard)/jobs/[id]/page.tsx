@@ -33,6 +33,111 @@ const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
   "temporary": "임시직",
 };
 
+// 샘플 데이터 ID 체크
+const isSampleJobId = (id: string): boolean => {
+  return id.startsWith("00000000-0000-0000-0000-");
+};
+
+// 샘플 일자리 상세 데이터
+const SAMPLE_JOBS_DETAIL: Record<string, Job> = {
+  "00000000-0000-0000-0000-000000000124": {
+    id: "00000000-0000-0000-0000-000000000124",
+    position: "창고 관리 및 포장",
+    company_name: "스마트물류",
+    company_phone: "031-1234-5678",
+    company_address: "경기도 용인시 처인구 포곡읍 물류단지로 123",
+    location: "경기 용인시",
+    employment_type: "contract",
+    salary_range: "월 270만원",
+    salary_currency: "KRW",
+    description: `[주요 업무]
+• 입고된 상품의 검수 및 분류 작업
+• 출고 상품 포장 및 라벨링
+• 재고 관리 및 창고 정리 정돈
+• 물류 시스템(WMS) 데이터 입력
+• 배송 준비 및 차량 상하차 보조
+
+[근무 시간]
+• 주간: 09:00 ~ 18:00 (휴게시간 1시간)
+• 주 5일 근무 (토/일 휴무)
+• 물량에 따라 연장 근무 가능 (수당 별도 지급)
+
+[근무 환경]
+• 쾌적한 냉난방 시설 완비
+• 넓고 정돈된 물류센터
+• 무거운 물건 리프트 사용 가능`,
+    requirements: `[필수 조건]
+• 만 18세 이상
+• 장기 근무 가능자 (최소 3개월 이상)
+• 기본적인 한국어 의사소통 가능
+• 건강하고 성실한 분
+
+[비자 조건]
+• E-9, H-2, F-2, F-4, F-5, F-6 비자 소지자
+• 합법적 취업 가능 비자 소지자`,
+    preferred_qualifications: `• 물류센터 근무 경험자 우대
+• 지게차 자격증 소지자 우대
+• 컴퓨터 기본 활용 가능자 우대
+• 용인 인근 거주자 우대
+• 야간 근무 가능자 우대`,
+    benefits: `• 4대 보험 가입
+• 주휴수당 지급
+• 연장/야간 수당 지급
+• 중식 제공 (구내식당)
+• 기숙사 지원 가능 (희망자)
+• 교통비 일부 지원
+• 우수 근무자 정규직 전환 기회
+• 명절 선물 지급`,
+    required_languages: ["한국어 (기초)"],
+    status: "active",
+    deadline: "2026-02-16",
+    created_at: "2026-01-24",
+    has_applied: false,
+  },
+  "00000000-0000-0000-0000-000000000101": {
+    id: "00000000-0000-0000-0000-000000000101",
+    position: "자동차 부품 조립 생산직",
+    company_name: "(주)한성모터스",
+    company_phone: "031-8765-4321",
+    company_address: "경기도 평택시 포승읍 자동차산업단지로 456",
+    location: "경기 평택시 포승읍",
+    employment_type: "full-time",
+    salary_range: "월 320만원 이상",
+    salary_currency: "KRW",
+    description: `[주요 업무]
+• 자동차 부품 조립 라인 작업
+• 품질 검사 및 불량품 선별
+• 생산 라인 정리 정돈
+• 안전 수칙 준수 및 작업장 관리
+
+[근무 시간]
+• 2교대 (주간/야간)
+• 주간: 06:00 ~ 15:00
+• 야간: 15:00 ~ 24:00
+• 주 5일 근무`,
+    requirements: `[필수 조건]
+• 만 18세 이상
+• 건강하고 체력이 좋은 분
+• 교대 근무 가능자
+• E-9 비자 소지자 또는 비자 지원 희망자`,
+    preferred_qualifications: `• 제조업 경험자 우대
+• 자동차 관련 경험자 우대
+• 장기 근무 가능자 우대`,
+    benefits: `• 4대 보험 완비
+• 기숙사 무료 제공
+• 중식/석식 무료 제공
+• 비자 지원 (E-9)
+• 연장/야간 수당 150%
+• 명절 상여금 지급
+• 우수 사원 포상`,
+    required_languages: ["한국어 (기초)"],
+    status: "active",
+    deadline: "2026-02-28",
+    created_at: "2026-01-01",
+    has_applied: false,
+  },
+};
+
 export default function JobDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -59,6 +164,22 @@ export default function JobDetailPage() {
 
   const fetchJob = async () => {
     try {
+      // 샘플 데이터 ID인 경우 로컬 데이터 사용
+      if (isSampleJobId(jobId)) {
+        const sampleJob = SAMPLE_JOBS_DETAIL[jobId];
+        if (sampleJob) {
+          setJob(sampleJob);
+        } else {
+          // 샘플 데이터에 없는 ID인 경우 기본 샘플 데이터 사용
+          setJob({
+            ...SAMPLE_JOBS_DETAIL["00000000-0000-0000-0000-000000000124"],
+            id: jobId,
+          });
+        }
+        setIsLoading(false);
+        return;
+      }
+
       const token = localStorage.getItem("access_token");
 
       // 인증 헤더는 선택적으로 전달 (비로그인도 접근 가능)
