@@ -74,6 +74,7 @@ export default function ConsultantDashboardPage() {
   const [isAvailable, setIsAvailable] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchConsultations();
@@ -291,7 +292,96 @@ export default function ConsultantDashboardPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-row bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
-      {/* Side Navigation */}
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Side Navigation */}
+      <aside
+        className={`fixed inset-y-0 left-0 w-64 flex-col border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 z-40 transform transition-transform duration-300 ease-in-out lg:hidden ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } flex`}
+      >
+        <div className="flex h-16 items-center justify-between px-6 border-b border-gray-100 dark:border-gray-700">
+          <div className="flex items-center">
+            <Link href="/" className="text-primary text-xl font-extrabold leading-normal tracking-tight">
+              easyK
+            </Link>
+            <span className="ml-2 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+              {language === 'ko' ? '전문가용' : 'Expert'}
+            </span>
+          </div>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-2">
+          {sidebarMenuItems.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => {
+                setActiveMenu(item.key);
+                setIsMobileMenuOpen(false);
+              }}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all w-full text-left ${
+                activeMenu === item.key
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+              <span className={`text-sm ${activeMenu === item.key ? 'font-bold' : 'font-medium'}`}>
+                {item.label[language as 'ko' | 'en']}
+              </span>
+              {item.badge > 0 && (
+                <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </nav>
+
+        {/* Profile Section in Mobile Sidebar */}
+        <div className="p-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold">
+                {consultantName.charAt(0)}
+              </div>
+              <span className={`absolute bottom-0 right-0 w-3 h-3 ${isAvailable ? 'bg-green-500' : 'bg-gray-400'} border-2 border-white dark:border-gray-800 rounded-full`}></span>
+            </div>
+            <div className="flex flex-col flex-1 min-w-0">
+              <span className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                {consultantName} {language === 'ko' ? '변호사' : ''}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {isAvailable ? (language === 'ko' ? '온라인' : 'Online') : (language === 'ko' ? '오프라인' : 'Offline')}
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user');
+                router.push('/login');
+              }}
+              className="text-gray-500 dark:text-gray-400 hover:text-primary transition-colors"
+            >
+              <span className="material-symbols-outlined text-[20px]">logout</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Desktop Side Navigation */}
       <aside className="hidden lg:flex w-64 flex-col border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 fixed h-full z-20">
         <div className="flex h-16 items-center px-6 border-b border-gray-100 dark:border-gray-700">
           <Link href="/" className="text-primary text-xl font-extrabold leading-normal tracking-tight">
@@ -362,7 +452,10 @@ export default function ConsultantDashboardPage() {
         {/* Top Header */}
         <header className="sticky top-0 z-10 bg-white/80 dark:bg-slate-800/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-700 px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 lg:hidden">
-            <button className="text-gray-900 dark:text-white">
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="text-gray-900 dark:text-white p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
               <span className="material-symbols-outlined">menu</span>
             </button>
             <Link href="/" className="text-primary text-lg font-bold">easyK</Link>
