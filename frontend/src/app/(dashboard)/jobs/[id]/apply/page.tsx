@@ -228,6 +228,16 @@ export default function JobApplyPage() {
         return;
       }
 
+      // 샘플 데이터인 경우 API 호출 없이 바로 성공 처리 (데모용)
+      if (isSampleJobId(jobId)) {
+        const params = new URLSearchParams({
+          position: job?.position || "",
+          company: job?.company_name || "",
+        });
+        router.push(`/jobs/${jobId}/apply/success?${params.toString()}`);
+        return;
+      }
+
       // FormData 생성
       const formData = new FormData();
       formData.append("resume", resumeFile);
