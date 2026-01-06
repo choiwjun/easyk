@@ -73,26 +73,30 @@ def get_client_ip(request: Request) -> str:
 def validate_environment_variables() -> None:
     """
     필수 환경 변수 검증
-    
+
     Raises:
-        ValueError: 필수 환경 변수가 누락인 경우
+        ValueError: 필수 환경 변수가 누락인 경우 (프로덕션 모드에서만)
     """
     from ..config import settings
-    
+
+    # 개발 모드에서는 검증 건너뛰기
+    if settings.DEBUG:
+        return
+
     missing_vars = []
-    
+
     # 데이터베이스 URL 확인
     if not settings.DATABASE_URL or settings.DATABASE_URL == "postgresql://user:password@localhost:5432/easyk":
         missing_vars.append("DATABASE_URL")
-    
+
     # 시크릿 키 확인 (프로덕션 모드에서만)
     if settings.SECRET_KEY == "your-secret-key-here-change-in-production":
         missing_vars.append("SECRET_KEY (production requires secure secret key)")
-    
+
     # Toss Payments 키 확인
     if not settings.TOSS_CLIENT_KEY or not settings.TOSS_SECRET_KEY:
         missing_vars.append("TOSS_CLIENT_KEY and TOSS_SECRET_KEY")
-    
+
     if missing_vars:
         error_msg = f"Missing required environment variables: {', '.join(missing_vars)}"
         raise ValueError(error_msg)
