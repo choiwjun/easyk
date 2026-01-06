@@ -29,7 +29,7 @@ class UserCreate(BaseModel):
     @classmethod
     def validate_role(cls, v: str) -> str:
         """역할 검증"""
-        allowed_roles = ["foreign", "consultant", "admin"]
+        allowed_roles = ["foreign", "consultant", "admin", "agency"]
         if v not in allowed_roles:
             raise ValueError(f"Role must be one of {allowed_roles}")
         return v

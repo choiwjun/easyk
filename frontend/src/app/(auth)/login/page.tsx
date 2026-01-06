@@ -78,8 +78,24 @@ export default function LoginPage() {
         localStorage.setItem('user', JSON.stringify(data.user));
       }
 
+      // Role-based redirect according to UserFlow
+      const userRole = data.user?.role;
+      let redirectUrl = "/";
+
+      if (userRole === "consultant") {
+        // 전문가(변호사) → 전문가 대시보드
+        redirectUrl = "/consultant/dashboard";
+      } else if (userRole === "agency") {
+        // 기관 담당자 → 기관 대시보드
+        redirectUrl = "/agency";
+      } else if (userRole === "admin") {
+        // 관리자 → 관리자 대시보드
+        redirectUrl = "/admin/stats";
+      }
+      // foreign(외국인) → 메인 페이지 (기본값 "/")
+
       // Force a page reload to update auth state
-      window.location.href = "/";
+      window.location.href = redirectUrl;
     } catch (error) {
       setErrors({ general: t('errors.networkError') });
     } finally {
