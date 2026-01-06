@@ -419,20 +419,26 @@ export default function ApplicationsPage() {
                       공고 상세 보기
                     </Link>
                     {application.status === "hired" ? (
-                      <button className="h-10 flex-1 md:flex-none px-4 rounded-lg bg-white dark:bg-[#1a222b] border border-primary text-primary text-sm font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors shadow-sm">
-                        합격 확인
-                      </button>
-                    ) : application.status === "rejected" ? (
-                      <button
-                        disabled
-                        className="h-10 flex-1 md:flex-none px-4 rounded-lg bg-[#f0f2f4] dark:bg-[#2a3441] text-[#a0aec0] text-sm font-bold cursor-not-allowed"
+                      <Link
+                        href={`/applications/${application.id}`}
+                        className="h-10 flex-1 md:flex-none px-4 rounded-lg bg-white dark:bg-[#1a222b] border border-primary text-primary text-sm font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors shadow-sm flex items-center justify-center"
                       >
-                        지원 마감
-                      </button>
+                        합격 확인
+                      </Link>
+                    ) : application.status === "rejected" ? (
+                      <Link
+                        href={`/applications/${application.id}`}
+                        className="h-10 flex-1 md:flex-none px-4 rounded-lg bg-[#f0f2f4] dark:bg-[#2a3441] text-[#657486] dark:text-gray-400 text-sm font-bold transition-colors flex items-center justify-center"
+                      >
+                        상세 보기
+                      </Link>
                     ) : (
-                      <button className="h-10 flex-1 md:flex-none px-4 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors shadow-sm">
+                      <Link
+                        href={`/applications/${application.id}`}
+                        className="h-10 flex-1 md:flex-none px-4 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors shadow-sm flex items-center justify-center"
+                      >
                         지원 상세 보기
-                      </button>
+                      </Link>
                     )}
                   </div>
                 </div>
