@@ -3,126 +3,383 @@
 <html class="light" lang="ko"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>easyK - 지원 결과 안내</title>
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;family=Nanum+Gothic:wght@400;700;800&amp;family=Noto+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols -->
+<title>easyK - 정부 지원 프로그램 목록</title>
+<!-- Google Fonts: Nanum Gothic & Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&amp;family=Public+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Theme Config -->
+<!-- Theme Configuration -->
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1e549f",
+                        "primary": "#1e5a9f",
                         "background-light": "#f6f7f8",
-                        "background-dark": "#121820",
+                        "background-dark": "#121920",
                     },
                     fontFamily: {
-                        "display": ["Inter", "sans-serif"],
-                        "korean": ["Nanum Gothic", "sans-serif"],
+                        "display": ["Nanum Gothic", "Public Sans", "sans-serif"],
+                        "body": ["Nanum Gothic", "Public Sans", "sans-serif"],
                     },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
                 },
             },
         }
     </script>
 <style>
-        .material-symbols-outlined {
-            font-variation-settings:
-            'FILL' 0,
-            'wght' 400,
-            'GRAD' 0,
-            'opsz' 24
-        }
         body {
-            font-family: 'Nanum Gothic', 'Inter', sans-serif;
+            font-family: 'Nanum Gothic', sans-serif;
         }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-[#121417] dark:text-white antialiased transition-colors duration-200">
-<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-<!-- Header -->
-<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-b-gray-800 bg-white dark:bg-[#1a222c] px-4 md:px-10 py-3 transition-colors duration-200">
-<div class="flex items-center gap-4 text-[#121417] dark:text-white">
-<div class="size-8 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined text-3xl">language</span>
+<body class="bg-background-light dark:bg-background-dark text-[#121417] dark:text-white min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-white dark:bg-[#1a222d] border-b border-[#f0f2f4] dark:border-[#2a3441]">
+<div class="px-4 md:px-10 py-3 flex items-center justify-between max-w-[1280px] mx-auto w-full">
+<div class="flex items-center gap-4 text-primary dark:text-white cursor-pointer">
+<div class="size-8 flex items-center justify-center bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">diversity_2</span>
 </div>
-<h2 class="text-[#121417] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display">easyK</h2>
+<h2 class="text-[#121417] dark:text-white text-xl font-extrabold leading-tight tracking-tight">easyK</h2>
 </div>
-<!-- Desktop Nav -->
-<div class="hidden md:flex flex-1 justify-end gap-8">
-<div class="flex items-center gap-9">
-<a class="text-[#121417] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold leading-normal" href="#">채용 공고</a>
-<a class="text-[#121417] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">지원 현황</a>
-<a class="text-[#121417] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">커뮤니티</a>
-<a class="text-[#121417] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">고객센터</a>
+<div class="hidden md:flex items-center gap-9">
+<a class="text-[#657486] dark:text-[#9aaebf] hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" href="#">홈</a>
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary py-1" href="#">프로그램 목록</a>
+<a class="text-[#657486] dark:text-[#9aaebf] hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" href="#">커뮤니티</a>
+<a class="text-[#657486] dark:text-[#9aaebf] hover:text-primary dark:hover:text-primary text-sm font-bold leading-normal transition-colors" href="#">마이페이지</a>
 </div>
-<div class="flex items-center gap-4">
-<button class="flex items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-gray-700 text-[#121417] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-<span class="truncate">로그아웃</span>
+<div class="flex gap-2">
+<button class="flex items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary hover:bg-primary/90 text-white text-sm font-bold leading-normal transition-colors shadow-sm">
+<span class="truncate">로그인</span>
 </button>
-<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-gray-200 dark:border-gray-700" data-alt="User profile picture placeholder with abstract pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNaUYcCMh1N-sPQ22mcvhwUU3bwhPORO36zguX64AunwMN12UrI1WVqgfcXVBMwqTf8Cg7_WcF3XYX79T7mSdHqFxupcpv81DH4pFFfwim-QSeKkJEcCZmNiHUlHMXYPeasD4M20Vj7afLUKlQOo1Hs9jRJ5fWkxPq-scPJfHJY4qiGkdiya9QLlhPf5S50319ePVTpnrgVySzIz9ZeuNYz6_E_drC9Ndu7sF9XPklVZPLd_N8hVMszzHK7yuqScIiDjWn83D4WxzJ");'></div>
-</div>
-</div>
-<!-- Mobile Menu Icon -->
-<button class="md:hidden p-2 text-gray-600 dark:text-gray-300">
-<span class="material-symbols-outlined">menu</span>
+<button class="flex items-center justify-center overflow-hidden rounded-lg h-9 px-3 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-[#e0e2e4] dark:hover:bg-[#3a4451] text-[#121417] dark:text-white text-sm font-bold leading-normal transition-colors">
+<span class="material-symbols-outlined text-[20px]">language</span>
 </button>
+</div>
+</div>
 </header>
 <!-- Main Content -->
-<main class="flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-20">
-<div class="w-full max-w-[560px] flex flex-col gap-6">
-<!-- Notification Card -->
-<div class="bg-white dark:bg-[#1e2732] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-gray-700 p-8 md:p-10 text-center animate-fade-in-up">
-<!-- Icon Status -->
-<div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary dark:text-blue-400">
-<span class="material-symbols-outlined text-[32px]">info</span>
-</div>
-<h1 class="mb-3 text-2xl md:text-[28px] font-bold text-[#121417] dark:text-white font-korean">지원 결과 안내</h1>
-<p class="text-gray-600 dark:text-gray-300 text-base leading-relaxed mb-8 font-korean px-2">
-                        아쉽지만, 지원하신 공고에 대한 결과가 거절되었습니다.<br class="hidden md:block"/>
-                        더 좋은 기회가 회원님을 기다리고 있을 거예요. <br class="hidden md:block"/>
-                        easyK가 회원님의 앞날을 항상 응원합니다.
+<main class="flex-1 w-full max-w-[1280px] mx-auto px-4 md:px-10 py-8">
+<!-- Page Heading -->
+<div class="mb-8">
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div class="flex flex-col gap-2">
+<h1 class="text-[#121417] dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">정부 지원 프로그램</h1>
+<p class="text-[#657486] dark:text-[#9aaebf] text-base font-normal leading-normal max-w-2xl">
+                        한국 생활 정착에 필요한 다양한 정부 지원 혜택을 한눈에 확인하고 신청하세요.
                     </p>
-<!-- Job Summary Box -->
-<div class="mb-8 rounded-xl bg-gray-50 dark:bg-[#121820] border border-gray-100 dark:border-gray-700 p-4 text-left">
-<div class="flex items-start gap-4">
-<div class="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-white border border-gray-200 dark:border-gray-600">
-<div class="h-full w-full bg-contain bg-center bg-no-repeat" data-alt="Company logo for Samsung C&amp;T" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCv2JPU_aZJOV9LAY8BDHbS6pSj0-qSWMUqz-tEXpdM1zWbPASLX8x9Ho90tVbmMbiq31nv3WsR7epwWk7W9v0LZujVSv41xcHIBOePsJz-BA77KrM9X_ZqBQPfRt1OcGWG7ucwi70GqRXEHl36iMId7HCk2YG6jXLuBKUtzbmZFGxnxKsMHNpoOKMWYtbVMwLZpRURG4Kw3viBuDGuetakKZ0cqHKwxBc4TQbf0TVg8dJrGrIp6At3PzB4rTOnO94-rHbebViOkBp7");'></div>
 </div>
-<div class="flex flex-col justify-center h-16">
-<h3 class="font-bold text-[#121417] dark:text-white text-base md:text-lg truncate line-clamp-1 font-korean">웹 개발자 (Web Developer)</h3>
-<p class="text-sm text-gray-500 dark:text-gray-400 font-medium font-korean">삼성물산 (Samsung C&amp;T)</p>
-</div>
-</div>
-<div class="mt-3 flex items-center gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
-<span class="material-symbols-outlined text-gray-400 text-[16px]">calendar_today</span>
-<span class="text-xs text-gray-500 dark:text-gray-400 font-display">지원일: 2023. 10. 24</span>
-</div>
-</div>
-<!-- Action Buttons -->
-<div class="flex flex-col gap-3">
-<button class="flex w-full items-center justify-center rounded-xl bg-primary hover:bg-blue-700 text-white h-12 md:h-14 px-6 text-base font-bold transition-all shadow-md hover:shadow-lg font-korean group">
-<span class="mr-2">새로운 일자리 검색</span>
-<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+<button class="flex items-center gap-2 h-10 px-4 bg-white dark:bg-[#1a222d] border border-[#dce0e5] dark:border-[#333] rounded-lg text-[#121417] dark:text-white text-sm font-bold hover:bg-gray-50 dark:hover:bg-[#252e3a] transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">help</span>
+<span>문의하기</span>
 </button>
-<button class="flex w-full items-center justify-center rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-transparent text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 h-12 md:h-14 px-6 text-base font-bold transition-all font-korean">
-                            내 지원 내역 확인
-                        </button>
 </div>
 </div>
-<!-- Footer / Help Link -->
-<div class="text-center">
-<a class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary underline decoration-1 underline-offset-4 transition-colors font-korean" href="#">
-                        채용 결과에 대해 궁금한 점이 있으신가요?
-                    </a>
+<!-- Filter Chips & Search -->
+<div class="flex flex-col gap-6 mb-8">
+<!-- Category Chips -->
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#121417] dark:bg-white pl-4 pr-5 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-white dark:text-[#121417] text-[20px]">check</span>
+<p class="text-white dark:text-[#121417] text-sm font-bold leading-normal">전체</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1a222d] border border-[#e5e7eb] dark:border-[#333] pl-4 pr-5 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/20 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-[#657486] group-hover:text-primary text-[20px]">payments</span>
+<p class="text-[#121417] dark:text-white group-hover:text-primary text-sm font-medium leading-normal">장려금</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1a222d] border border-[#e5e7eb] dark:border-[#333] pl-4 pr-5 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/20 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-[#657486] group-hover:text-primary text-[20px]">school</span>
+<p class="text-[#121417] dark:text-white group-hover:text-primary text-sm font-medium leading-normal">교육</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1a222d] border border-[#e5e7eb] dark:border-[#333] pl-4 pr-5 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/20 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-[#657486] group-hover:text-primary text-[20px]">work</span>
+<p class="text-[#121417] dark:text-white group-hover:text-primary text-sm font-medium leading-normal">취업 훈련</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1a222d] border border-[#e5e7eb] dark:border-[#333] pl-4 pr-5 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/20 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-[#657486] group-hover:text-primary text-[20px]">gavel</span>
+<p class="text-[#121417] dark:text-white group-hover:text-primary text-sm font-medium leading-normal">법률 지원</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1a222d] border border-[#e5e7eb] dark:border-[#333] pl-4 pr-5 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/20 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-[#657486] group-hover:text-primary text-[20px]">medical_services</span>
+<p class="text-[#121417] dark:text-white group-hover:text-primary text-sm font-medium leading-normal">의료</p>
+</button>
+</div>
+<!-- Search & Sort -->
+<div class="flex flex-col md:flex-row gap-4">
+<div class="relative flex-1">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#657486]">search</span>
+<input class="w-full rounded-xl bg-white dark:bg-[#1a222d] border border-[#dce0e5] dark:border-[#333] h-12 pl-12 pr-4 text-base placeholder:text-[#657486] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow" placeholder="프로그램명 또는 키워드 검색 (예: 한국어, 비자)"/>
+</div>
+<div class="relative w-full md:w-48">
+<select class="w-full appearance-none rounded-xl bg-white dark:bg-[#1a222d] border border-[#dce0e5] dark:border-[#333] h-12 pl-4 pr-10 text-base text-[#121417] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer">
+<option>최신순</option>
+<option>마감 임박순</option>
+<option>인기순</option>
+</select>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#657486] pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Program Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="group flex flex-col bg-white dark:bg-[#1a222d] rounded-2xl border border-[#e5e7eb] dark:border-[#333] overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+<div class="relative h-48 w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Abstract image of coins and financial documents representing subsidy" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuByWHgF4cf8isWJhWQSIZFfR80dgKizXiU-KWCxPgHYikgr71d8kaHY61lQJVzK3nJIIUwXn7eckB0mOCNIccnkKx4tjTNYsOQpIv00uV0iDOGTrNfR56fk7P8JSOk3mLVmkbAdGGVkUC0nvgdp8LSg-nbKwJSZpPqMaFJqcm7rQjbu1yxtcln3FIhJOp-igrY6WKIcdDvwyFHgFX-AZQ1-BX1sYXZS2m9vHxxiURwni7BahsEQMcWOIodaFHNI17TBM9XfyWAYdDdX");'></div>
+<div class="absolute top-4 left-4 z-20">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                            모집중
+                        </span>
+</div>
+<div class="absolute bottom-4 left-4 z-20 flex gap-2">
+<span class="inline-flex items-center gap-1 text-white text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]">location_on</span> 서울
+                        </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-primary text-xs font-bold uppercase tracking-wider">장려금</span>
+<span class="w-1 h-1 rounded-full bg-[#dce0e5]"></span>
+<span class="text-[#657486] text-xs">D-Day 15</span>
+</div>
+<h3 class="text-[#121417] dark:text-white text-lg font-bold leading-tight mb-2 group-hover:text-primary transition-colors">외국인 근로자 정착 지원금</h3>
+<p class="text-[#657486] dark:text-[#9aaebf] text-sm leading-relaxed line-clamp-2">초기 정착을 위한 긴급 생계비 및 주거 지원 프로그램입니다. 안정적인 한국 생활을 시작하세요.</p>
+</div>
+<div class="pt-4 border-t border-[#f0f2f4] dark:border-[#2a3441] flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4f5b67] dark:text-[#8897a8]">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>F-2, F-4 비자 소지자</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-primary hover:text-white dark:hover:bg-primary text-[#121417] dark:text-white text-sm font-bold transition-all">
+                        자세히 보기
+                    </button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group flex flex-col bg-white dark:bg-[#1a222d] rounded-2xl border border-[#e5e7eb] dark:border-[#333] overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+<div class="relative h-48 w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Classroom setting with students learning, representing education" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuADgCy_dhITvF9hyDzTkP0Iba3SSK4SPthnprfGDBDyt3IFL4AEVdOWyGauJxB8A4jabaA9mqMrnSULoVetCc22n_Ni18zu3eOeopoMGCx-7KyspPlP6OMBMbJyoelVPJ0FvSixOAFGrKWPmNk1ivkfCTNrxYPTjuQAbk6_so0gpaiKOQWnQmY0He1DfGCXoSl5m16AM5k6CJPY2zBKWFgnrZncOwteoLRK4nUpmVzWMxRiu8fUM38cCkt9vPP4aLOHKnpDS3PjBVPA");'></div>
+<div class="absolute top-4 left-4 z-20">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                            상시 모집
+                        </span>
+</div>
+<div class="absolute bottom-4 left-4 z-20 flex gap-2">
+<span class="inline-flex items-center gap-1 text-white text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]">location_on</span> 경기
+                        </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-primary text-xs font-bold uppercase tracking-wider">교육</span>
+<span class="w-1 h-1 rounded-full bg-[#dce0e5]"></span>
+<span class="text-[#657486] text-xs">선착순</span>
+</div>
+<h3 class="text-[#121417] dark:text-white text-lg font-bold leading-tight mb-2 group-hover:text-primary transition-colors">실전 한국어 회화 교실 (중급)</h3>
+<p class="text-[#657486] dark:text-[#9aaebf] text-sm leading-relaxed line-clamp-2">직장 및 실생활에서 바로 사용할 수 있는 실전 한국어 표현을 배웁니다.</p>
+</div>
+<div class="pt-4 border-t border-[#f0f2f4] dark:border-[#2a3441] flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4f5b67] dark:text-[#8897a8]">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>전체 외국인 대상</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-primary hover:text-white dark:hover:bg-primary text-[#121417] dark:text-white text-sm font-bold transition-all">
+                        자세히 보기
+                    </button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group flex flex-col bg-white dark:bg-[#1a222d] rounded-2xl border border-[#e5e7eb] dark:border-[#333] overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+<div class="relative h-48 w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="People in a meeting discussing charts, representing job training" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCbv3zuE1_oXmKQAAjNayzBYhfidE9TW7QoDjP1C6n7XH6goad6BR9doY_iQz-KYMaPtRRAdm2uE99nbcAu_cbt3SJ0oH0iQzbhC-jkjfBVAehCRjn8tqx4jVOAyi5TfwzeIUl0YSUhgJ2oDMzq6kIBTeND3zChhcHsk7St2FyZJEdg5t_E45f2-v8Y7_NFRVMKCRRD-iVcV0o0s0SfLxWBdV7tWU7I0WBXPUd4lsvwMZTdTxwZA-BAWav78AjRqmIJZK1ysrR4cleY");'></div>
+<div class="absolute top-4 left-4 z-20">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                            모집중
+                        </span>
+</div>
+<div class="absolute bottom-4 left-4 z-20 flex gap-2">
+<span class="inline-flex items-center gap-1 text-white text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]">location_on</span> 인천
+                        </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-primary text-xs font-bold uppercase tracking-wider">취업 훈련</span>
+<span class="w-1 h-1 rounded-full bg-[#dce0e5]"></span>
+<span class="text-[#657486] text-xs">D-Day 5</span>
+</div>
+<h3 class="text-[#121417] dark:text-white text-lg font-bold leading-tight mb-2 group-hover:text-primary transition-colors">IT 개발자 양성 과정</h3>
+<p class="text-[#657486] dark:text-[#9aaebf] text-sm leading-relaxed line-clamp-2">웹 개발 기초부터 실무 프로젝트까지, IT 분야 취업을 희망하는 분들을 위한 과정입니다.</p>
+</div>
+<div class="pt-4 border-t border-[#f0f2f4] dark:border-[#2a3441] flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4f5b67] dark:text-[#8897a8]">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>E-9, F-6 비자 소지자</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-primary hover:text-white dark:hover:bg-primary text-[#121417] dark:text-white text-sm font-bold transition-all">
+                        자세히 보기
+                    </button>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group flex flex-col bg-white dark:bg-[#1a222d] rounded-2xl border border-[#e5e7eb] dark:border-[#333] overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+<div class="relative h-48 w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Gavel and books on a table representing legal support" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAPAFUYfYrwuAcseXV3KtITNX4ZDdFblZ0OvRFsPFL3khGb628Buud8apuqclt-IiINQDSUhYVw5irVHINmDiV-sQYZBXFQWJDWTNZcuXvvyyAYgnk68TD_Lnny5TgllpVBXCsSE2P_YVR2S1-SarZMa7UXcNlnZRPjC05z4Osbpj5_NNEou8qTzK5khLnZYLMmyU-aeLxVq8GmJyfVQYyI3YnJMN0e2L9kIIJKIlBvMg320PO43ifXd3Wc9Wfo0QRKJ1sIGKDPqLBW");'></div>
+<div class="absolute top-4 left-4 z-20">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                            상시 모집
+                        </span>
+</div>
+<div class="absolute bottom-4 left-4 z-20 flex gap-2">
+<span class="inline-flex items-center gap-1 text-white text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]">location_on</span> 서울
+                        </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-primary text-xs font-bold uppercase tracking-wider">법률 지원</span>
+<span class="w-1 h-1 rounded-full bg-[#dce0e5]"></span>
+<span class="text-[#657486] text-xs">예약제</span>
+</div>
+<h3 class="text-[#121417] dark:text-white text-lg font-bold leading-tight mb-2 group-hover:text-primary transition-colors">무료 법률 상담 서비스</h3>
+<p class="text-[#657486] dark:text-[#9aaebf] text-sm leading-relaxed line-clamp-2">비자 문제, 근로 계약, 주거 분쟁 등 법률적 어려움을 겪는 외국인을 지원합니다.</p>
+</div>
+<div class="pt-4 border-t border-[#f0f2f4] dark:border-[#2a3441] flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4f5b67] dark:text-[#8897a8]">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>도움이 필요한 누구나</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-primary hover:text-white dark:hover:bg-primary text-[#121417] dark:text-white text-sm font-bold transition-all">
+                        자세히 보기
+                    </button>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="group flex flex-col bg-white dark:bg-[#1a222d] rounded-2xl border border-[#e5e7eb] dark:border-[#333] overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+<div class="relative h-48 w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Stethoscope on a blue background representing medical support" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeduKerV5KHm1oMdNBlPqwFYNLdrmH5kKX_Upz5-vvir0wurckIIZis6olqzA-oTYl33sk1qmTSzaerKdGyW89KFbh0y4kV5uMXFrHX7ucaOfwBEtbJEi3QvSmnkCJF-sLpKgBKo2Qu3uEALmLjxSdr_MaIsijK0mR8MgcOrZw2D4zbB-w9MQgU37HsGaQPxqb6wfCZnxIkRWxbLpyiijPegHUlwKT3kaR3tAgmwJdxVduEEn5CpB_h2Lep7bHqEP3Eqndb0Yu8Joz");'></div>
+<div class="absolute top-4 left-4 z-20">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                            마감 임박
+                        </span>
+</div>
+<div class="absolute bottom-4 left-4 z-20 flex gap-2">
+<span class="inline-flex items-center gap-1 text-white text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]">location_on</span> 부산
+                        </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-primary text-xs font-bold uppercase tracking-wider">의료</span>
+<span class="w-1 h-1 rounded-full bg-[#dce0e5]"></span>
+<span class="text-[#657486] text-xs">D-Day 2</span>
+</div>
+<h3 class="text-[#121417] dark:text-white text-lg font-bold leading-tight mb-2 group-hover:text-primary transition-colors">무료 건강 검진 캠페인</h3>
+<p class="text-[#657486] dark:text-[#9aaebf] text-sm leading-relaxed line-clamp-2">기초 검사부터 치과, 안과 검진까지. 건강한 한국 생활을 위한 종합 검진.</p>
+</div>
+<div class="pt-4 border-t border-[#f0f2f4] dark:border-[#2a3441] flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4f5b67] dark:text-[#8897a8]">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>건강보험 미가입자 우선</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-primary hover:text-white dark:hover:bg-primary text-[#121417] dark:text-white text-sm font-bold transition-all">
+                        자세히 보기
+                    </button>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group flex flex-col bg-white dark:bg-[#1a222d] rounded-2xl border border-[#e5e7eb] dark:border-[#333] overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+<div class="relative h-48 w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Group of friends talking and laughing representing community" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBByWvr-XGS2-_Hcp1lILD09pK_w2igUhK71U33149fJhfNs8dpONmPLBqkys7q51hOvHgZLkAkNRiQTGgC3HfyK97OGXGwWL5e7h6b7TRY5L6blk_0VLHfYm5zCgxT5gXAr_h8fOxCh8oAH4UIxy_WJmWPiygY3y6l11mDUGAoktpxaNrSueUvl6yq4PpNiDm6tgLKfDqb_bkHvyUGNsOE57-aBFmIXB49hpCdoTbBWzL7iZHLCJZCzqRGFypMz14may7jxK5JnSUz");'></div>
+<div class="absolute top-4 left-4 z-20">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                            모집중
+                        </span>
+</div>
+<div class="absolute bottom-4 left-4 z-20 flex gap-2">
+<span class="inline-flex items-center gap-1 text-white text-xs font-medium">
+<span class="material-symbols-outlined text-[14px]">location_on</span> 대구
+                        </span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1 gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="text-primary text-xs font-bold uppercase tracking-wider">문화</span>
+<span class="w-1 h-1 rounded-full bg-[#dce0e5]"></span>
+<span class="text-[#657486] text-xs">주말 프로그램</span>
+</div>
+<h3 class="text-[#121417] dark:text-white text-lg font-bold leading-tight mb-2 group-hover:text-primary transition-colors">한국 전통 문화 체험</h3>
+<p class="text-[#657486] dark:text-[#9aaebf] text-sm leading-relaxed line-clamp-2">한복 입기, 다도 체험 등 한국의 전통 문화를 직접 경험해보는 시간입니다.</p>
+</div>
+<div class="pt-4 border-t border-[#f0f2f4] dark:border-[#2a3441] flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4f5b67] dark:text-[#8897a8]">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>가족 단위 신청 가능</span>
+</div>
+</div>
+<button class="w-full mt-2 flex items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-primary hover:text-white dark:hover:bg-primary text-[#121417] dark:text-white text-sm font-bold transition-all">
+                        자세히 보기
+                    </button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center mt-12 mb-8">
+<div class="flex gap-2">
+<button class="flex items-center justify-center size-10 rounded-lg text-[#657486] hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441]">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-lg bg-primary text-white font-bold">1</button>
+<button class="flex items-center justify-center size-10 rounded-lg text-[#121417] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] font-medium">2</button>
+<button class="flex items-center justify-center size-10 rounded-lg text-[#121417] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] font-medium">3</button>
+<button class="flex items-center justify-center size-10 rounded-lg text-[#121417] dark:text-white hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] font-medium">4</button>
+<button class="flex items-center justify-center size-10 rounded-lg text-[#657486] hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441]">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
 </div>
 </div>
 </main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-[#1a222d] border-t border-[#f0f2f4] dark:border-[#2a3441] py-8">
+<div class="max-w-[1280px] mx-auto px-4 md:px-10 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="size-6 flex items-center justify-center bg-primary/10 rounded-md text-primary">
+<span class="material-symbols-outlined text-[16px]">diversity_2</span>
 </div>
+<span class="text-[#121417] dark:text-white font-bold text-lg">easyK</span>
+</div>
+<div class="flex flex-wrap justify-center gap-6 text-sm text-[#657486] dark:text-[#9aaebf]">
+<a class="hover:text-primary" href="#">이용약관</a>
+<a class="hover:text-primary" href="#">개인정보처리방침</a>
+<a class="hover:text-primary" href="#">고객센터</a>
+</div>
+<p class="text-xs text-[#9aaebf]">© 2024 easyK. All rights reserved.</p>
+</div>
+</footer>
 </body></html>
