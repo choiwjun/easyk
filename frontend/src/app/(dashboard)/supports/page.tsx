@@ -89,8 +89,16 @@ export default function SupportsPage() {
 
       if (response.ok) {
         const data = await response.json();
-        setSupports(data.supports || []);
-        setTotal(data.total || 0);
+        const supports = data.supports || [];
+        // API 응답이 비어있으면 샘플 데이터 사용
+        if (supports.length === 0) {
+          console.info('[Supports] API 응답이 비어있음, 샘플 데이터 사용');
+          setSupports(SAMPLE_SUPPORTS);
+          setTotal(SAMPLE_SUPPORTS.length);
+        } else {
+          setSupports(supports);
+          setTotal(data.total || supports.length);
+        }
       } else {
         // API 실패 시 샘플 데이터 사용
         console.warn('[Supports] API 호출 실패, 샘플 데이터 사용:', response.status);
