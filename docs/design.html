@@ -3,157 +3,132 @@
 <html class="light" lang="ko"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>easyK - 지원 폼 작성</title>
+<title>easyK - 지원 완료</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Nanum+Gothic:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Nanum+Gothic:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
 <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#1e5a9f",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#121920",
-                        "surface-light": "#ffffff",
-                        "surface-dark": "#1C242F", 
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"],
-                        "body": ["Nanum Gothic", "sans-serif"],
-                    },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-                },
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1e5a9f",
+              "background-light": "#f6f7f8",
+              "background-dark": "#121920",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1a222c",
             },
-        }
+            fontFamily: {
+              "display": ["Inter", "sans-serif"],
+              "korean": ["Nanum Gothic", "sans-serif"],
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
     </script>
 <style>
-        body { font-family: 'Nanum Gothic', sans-serif; }
-        .font-inter { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', 'Nanum Gothic', sans-serif;
+        }
+        /* Specific override for Korean text feel */
+        .korean-text {
+            font-family: 'Nanum Gothic', sans-serif;
+        }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col text-[#121417] dark:text-[#e0e0e0] overflow-x-hidden">
-<!-- Top Navbar -->
-<div class="w-full bg-white dark:bg-surface-dark border-b border-[#f0f2f4] dark:border-[#2a3441] sticky top-0 z-50">
-<div class="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between mx-auto max-w-[1440px]">
-<div class="flex items-center gap-4 text-[#121417] dark:text-white">
-<div class="size-8 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined text-3xl">diversity_2</span>
+<body class="bg-background-light dark:bg-background-dark text-[#121417] dark:text-white min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="w-full bg-surface-light dark:bg-surface-dark border-b border-[#f0f2f4] dark:border-[#2a3441] sticky top-0 z-50">
+<div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2 cursor-pointer">
+<!-- Logo Icon -->
+<div class="text-primary">
+<span class="material-symbols-outlined text-[32px]">public</span>
 </div>
-<h2 class="text-xl md:text-2xl font-bold leading-tight tracking-[-0.015em] font-inter">easyK</h2>
-</div>
-<div class="hidden md:flex items-center gap-9">
-<a class="text-[#121417] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">채용 정보</a>
-<a class="text-[#121417] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">비자 가이드</a>
-<a class="text-[#121417] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">커뮤니티</a>
+<h2 class="text-[#121417] dark:text-white text-xl font-bold tracking-tight">easyK</h2>
 </div>
 <div class="flex items-center gap-4">
-<button class="flex min-w-[84px] items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold shadow-sm">
-<span>로그인</span>
+<button class="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">
+                    채용 공고
+                </button>
+<button class="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">
+                    기업 서비스
+                </button>
+<div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+<button class="flex items-center justify-center size-10 rounded-full bg-[#f0f2f4] dark:bg-[#2a3441] text-[#121417] dark:text-white hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+<span class="material-symbols-outlined">person</span>
 </button>
 </div>
 </div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow flex items-center justify-center p-4 md:p-8">
+<div class="w-full max-w-[640px] flex flex-col items-center">
+<!-- Success Card -->
+<div class="w-full bg-surface-light dark:bg-surface-dark rounded-xl shadow-lg border border-[#f0f2f4] dark:border-[#2a3441] overflow-hidden p-8 md:p-12 animate-fade-in-up">
+<!-- Icon & Headline -->
+<div class="flex flex-col items-center text-center mb-10">
+<div class="size-20 rounded-full bg-primary/10 flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-[48px] fill-1" style="font-variation-settings: 'FILL' 1;">check_circle</span>
 </div>
-<!-- Main Content -->
-<main class="flex-grow flex flex-col items-center py-8 px-4 md:px-10 lg:px-40 w-full">
-<div class="w-full max-w-[960px] flex flex-col gap-6">
-<!-- Breadcrumbs -->
-<div class="flex flex-wrap gap-2 items-center text-sm">
-<a class="text-[#657486] dark:text-gray-400 font-medium hover:text-primary" href="#">홈</a>
-<span class="material-symbols-outlined text-[16px] text-[#657486] dark:text-gray-500">chevron_right</span>
-<a class="text-[#657486] dark:text-gray-400 font-medium hover:text-primary" href="#">채용 정보</a>
-<span class="material-symbols-outlined text-[16px] text-[#657486] dark:text-gray-500">chevron_right</span>
-<span class="text-[#121417] dark:text-white font-bold">지원서 작성</span>
+<h1 class="korean-text text-2xl md:text-3xl font-bold text-[#121417] dark:text-white mb-3">
+                        지원이 성공적으로 완료되었습니다!
+                    </h1>
+<p class="korean-text text-slate-500 dark:text-slate-400 text-base md:text-lg">
+                        지원서를 신중하게 검토 후 연락드리겠습니다.
+                    </p>
 </div>
-<!-- Header Section -->
-<div class="flex flex-col gap-2">
-<h1 class="text-[#121417] dark:text-white text-3xl md:text-[32px] font-bold leading-tight tracking-[-0.015em]">지원 폼 작성</h1>
-<p class="text-[#657486] dark:text-gray-400 text-sm md:text-base font-normal">
-                    귀하의 역량을 보여주세요. 지원하려는 포지션에 맞춰 정보를 입력해주세요.
-                </p>
-</div>
-<!-- Form Card -->
-<form class="w-full bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3441] p-6 md:p-8 flex flex-col gap-8">
-<!-- Personal Information Summary (Read-only context) -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-[#f0f2f4] dark:border-[#2a3441]">
-<div class="flex flex-col gap-2">
-<label class="text-[#121417] dark:text-gray-200 text-sm font-bold">이름</label>
-<input class="bg-background-light dark:bg-[#121920] border-0 rounded-lg text-gray-500 dark:text-gray-400 px-4 py-3 text-sm focus:ring-0 cursor-not-allowed" readonly="" type="text" value="홍길동"/>
-</div>
-<div class="flex flex-col gap-2">
-<label class="text-[#121417] dark:text-gray-200 text-sm font-bold">이메일</label>
-<input class="bg-background-light dark:bg-[#121920] border-0 rounded-lg text-gray-500 dark:text-gray-400 px-4 py-3 text-sm focus:ring-0 cursor-not-allowed" readonly="" type="text" value="hong@example.com"/>
-</div>
-</div>
-<!-- Resume Upload Section -->
-<div class="flex flex-col gap-4">
-<div class="flex items-center justify-between">
-<h2 class="text-[#121417] dark:text-white text-lg font-bold">이력서 첨부 <span class="text-primary text-sm font-normal ml-1">*필수</span></h2>
-<span class="material-symbols-outlined text-green-600 hidden">check_circle</span>
-</div>
-<div class="group relative flex flex-col items-center justify-center w-full h-48 rounded-xl border-2 border-dashed border-[#dce0e5] dark:border-gray-600 bg-[#f9fafb] dark:bg-[#121920]/50 hover:bg-[#f0f2f4] dark:hover:bg-[#121920] hover:border-primary transition-all cursor-pointer">
-<input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" type="file"/>
-<div class="flex flex-col items-center gap-3 text-center px-4">
-<div class="p-3 bg-white dark:bg-surface-dark rounded-full shadow-sm text-[#657486] dark:text-gray-400 group-hover:text-primary group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-3xl">upload_file</span>
-</div>
-<div class="flex flex-col gap-1">
-<p class="text-[#121417] dark:text-white text-sm font-bold">클릭하여 파일을 선택하거나 이곳에 드래그하세요</p>
-<p class="text-[#657486] dark:text-gray-500 text-xs">PDF, Word 형식 (최대 10MB)</p>
-</div>
-<button class="mt-2 px-4 py-2 bg-white dark:bg-[#2a3441] border border-[#dce0e5] dark:border-gray-600 rounded-lg text-xs font-bold text-[#121417] dark:text-gray-200 shadow-sm group-hover:border-primary/50 transition-colors" type="button">
-                                파일 선택
-                            </button>
+<!-- Summary Box (DescriptionList Adaptation) -->
+<div class="bg-background-light dark:bg-[#202934] rounded-lg p-6 mb-8 border border-[#e5e7eb] dark:border-[#2a3441]">
+<h3 class="korean-text text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
+                        지원 내역 요약
+                    </h3>
+<div class="grid grid-cols-[100px_1fr] gap-y-4 gap-x-4 items-center">
+<!-- Item 1 -->
+<div class="korean-text text-slate-500 dark:text-slate-400 text-sm font-medium">지원 포지션</div>
+<div class="font-semibold text-[#121417] dark:text-white text-base">Global Marketing Manager</div>
+<!-- Item 2 -->
+<div class="korean-text text-slate-500 dark:text-slate-400 text-sm font-medium">회사명</div>
+<div class="korean-text font-semibold text-[#121417] dark:text-white text-base">삼성전자</div>
+<!-- Item 3 -->
+<div class="korean-text text-slate-500 dark:text-slate-400 text-sm font-medium">접수일</div>
+<div class="font-display font-medium text-[#121417] dark:text-white text-base">2023.10.25</div>
 </div>
 </div>
+<!-- Info Text (BodyText Adaptation) -->
+<div class="mb-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary text-xl mt-0.5">info</span>
+<p class="korean-text text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                        결과는 <strong>'내 지원 내역'</strong>에서 실시간으로 확인하실 수 있습니다.<br/>
+                        서류 합격 시 이메일 및 문자로 개별 연락드립니다.
+                    </p>
 </div>
-<!-- Cover Letter Upload Section -->
-<div class="flex flex-col gap-4">
-<div class="flex items-center justify-between">
-<h2 class="text-[#121417] dark:text-white text-lg font-bold">자기소개서 첨부 <span class="text-[#657486] dark:text-gray-500 text-sm font-normal ml-1">(선택)</span></h2>
-</div>
-<div class="group relative flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-[#dce0e5] dark:border-gray-600 bg-[#f9fafb] dark:bg-[#121920]/50 hover:bg-[#f0f2f4] dark:hover:bg-[#121920] hover:border-primary transition-all cursor-pointer">
-<input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" type="file"/>
-<div class="flex flex-col items-center gap-3 text-center px-4">
-<div class="flex items-center gap-2 text-[#657486] dark:text-gray-400 group-hover:text-primary transition-colors">
-<span class="material-symbols-outlined">description</span>
-<span class="text-sm font-medium">자기소개서 파일 업로드</span>
-</div>
-<p class="text-[#9aa2ac] dark:text-gray-600 text-xs">자유 형식, PDF 권장</p>
-</div>
-</div>
-</div>
-<!-- Additional Info Section -->
-<div class="flex flex-col gap-4">
-<label class="text-[#121417] dark:text-white text-lg font-bold" for="additional-info">추가 정보</label>
-<div class="relative">
-<textarea class="w-full rounded-xl border border-[#dce0e5] dark:border-[#2a3441] bg-white dark:bg-[#121920] p-4 text-sm text-[#121417] dark:text-gray-200 placeholder:text-[#9aa2ac] focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none transition-shadow" id="additional-info" placeholder="채용 담당자에게 전달하고 싶은 말이 있다면 적어주세요. (예: 포트폴리오 링크, 업무 가능 시작일 등)" rows="5"></textarea>
-<div class="absolute bottom-3 right-4 text-xs text-[#9aa2ac]">0 / 1000자</div>
-</div>
-</div>
-<!-- Actions -->
-<div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#f0f2f4] dark:border-[#2a3441]">
-<button class="w-full sm:w-auto px-6 py-3 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-transparent text-[#121417] dark:text-gray-300 text-sm font-bold hover:bg-gray-50 dark:hover:bg-[#2a3441] transition-colors" type="button">
-                        임시 저장
+<!-- Action Buttons (ButtonGroup Adaptation) -->
+<div class="flex flex-col sm:flex-row gap-3 justify-center w-full">
+<button class="korean-text flex-1 h-12 bg-primary hover:bg-[#15457a] text-white text-base font-bold rounded-lg transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+                        내 지원 내역 보기
                     </button>
-<button class="w-full sm:w-auto px-8 py-3 rounded-lg bg-primary hover:bg-[#164885] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2" type="submit">
-<span>지원 제출</span>
-<span class="material-symbols-outlined text-[18px]">send</span>
-</button>
+<button class="korean-text flex-1 h-12 bg-white dark:bg-transparent border border-[#dce0e5] dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 text-[#121417] dark:text-white text-base font-bold rounded-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">home</span>
+                        메인으로 돌아가기
+                    </button>
 </div>
-</form>
-<!-- Trust Badges / Footer Info -->
-<div class="flex justify-center gap-8 py-4 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[#657486]">lock</span>
-<span class="text-xs text-[#657486] font-medium">SSL 보안 전송</span>
 </div>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[#657486]">verified_user</span>
-<span class="text-xs text-[#657486] font-medium">개인정보 보호</span>
-</div>
+<!-- Footer Links -->
+<div class="mt-8 text-center">
+<p class="korean-text text-xs text-slate-400 dark:text-slate-600">
+                    도움이 필요하신가요? <a class="underline hover:text-primary" href="#">고객센터 문의하기</a>
+</p>
 </div>
 </div>
 </main>

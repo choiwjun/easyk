@@ -245,14 +245,12 @@ export default function JobApplyPage() {
       });
 
       if (response.ok) {
-        setSuccessMessage(
-          language === "ko"
-            ? "지원이 완료되었습니다!"
-            : "Application submitted successfully!"
-        );
-        setTimeout(() => {
-          router.push("/jobs");
-        }, 2000);
+        // 성공 페이지로 이동 (포지션과 회사명 전달)
+        const params = new URLSearchParams({
+          position: job?.position || "",
+          company: job?.company_name || "",
+        });
+        router.push(`/jobs/${jobId}/apply/success?${params.toString()}`);
       } else {
         const errorData = await response.json();
         setError(
