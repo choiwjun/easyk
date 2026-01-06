@@ -11,7 +11,7 @@ import Link from "next/link";
 export default function SignupPage() {
   const router = useRouter();
   const { t, language } = useLanguage();
-  const [userType, setUserType] = useState<"foreign" | "consultant">("foreign");
+  const [userType, setUserType] = useState<"foreign" | "consultant" | "agency">("foreign");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -201,36 +201,116 @@ export default function SignupPage() {
               <label className="block text-sm font-bold text-text-primary dark:text-white mb-3">
                 {language === 'ko' ? '회원 유형 선택' : 'Select User Type'}
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
+                {/* 외국인 회원 */}
                 <button
                   type="button"
                   onClick={() => setUserType("foreign")}
                   className={`
-                    h-12 rounded-xl font-bold text-[14px] transition-all flex items-center justify-center gap-2
+                    p-4 rounded-xl font-bold text-[14px] transition-all flex items-center gap-4 text-left
                     ${
                       userType === "foreign"
-                        ? "bg-primary text-white shadow-lg shadow-primary/30"
+                        ? "bg-primary text-white shadow-lg shadow-primary/30 ring-2 ring-primary ring-offset-2"
                         : "bg-[#f2f4f6] dark:bg-gray-800 text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
                     }
                   `}
                 >
-                  <span className="material-symbols-outlined text-[20px]">public</span>
-                  {language === 'ko' ? '외국인 회원' : 'Foreign Member'}
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                    userType === "foreign" ? "bg-white/20" : "bg-blue-100 dark:bg-blue-900/30"
+                  }`}>
+                    <span className={`material-symbols-outlined text-[28px] ${
+                      userType === "foreign" ? "text-white" : "text-blue-600 dark:text-blue-400"
+                    }`}>public</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className={`font-bold text-[15px] mb-0.5 ${
+                      userType === "foreign" ? "text-white" : "text-text-primary dark:text-white"
+                    }`}>
+                      {language === 'ko' ? '외국인 회원' : 'Foreign Member'}
+                    </p>
+                    <p className={`text-xs ${
+                      userType === "foreign" ? "text-white/80" : "text-text-muted dark:text-gray-400"
+                    }`}>
+                      {language === 'ko' ? '법률 상담, 일자리 검색, 정부 지원 조회' : 'Legal consultation, job search, government support'}
+                    </p>
+                  </div>
+                  {userType === "foreign" && (
+                    <span className="material-symbols-outlined text-white text-[24px]">check_circle</span>
+                  )}
                 </button>
+
+                {/* 변호사/전문가 */}
                 <button
                   type="button"
                   onClick={() => setUserType("consultant")}
                   className={`
-                    h-12 rounded-xl font-bold text-[14px] transition-all flex items-center justify-center gap-2
+                    p-4 rounded-xl font-bold text-[14px] transition-all flex items-center gap-4 text-left
                     ${
                       userType === "consultant"
-                        ? "bg-primary text-white shadow-lg shadow-primary/30"
+                        ? "bg-primary text-white shadow-lg shadow-primary/30 ring-2 ring-primary ring-offset-2"
                         : "bg-[#f2f4f6] dark:bg-gray-800 text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
                     }
                   `}
                 >
-                  <span className="material-symbols-outlined text-[20px]">badge</span>
-                  {language === 'ko' ? '전문가 회원' : 'Professional'}
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                    userType === "consultant" ? "bg-white/20" : "bg-purple-100 dark:bg-purple-900/30"
+                  }`}>
+                    <span className={`material-symbols-outlined text-[28px] ${
+                      userType === "consultant" ? "text-white" : "text-purple-600 dark:text-purple-400"
+                    }`}>gavel</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className={`font-bold text-[15px] mb-0.5 ${
+                      userType === "consultant" ? "text-white" : "text-text-primary dark:text-white"
+                    }`}>
+                      {language === 'ko' ? '변호사/전문가' : 'Lawyer/Expert'}
+                    </p>
+                    <p className={`text-xs ${
+                      userType === "consultant" ? "text-white/80" : "text-text-muted dark:text-gray-400"
+                    }`}>
+                      {language === 'ko' ? '법률 상담 제공, 상담 요청 수락/관리' : 'Provide legal consultation, manage requests'}
+                    </p>
+                  </div>
+                  {userType === "consultant" && (
+                    <span className="material-symbols-outlined text-white text-[24px]">check_circle</span>
+                  )}
+                </button>
+
+                {/* 기관 담당자 */}
+                <button
+                  type="button"
+                  onClick={() => setUserType("agency")}
+                  className={`
+                    p-4 rounded-xl font-bold text-[14px] transition-all flex items-center gap-4 text-left
+                    ${
+                      userType === "agency"
+                        ? "bg-primary text-white shadow-lg shadow-primary/30 ring-2 ring-primary ring-offset-2"
+                        : "bg-[#f2f4f6] dark:bg-gray-800 text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
+                    }
+                  `}
+                >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                    userType === "agency" ? "bg-white/20" : "bg-green-100 dark:bg-green-900/30"
+                  }`}>
+                    <span className={`material-symbols-outlined text-[28px] ${
+                      userType === "agency" ? "text-white" : "text-green-600 dark:text-green-400"
+                    }`}>apartment</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className={`font-bold text-[15px] mb-0.5 ${
+                      userType === "agency" ? "text-white" : "text-text-primary dark:text-white"
+                    }`}>
+                      {language === 'ko' ? '기관 담당자' : 'Agency Staff'}
+                    </p>
+                    <p className={`text-xs ${
+                      userType === "agency" ? "text-white/80" : "text-text-muted dark:text-gray-400"
+                    }`}>
+                      {language === 'ko' ? '일자리 공고 등록/관리, 지원자 관리' : 'Post jobs, manage applicants'}
+                    </p>
+                  </div>
+                  {userType === "agency" && (
+                    <span className="material-symbols-outlined text-white text-[24px]">check_circle</span>
+                  )}
                 </button>
               </div>
             </div>
