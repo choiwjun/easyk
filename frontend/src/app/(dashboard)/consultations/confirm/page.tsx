@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -30,7 +31,7 @@ interface UserInfo {
   residential_area: string | null;
 }
 
-export default function ConsultationConfirmPage() {
+function ConsultationConfirmContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { language } = useLanguage();
@@ -401,5 +402,24 @@ export default function ConsultationConfirmPage() {
 
       <DesignFooter />
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+      <div className="flex items-center gap-3">
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-text-secondary">로딩 중...</span>
+      </div>
+    </div>
+  );
+}
+
+export default function ConsultationConfirmPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ConsultationConfirmContent />
+    </Suspense>
   );
 }

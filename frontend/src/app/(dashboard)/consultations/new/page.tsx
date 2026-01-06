@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -32,7 +32,7 @@ const MOCK_LAWYERS = [
   { id: "choi", name: { ko: "최지훈 변호사 (국적 취득)", en: "Jihoon Choi (Nationality Acquisition)" } },
 ];
 
-export default function NewConsultationPage() {
+function NewConsultationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { language } = useLanguage();
@@ -289,5 +289,24 @@ export default function NewConsultationPage() {
 
       <DesignFooter />
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+      <div className="flex items-center gap-3">
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-text-secondary">로딩 중...</span>
+      </div>
+    </div>
+  );
+}
+
+export default function NewConsultationPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <NewConsultationContent />
+    </Suspense>
   );
 }

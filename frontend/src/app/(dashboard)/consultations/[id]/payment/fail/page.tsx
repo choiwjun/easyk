@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import DesignHeader from "@/components/ui/DesignHeader";
 import DesignFooter from "@/components/ui/DesignFooter";
 
-export default function PaymentFailPage() {
+function PaymentFailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { language } = useLanguage();
@@ -117,5 +118,24 @@ export default function PaymentFailPage() {
       </div>
       <DesignFooter />
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+      <div className="flex items-center gap-3">
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-text-secondary">로딩 중...</span>
+      </div>
+    </div>
+  );
+}
+
+export default function PaymentFailPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <PaymentFailContent />
+    </Suspense>
   );
 }

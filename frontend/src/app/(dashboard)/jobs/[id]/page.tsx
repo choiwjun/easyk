@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 
 interface Job {
   id: string;
@@ -77,7 +76,6 @@ export default function JobDetailPage() {
         const data = await response.json();
         setJob(data);
       } else if (response.status === 401 || response.status === 403) {
-        // 인증 오류: 로그인 페이지로 리다이렉트
         router.push("/login");
       } else if (response.status === 404) {
         setError("일자리를 찾을 수 없습니다.");
@@ -117,11 +115,9 @@ export default function JobDetailPage() {
       });
 
       if (response.ok) {
-        // 지원 성공: 모달 닫기 및 페이지 새로고침
         setShowApplyModal(false);
         setCoverLetter("");
         setResumeUrl("");
-        // 일자리 정보 다시 불러오기 (has_applied 업데이트)
         await fetchJob();
       } else {
         const data = await response.json();
@@ -153,7 +149,6 @@ export default function JobDetailPage() {
       }
 
       if (isSaved) {
-        // 이미 저장됨: 제거
         const response = await fetch(`/api/jobs/${jobId}/save`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -161,14 +156,11 @@ export default function JobDetailPage() {
 
         if (response.ok) {
           setIsSaved(false);
-
-          // 로컬 스토리지에서도 제거
           const savedJobs = JSON.parse(localStorage.getItem("saved_jobs") || "[]");
           const updated = savedJobs.filter((saved: { job_id: string }) => saved.job_id !== jobId);
           localStorage.setItem("saved_jobs", JSON.stringify(updated));
         }
       } else {
-        // 저장되지 않음: 추가
         const response = await fetch(`/api/jobs/${jobId}/save`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -176,8 +168,6 @@ export default function JobDetailPage() {
 
         if (response.ok) {
           setIsSaved(true);
-
-          // 로컬 스토리지에도 추가
           const savedJobs = JSON.parse(localStorage.getItem("saved_jobs") || "[]");
           savedJobs.push({ job_id: jobId, saved_at: new Date().toISOString() });
           localStorage.setItem("saved_jobs", JSON.stringify(savedJobs));
@@ -197,20 +187,31 @@ export default function JobDetailPage() {
     }).format(date);
   };
 
+  const getDaysRemaining = (deadline: string) => {
+    const now = new Date();
+    const deadlineDate = new Date(deadline);
+    const diff = Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return diff;
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">로딩 중...</div>
+      <div className="min-h-screen bg-background-light flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-text-secondary">로딩 중...</span>
+        </div>
       </div>
     );
   }
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-background-light py-8 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <p className="text-red-600 mb-4">{error || "일자리를 찾을 수 없습니다."}</p>
+          <div className="bg-white rounded-xl shadow-soft p-12 text-center">
+            <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">error_outline</span>
+            <p className="text-error mb-6">{error || "일자리를 찾을 수 없습니다."}</p>
             <Link href="/jobs">
               <Button variant="outline">일자리 목록으로 돌아가기</Button>
             </Link>
@@ -220,169 +221,321 @@ export default function JobDetailPage() {
     );
   }
 
+  const daysRemaining = getDaysRemaining(job.deadline);
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* 헤더 */}
-        <div className="mb-6">
-          <Link href="/jobs">
-            <Button variant="outline" size="sm">
-              ← 목록으로
-            </Button>
-          </Link>
+    <div className="min-h-screen bg-background-light">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-text-muted mb-6 font-medium">
+          <Link href="/" className="hover:text-primary transition-colors">홈</Link>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <Link href="/jobs" className="hover:text-primary transition-colors">채용 정보</Link>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-text-primary font-bold truncate max-w-[200px]">{job.position}</span>
         </div>
 
-        {/* 일자리 정보 카드 */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{job.position}</h1>
-              <p className="text-xl text-gray-700 mb-4">{job.company_name}</p>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                <span>{job.location}</span>
-                <span>•</span>
-                <span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column: Job Details (8 cols) */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
+            {/* Header Section */}
+            <div className="bg-white rounded-xl p-6 sm:p-8 shadow-soft border border-gray-100">
+              <div className="flex flex-col gap-4">
+                {/* Company & Date */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-primary">business</span>
+                    </div>
+                    <span className="text-text-secondary font-bold">{job.company_name}</span>
+                  </div>
+                  {daysRemaining > 0 ? (
+                    <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full">
+                      D-{daysRemaining}일 남음
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium text-error bg-error/10 px-3 py-1.5 rounded-full">
+                      마감됨
+                    </span>
+                  )}
+                </div>
+
+                {/* Job Title */}
+                <h1 className="text-2xl sm:text-3xl font-black text-text-primary leading-tight">
+                  {job.position}
+                </h1>
+
+                {/* Chips */}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-text-secondary">
+                    <span className="material-symbols-outlined text-[18px] mr-1.5">schedule</span>
+                    {EMPLOYMENT_TYPE_LABELS[job.employment_type] || job.employment_type}
+                  </span>
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-text-secondary">
+                    <span className="material-symbols-outlined text-[18px] mr-1.5">location_on</span>
+                    {job.location}
+                  </span>
+                  {job.required_languages && job.required_languages.length > 0 && (
+                    <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-50 text-primary border border-blue-100">
+                      <span className="material-symbols-outlined text-[18px] mr-1.5">translate</span>
+                      {job.required_languages.join(", ")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Summary Grid */}
+            <div className="bg-white rounded-xl p-6 shadow-soft border border-gray-100 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="flex flex-col gap-1 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <span className="text-xs text-text-muted font-medium">고용형태</span>
+                <span className="text-sm font-bold text-text-primary">
                   {EMPLOYMENT_TYPE_LABELS[job.employment_type] || job.employment_type}
                 </span>
-                {job.salary_range && (
-                  <>
-                    <span>•</span>
-                    <span className="font-semibold text-gray-900">
-                      {job.salary_range}
-                    </span>
-                  </>
-                )}
+              </div>
+              <div className="flex flex-col gap-1 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <span className="text-xs text-text-muted font-medium">근무지역</span>
+                <span className="text-sm font-bold text-text-primary">{job.location}</span>
+              </div>
+              <div className="flex flex-col gap-1 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <span className="text-xs text-text-muted font-medium">마감일</span>
+                <span className="text-sm font-bold text-text-primary">{formatDate(job.deadline)}</span>
+              </div>
+              <div className="flex flex-col gap-1 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <span className="text-xs text-text-muted font-medium">급여</span>
+                <span className="text-sm font-bold text-primary">
+                  {job.salary_range || "협의 후 결정"}
+                </span>
               </div>
             </div>
-          </div>
 
-          {/* 지원 버튼 */}
-          <div className="pt-4 border-t border-gray-200">
-            <div className="flex gap-4">
-              {/* 관심 공고 저장 버튼 */}
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={handleSaveJob}
-                className="flex items-center gap-2"
-              >
-                {isSaved ? "❤️ 저장됨" : "🤍 관심 공고"}
-              </Button>
+            {/* Detail Content */}
+            <div className="bg-white rounded-xl p-6 sm:p-8 shadow-soft border border-gray-100 flex flex-col gap-10">
+              {/* Job Description */}
+              <section>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-1 h-6 bg-primary rounded-full"></span>
+                  <h3 className="text-xl font-bold text-text-primary">직무 설명</h3>
+                </div>
+                <div className="text-text-secondary leading-relaxed pl-3 whitespace-pre-wrap">
+                  {job.description}
+                </div>
+              </section>
 
-              {/* 지원 버튼 */}
-              {job.has_applied ? (
-                <div className="flex-1 bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                  <p className="text-blue-700 font-medium">이미 지원하신 일자리입니다.</p>
-                </div>
-              ) : job.status === "active" ? (
-                <Button
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  onClick={() => setShowApplyModal(true)}
-                  className="flex-1"
-                >
-                  지원하기
-                </Button>
-              ) : (
-                <div className="flex-1 bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-                  <p className="text-gray-600">모집이 마감된 일자리입니다.</p>
-                </div>
+              {/* Requirements */}
+              {job.requirements && (
+                <section>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-1 h-6 bg-primary rounded-full"></span>
+                    <h3 className="text-xl font-bold text-text-primary">자격 요건</h3>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-5">
+                    <div className="text-text-secondary leading-relaxed whitespace-pre-wrap">
+                      {job.requirements}
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {/* Preferred Qualifications */}
+              {job.preferred_qualifications && (
+                <section>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-1 h-6 bg-primary rounded-full"></span>
+                    <h3 className="text-xl font-bold text-text-primary">우대 사항</h3>
+                  </div>
+                  <div className="text-text-secondary leading-relaxed pl-3 whitespace-pre-wrap">
+                    {job.preferred_qualifications}
+                  </div>
+                </section>
+              )}
+
+              {/* Benefits */}
+              {job.benefits && (
+                <section>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-1 h-6 bg-success rounded-full"></span>
+                    <h3 className="text-xl font-bold text-text-primary">복리후생</h3>
+                  </div>
+                  <div className="text-text-secondary leading-relaxed pl-3 whitespace-pre-wrap">
+                    {job.benefits}
+                  </div>
+                </section>
+              )}
+
+              {/* Required Languages */}
+              {job.required_languages && job.required_languages.length > 0 && (
+                <section>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-1 h-6 bg-info rounded-full"></span>
+                    <h3 className="text-xl font-bold text-text-primary">필수 언어</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {job.required_languages.map((lang, index) => (
+                      <span
+                        key={index}
+                        className="px-4 py-2 bg-blue-50 text-primary rounded-full text-sm font-medium border border-blue-100"
+                      >
+                        {lang}
+                      </span>
+                    ))}
+                  </div>
+                </section>
               )}
             </div>
+
+            {/* Company Info */}
+            {(job.company_phone || job.company_address) && (
+              <div className="bg-white rounded-xl p-6 sm:p-8 shadow-soft border border-gray-100">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="size-14 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-2xl text-gray-400">apartment</span>
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-bold text-text-primary">{job.company_name}</h4>
+                      <p className="text-sm text-text-muted">회사 정보</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 border-t border-gray-100 pt-6">
+                  {job.company_phone && (
+                    <div>
+                      <p className="text-xs text-text-muted mb-1">연락처</p>
+                      <p className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[16px] text-gray-400">call</span>
+                        {job.company_phone}
+                      </p>
+                    </div>
+                  )}
+                  {job.company_address && (
+                    <div>
+                      <p className="text-xs text-text-muted mb-1">주소</p>
+                      <p className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[16px] text-gray-400">location_on</span>
+                        {job.company_address}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
 
-        {/* 상세 정보 */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">모집 상세</h2>
+          {/* Right Column: Sticky Action Card (4 cols) */}
+          <div className="lg:col-span-4 relative">
+            <div className="sticky top-24 flex flex-col gap-4">
+              {/* Main Action Card */}
+              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                <h3 className="text-sm font-medium text-text-muted mb-2">예상 급여</h3>
+                <div className="flex items-end gap-1 mb-6">
+                  <span className="text-3xl font-black text-text-primary">
+                    {job.salary_range || "협의"}
+                  </span>
+                </div>
 
-          <div className="space-y-4">
-            {/* 직무 설명 */}
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">직무 설명</h3>
-              <p className="text-gray-900 whitespace-pre-wrap">{job.description}</p>
-            </div>
-
-            {/* 자격 요건 */}
-            {job.requirements && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">자격 요건</h3>
-                <p className="text-gray-900 whitespace-pre-wrap">{job.requirements}</p>
-              </div>
-            )}
-
-            {/* 우대 사항 */}
-            {job.preferred_qualifications && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">우대 사항</h3>
-                <p className="text-gray-900 whitespace-pre-wrap">
-                  {job.preferred_qualifications}
-                </p>
-              </div>
-            )}
-
-            {/* 복리후생 */}
-            {job.benefits && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">복리후생</h3>
-                <p className="text-gray-900 whitespace-pre-wrap">{job.benefits}</p>
-              </div>
-            )}
-
-            {/* 필수 언어 */}
-            {job.required_languages && job.required_languages.length > 0 && (
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">필수 언어</h3>
-                <div className="flex flex-wrap gap-2">
-                  {job.required_languages.map((lang, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                <div className="flex flex-col gap-3">
+                  {job.has_applied ? (
+                    <div className="w-full h-12 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+                      <span className="text-primary font-bold">이미 지원 완료</span>
+                    </div>
+                  ) : job.status === "active" && daysRemaining > 0 ? (
+                    <button
+                      onClick={() => setShowApplyModal(true)}
+                      className="w-full h-12 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg shadow-md shadow-primary/20 transition-all transform active:scale-95 flex items-center justify-center gap-2"
                     >
-                      {lang}
-                    </span>
-                  ))}
+                      <span>지원하기</span>
+                      <span className="material-symbols-outlined text-[20px]">send</span>
+                    </button>
+                  ) : (
+                    <div className="w-full h-12 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
+                      <span className="text-text-muted font-medium">모집 마감</span>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={handleSaveJob}
+                      className={`flex-1 h-11 border rounded-lg transition-colors flex items-center justify-center gap-2 font-bold ${
+                        isSaved
+                          ? "border-primary bg-primary/5 text-primary"
+                          : "border-gray-200 hover:border-primary hover:text-primary text-text-secondary bg-white"
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[20px]">
+                        {isSaved ? "bookmark" : "bookmark_border"}
+                      </span>
+                      <span>{isSaved ? "저장됨" : "스크랩"}</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: job.position,
+                            text: `${job.company_name} - ${job.position}`,
+                            url: window.location.href,
+                          });
+                        } else {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert("링크가 복사되었습니다.");
+                        }
+                      }}
+                      className="size-11 flex-shrink-0 border border-gray-200 hover:border-gray-400 text-text-muted rounded-lg transition-colors flex items-center justify-center bg-white"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">share</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[18px]">calendar_today</span>
+                    </div>
+                    <div>
+                      <p className="text-xs text-text-muted">등록일</p>
+                      <p className="text-sm font-bold text-text-primary">{formatDate(job.created_at)}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-text-muted leading-relaxed mt-3">
+                    본 채용 정보는 easyK를 통해 제공됩니다. 실제 채용 조건은 회사와 상이할 수 있습니다.
+                  </p>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* 회사 정보 */}
-        {(job.company_phone || job.company_address) && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">회사 정보</h2>
-            <div className="space-y-2 text-gray-700">
-              {job.company_phone && (
-                <p>
-                  <span className="font-medium">연락처: </span>
-                  {job.company_phone}
-                </p>
-              )}
-              {job.company_address && (
-                <p>
-                  <span className="font-medium">주소: </span>
-                  {job.company_address}
-                </p>
-              )}
+              {/* Help Banner */}
+              <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white shadow-lg relative overflow-hidden group">
+                <div className="relative z-10">
+                  <h4 className="font-bold text-lg mb-1">취업 비자 도움이 필요하세요?</h4>
+                  <p className="text-gray-300 text-sm mb-4">전문 상담사와 1:1 상담을 받아보세요.</p>
+                  <Link
+                    href="/consultations"
+                    className="inline-flex items-center text-sm font-bold text-white border-b border-white/30 pb-0.5 hover:border-white transition-colors"
+                  >
+                    상담 신청하기
+                    <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+                  </Link>
+                </div>
+                <div className="absolute -right-4 -bottom-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <span className="material-symbols-outlined text-[120px]">gavel</span>
+                </div>
+              </div>
             </div>
           </div>
-        )}
-
-        {/* 모집 마감일 */}
-        <div className="mt-4 text-sm text-gray-600 text-center">
-          마감일: {formatDate(job.deadline)}
         </div>
-      </div>
+      </main>
 
       {/* 지원 모달 */}
       {showApplyModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">일자리 지원</h2>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 sm:p-8">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-text-primary">일자리 지원</h2>
+                  <p className="text-sm text-text-muted mt-1">{job.company_name} - {job.position}</p>
+                </div>
                 <button
                   onClick={() => {
                     setShowApplyModal(false);
@@ -390,67 +543,80 @@ export default function JobDetailPage() {
                     setResumeUrl("");
                     setApplyError("");
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="size-10 rounded-full hover:bg-gray-100 transition-colors flex items-center justify-center"
                 >
-                  <span className="text-2xl">×</span>
+                  <span className="material-symbols-outlined text-text-muted">close</span>
                 </button>
               </div>
 
-              <form onSubmit={handleApply} className="space-y-4">
+              <form onSubmit={handleApply} className="space-y-6">
                 {applyError && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-600">{applyError}</p>
+                  <div className="p-4 bg-error/10 border border-error/20 rounded-lg flex items-start gap-3">
+                    <span className="material-symbols-outlined text-error">error</span>
+                    <p className="text-sm text-error">{applyError}</p>
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    자기소개서 (선택사항)
+                  <label className="block text-sm font-bold text-text-primary mb-2">
+                    자기소개서 <span className="text-text-muted font-normal">(선택)</span>
                   </label>
                   <textarea
                     value={coverLetter}
                     onChange={(e) => setCoverLetter(e.target.value)}
                     rows={8}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
                     placeholder="자기소개서를 입력해주세요..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    이력서 파일 URL (선택사항)
+                  <label className="block text-sm font-bold text-text-primary mb-2">
+                    이력서 URL <span className="text-text-muted font-normal">(선택)</span>
                   </label>
-                  <Input
+                  <input
                     type="url"
                     value={resumeUrl}
                     onChange={(e) => setResumeUrl(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     placeholder="https://example.com/resume.pdf"
                   />
+                  <p className="text-xs text-text-muted mt-2">
+                    Google Drive, Dropbox 등의 공유 링크를 입력해주세요.
+                  </p>
                 </div>
 
-                <div className="flex gap-4 pt-4">
-                  <Button
+                <div className="flex gap-3 pt-4">
+                  <button
                     type="button"
-                    variant="outline"
                     onClick={() => {
                       setShowApplyModal(false);
                       setCoverLetter("");
                       setResumeUrl("");
                       setApplyError("");
                     }}
-                    fullWidth
                     disabled={isSubmitting}
+                    className="flex-1 h-12 border border-gray-200 text-text-secondary font-bold rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50"
                   >
                     취소
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     type="submit"
-                    variant="primary"
-                    loading={isSubmitting}
-                    fullWidth
+                    disabled={isSubmitting}
+                    className="flex-1 h-12 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl shadow-md shadow-primary/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                   >
-                    지원하기
-                  </Button>
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>처리 중...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>지원하기</span>
+                        <span className="material-symbols-outlined text-[20px]">send</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </form>
             </div>
@@ -460,7 +626,3 @@ export default function JobDetailPage() {
     </div>
   );
 }
-
-
-
-
