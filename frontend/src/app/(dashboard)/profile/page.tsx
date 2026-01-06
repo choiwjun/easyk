@@ -117,6 +117,15 @@ export default function ProfilePage() {
     router.push('/login');
   };
 
+  // Get current date for welcome header
+  const getCurrentDate = () => {
+    const now = new Date();
+    if (language === 'ko') {
+      return now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+    }
+    return now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
   if (!profile && !errors.general) {
     return (
       <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
@@ -138,73 +147,233 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
       <DesignHeader />
 
-      <main className="flex-1 flex flex-col items-center py-8 px-4 md:px-10">
-        <div className="w-full max-w-[800px] flex flex-col gap-6">
-          {/* Breadcrumbs */}
-          <div className="flex flex-wrap gap-2 text-sm">
-            <Link href="/" className="text-text-sub dark:text-gray-400 font-medium hover:text-primary">
-              {language === 'ko' ? '홈' : 'Home'}
-            </Link>
-            <span className="text-text-sub dark:text-gray-500">/</span>
-            <span className="text-text-main dark:text-gray-200 font-bold">
-              {language === 'ko' ? '마이페이지' : 'My Page'}
-            </span>
+      <main className="flex-1 w-full max-w-[1080px] mx-auto px-5 py-8 flex flex-col gap-8">
+        {/* Welcome Header - design.html 기반 */}
+        <section className="w-full">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-primary to-[#164a85] rounded-2xl p-6 md:p-8 text-white shadow-lg">
+            <div className="flex flex-col gap-2">
+              <p className="text-white/70 text-sm font-medium">{getCurrentDate()}</p>
+              <h1 className="text-2xl md:text-3xl font-extrabold">
+                {language === 'ko'
+                  ? `${profile?.first_name || '회원'}님, 안녕하세요!`
+                  : `Hello, ${profile?.first_name || 'User'}!`}
+              </h1>
+              <p className="text-white/80 text-base">
+                {language === 'ko' ? '오늘도 좋은 하루 되세요.' : 'Have a great day today.'}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="size-16 md:size-20 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                <span className="material-symbols-outlined text-white text-4xl md:text-5xl">person</span>
+              </div>
+            </div>
           </div>
+        </section>
 
-          {/* Page Heading */}
-          <div className="flex flex-col gap-2">
-            <h1 className="text-text-main dark:text-white text-3xl md:text-4xl font-extrabold tracking-tight">
-              {t('profile.title')}
-            </h1>
-            <p className="text-text-sub dark:text-gray-400 text-base">
-              {language === 'ko' ? '개인 정보를 확인하고 수정할 수 있습니다.' : 'View and edit your personal information.'}
-            </p>
-          </div>
-
-          {/* Quick Links */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Stats Overview - design.html 기반 */}
+        <section className="w-full">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 진행 중인 상담 */}
             <Link
               href="/consultations/my"
-              className="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all"
+              className="group bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-primary/30"
             >
-              <span className="material-symbols-outlined text-primary text-2xl">gavel</span>
-              <span className="text-sm font-medium text-text-main dark:text-white">
-                {language === 'ko' ? '상담 내역' : 'Consultations'}
-              </span>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-primary text-xl">gavel</span>
+                </div>
+              </div>
+              <p className="text-2xl font-extrabold text-text-main dark:text-white mb-1">2</p>
+              <p className="text-sm text-text-sub dark:text-gray-400 font-medium">
+                {language === 'ko' ? '진행 중인 상담' : 'Ongoing Consultations'}
+              </p>
             </Link>
+
+            {/* 지원한 일자리 */}
             <Link
               href="/applications"
-              className="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all"
+              className="group bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-primary/30"
             >
-              <span className="material-symbols-outlined text-primary text-2xl">work</span>
-              <span className="text-sm font-medium text-text-main dark:text-white">
-                {language === 'ko' ? '지원 현황' : 'Applications'}
-              </span>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-purple-600 dark:text-purple-400 text-xl">work</span>
+                </div>
+              </div>
+              <p className="text-2xl font-extrabold text-text-main dark:text-white mb-1">5</p>
+              <p className="text-sm text-text-sub dark:text-gray-400 font-medium">
+                {language === 'ko' ? '지원한 일자리' : 'Applied Jobs'}
+              </p>
             </Link>
-            <Link
-              href="/saved-jobs"
-              className="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all"
-            >
-              <span className="material-symbols-outlined text-primary text-2xl">bookmark</span>
-              <span className="text-sm font-medium text-text-main dark:text-white">
-                {language === 'ko' ? '관심 공고' : 'Saved Jobs'}
-              </span>
-            </Link>
+
+            {/* 확인 가능한 지원금 */}
             <Link
               href="/supports"
-              className="flex flex-col items-center gap-2 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all"
+              className="group bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-primary/30"
             >
-              <span className="material-symbols-outlined text-primary text-2xl">volunteer_activism</span>
-              <span className="text-sm font-medium text-text-main dark:text-white">
-                {language === 'ko' ? '정부지원' : 'Support'}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-xl">payments</span>
+                </div>
+              </div>
+              <p className="text-2xl font-extrabold text-text-main dark:text-white mb-1">3</p>
+              <p className="text-sm text-text-sub dark:text-gray-400 font-medium">
+                {language === 'ko' ? '확인 가능한 지원금' : 'Available Supports'}
+              </p>
+            </Link>
+
+            {/* 비자 만료일 */}
+            <div className="group bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-orange-600 dark:text-orange-400 text-xl">calendar_month</span>
+                </div>
+              </div>
+              <p className="text-2xl font-extrabold text-text-main dark:text-white mb-1">D-89</p>
+              <p className="text-sm text-text-sub dark:text-gray-400 font-medium">
+                {language === 'ko' ? '비자 만료일' : 'Visa Expiry'}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Main Services - design.html 기반 */}
+        <section className="w-full">
+          <h2 className="text-xl font-bold text-text-main dark:text-white mb-4">
+            {language === 'ko' ? '빠른 서비스' : 'Quick Services'}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* 법률 상담 */}
+            <Link
+              href="/consultations"
+              className="group flex items-center gap-4 p-5 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 hover:border-primary/30 transition-all"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-primary text-3xl">balance</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-bold text-text-main dark:text-white mb-1">
+                  {language === 'ko' ? '법률 상담' : 'Legal Consultation'}
+                </h3>
+                <p className="text-sm text-text-sub dark:text-gray-400">
+                  {language === 'ko' ? '전문 변호사 매칭' : 'Expert lawyer matching'}
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 group-hover:text-primary transition-colors">
+                chevron_right
+              </span>
+            </Link>
+
+            {/* 일자리 찾기 */}
+            <Link
+              href="/jobs"
+              className="group flex items-center gap-4 p-5 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 hover:border-primary/30 transition-all"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-purple-600 dark:text-purple-400 text-3xl">work_outline</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-bold text-text-main dark:text-white mb-1">
+                  {language === 'ko' ? '일자리 찾기' : 'Find Jobs'}
+                </h3>
+                <p className="text-sm text-text-sub dark:text-gray-400">
+                  {language === 'ko' ? '지자체 채용 공고' : 'Local government jobs'}
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 group-hover:text-primary transition-colors">
+                chevron_right
+              </span>
+            </Link>
+
+            {/* 정부 지원 */}
+            <Link
+              href="/supports"
+              className="group flex items-center gap-4 p-5 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 hover:border-primary/30 transition-all"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-3xl">assured_workload</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-bold text-text-main dark:text-white mb-1">
+                  {language === 'ko' ? '정부 지원' : 'Government Support'}
+                </h3>
+                <p className="text-sm text-text-sub dark:text-gray-400">
+                  {language === 'ko' ? '장려금, 교육, 훈련' : 'Subsidies, education, training'}
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 group-hover:text-primary transition-colors">
+                chevron_right
               </span>
             </Link>
           </div>
+        </section>
+
+        {/* 나의 신청 현황 - design.html 기반 */}
+        <section className="w-full">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-text-main dark:text-white">
+              {language === 'ko' ? '나의 신청 현황' : 'My Applications'}
+            </h2>
+            <Link href="/consultations/my" className="text-primary text-sm font-bold hover:underline flex items-center gap-1">
+              {language === 'ko' ? '전체 보기' : 'View All'}
+              <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+            </Link>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            {/* 신청 항목 1 */}
+            <Link href="/consultations/my" className="flex items-center gap-4 p-5 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-2xl">gavel</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-base font-bold text-text-main dark:text-white truncate">
+                    {language === 'ko' ? '임금 체불 법률 상담' : 'Unpaid Wages Consultation'}
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 whitespace-nowrap">
+                    {language === 'ko' ? '매칭 완료' : 'Matched'}
+                  </span>
+                </div>
+                <p className="text-sm text-text-sub dark:text-gray-400">
+                  {language === 'ko' ? '담당 변호사: ' : 'Lawyer: '}
+                  <span className="text-primary font-medium">김철수</span>
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-gray-300 dark:text-gray-600">chevron_right</span>
+            </Link>
+
+            {/* 신청 항목 2 */}
+            <Link href="/applications" className="flex items-center gap-4 p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+              <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center">
+                <span className="material-symbols-outlined text-purple-600 dark:text-purple-400 text-2xl">work</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-base font-bold text-text-main dark:text-white truncate">
+                    {language === 'ko' ? '제조업 현장직 지원' : 'Manufacturing Position'}
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 whitespace-nowrap">
+                    {language === 'ko' ? '검토 중' : 'Under Review'}
+                  </span>
+                </div>
+                <p className="text-sm text-text-sub dark:text-gray-400">
+                  {language === 'ko' ? '지원 기업: ' : 'Company: '}(주)대한정밀
+                </p>
+              </div>
+              <span className="material-symbols-outlined text-gray-300 dark:text-gray-600">chevron_right</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* 프로필 관리 섹션 */}
+        <section className="w-full">
+          <h2 className="text-xl font-bold text-text-main dark:text-white mb-4">
+            {language === 'ko' ? '프로필 관리' : 'Profile Management'}
+          </h2>
 
           {/* Profile Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
             {/* Profile Header */}
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="material-symbols-outlined text-primary text-3xl">person</span>
@@ -382,17 +551,17 @@ export default function ProfilePage() {
               )}
             </div>
           </div>
+        </section>
 
-          {/* Logout Button */}
-          <div className="flex justify-center">
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-6 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-medium transition-colors"
-            >
-              <span className="material-symbols-outlined text-[20px]">logout</span>
-              {language === 'ko' ? '로그아웃' : 'Logout'}
-            </button>
-          </div>
+        {/* Logout Button */}
+        <div className="flex justify-center pb-4">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-6 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl font-medium transition-colors"
+          >
+            <span className="material-symbols-outlined text-[20px]">logout</span>
+            {language === 'ko' ? '로그아웃' : 'Logout'}
+          </button>
         </div>
       </main>
 
