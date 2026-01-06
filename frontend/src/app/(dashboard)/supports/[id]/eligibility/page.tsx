@@ -20,6 +20,12 @@ interface Support {
   location?: string;
 }
 
+interface CriteriaResult {
+  label: string;
+  value: string;
+  passed: boolean;
+}
+
 const VISA_TYPES = [
   { value: "E-7", label: "E-7 (특정활동)", label_en: "E-7 (Specific Activities)" },
   { value: "E-9", label: "E-9 (비전문취업)", label_en: "E-9 (Non-professional Employment)" },
@@ -79,8 +85,7 @@ export default function EligibilityCheckPage() {
   const [isChecking, setIsChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<{
     eligible: boolean;
-    message: string;
-    details: string[];
+    criteria: CriteriaResult[];
   } | null>(null);
 
   useEffect(() => {
@@ -91,7 +96,6 @@ export default function EligibilityCheckPage() {
     try {
       const token = localStorage.getItem("access_token");
 
-      // API 호출 시도
       const response = await fetch(`/api/supports/${supportId}`, {
         headers: token ? { "Authorization": `Bearer ${token}` } : {},
       });
@@ -100,14 +104,12 @@ export default function EligibilityCheckPage() {
         const data = await response.json();
         setSupport(data);
       } else {
-        // API 실패 시 샘플 데이터에서 찾기
         const sampleSupport = SAMPLE_SUPPORTS.find(s => s.id === supportId);
         if (sampleSupport) {
           setSupport(sampleSupport as Support);
         }
       }
     } catch (error) {
-      // 네트워크 오류 시 샘플 데이터에서 찾기
       const sampleSupport = SAMPLE_SUPPORTS.find(s => s.id === supportId);
       if (sampleSupport) {
         setSupport(sampleSupport as Support);
@@ -123,67 +125,73 @@ export default function EligibilityCheckPage() {
     setIsChecking(true);
     setCheckResult(null);
 
-    // 검증 로직
-    const details: string[] = [];
-    let eligible = true;
+    const criteria: CriteriaResult[] = [];
+    let allPassed = true;
 
     // 비자 종류 확인
     if (selectedVisaType && selectedVisaType !== "other") {
       const isEligibleVisa = support.eligible_visa_types.includes(selectedVisaType);
-      if (isEligibleVisa) {
-        details.push(language === 'ko'
-          ? `✓ ${selectedVisaType} 비자는 신청 가능한 비자입니다.`
-          : `✓ ${selectedVisaType} visa is eligible for this program.`);
-      } else {
-        eligible = false;
-        details.push(language === 'ko'
-          ? `✗ ${selectedVisaType} 비자는 이 프로그램의 대상이 아닙니다.`
-          : `✗ ${selectedVisaType} visa is not eligible for this program.`);
-      }
+      const visaLabel = VISA_TYPES.find(v => v.value === selectedVisaType);
+      criteria.push({
+        label: language === 'ko' ? '비자 유형' : 'Visa Type',
+        value: visaLabel ? (language === 'ko' ? visaLabel.label : visaLabel.label_en) : selectedVisaType,
+        passed: isEligibleVisa,
+      });
+      if (!isEligibleVisa) allPassed = false;
     }
 
-    // 지역 확인 (프로그램에 location이 있는 경우)
-    if (selectedRegion && support.location) {
-      const regionLabel = REGIONS.find(r => r.value === selectedRegion)?.label || selectedRegion;
-      if (support.location === "전국" || support.location.includes(regionLabel)) {
-        details.push(language === 'ko'
-          ? `✓ ${regionLabel} 지역은 신청 가능 지역입니다.`
-          : `✓ ${regionLabel} is an eligible region.`);
-      } else {
-        eligible = false;
-        details.push(language === 'ko'
-          ? `✗ 이 프로그램은 ${support.location} 지역 거주자만 신청 가능합니다.`
-          : `✗ This program is only available for residents of ${support.location}.`);
+    // 지역 확인
+    if (selectedRegion) {
+      const regionLabel = REGIONS.find(r => r.value === selectedRegion);
+      const regionName = regionLabel ? (language === 'ko' ? regionLabel.label : regionLabel.label_en) : selectedRegion;
+      let isEligibleRegion = true;
+
+      if (support.location && support.location !== "전국" && support.location !== "Nationwide") {
+        isEligibleRegion = support.location.includes(regionLabel?.label || selectedRegion);
       }
+
+      criteria.push({
+        label: language === 'ko' ? '거주지' : 'Residence',
+        value: regionName,
+        passed: isEligibleRegion,
+      });
+      if (!isEligibleRegion) allPassed = false;
     }
 
-    // 나이 확인 (프로그램 자격조건에 나이 관련 내용이 있는 경우)
+    // 나이 확인
     if (age) {
       const ageNum = parseInt(age);
-      if (ageNum >= 18 && ageNum <= 65) {
-        details.push(language === 'ko'
-          ? `✓ 만 ${ageNum}세는 신청 가능 연령입니다.`
-          : `✓ Age ${ageNum} is eligible.`);
-      } else if (ageNum < 18) {
-        eligible = false;
-        details.push(language === 'ko'
-          ? `✗ 만 18세 이상부터 신청 가능합니다.`
-          : `✗ You must be at least 18 years old.`);
-      }
+      const isEligibleAge = ageNum >= 18 && ageNum <= 65;
+      criteria.push({
+        label: language === 'ko' ? '나이' : 'Age',
+        value: language === 'ko' ? `만 ${ageNum}세` : `${ageNum} years old`,
+        passed: isEligibleAge,
+      });
+      if (!isEligibleAge) allPassed = false;
     }
 
-    const message = eligible
-      ? (language === 'ko'
-          ? "축하합니다! 기본 자격 조건을 충족합니다."
-          : "Congratulations! You meet the basic eligibility requirements.")
-      : (language === 'ko'
-          ? "일부 조건을 충족하지 못했습니다. 아래 내용을 확인해주세요."
-          : "Some requirements are not met. Please check the details below.");
+    // 경력 확인 (선택 사항)
+    if (experience) {
+      const expLabel = EXPERIENCE_OPTIONS.find(e => e.value === experience);
+      criteria.push({
+        label: language === 'ko' ? '경력' : 'Experience',
+        value: expLabel ? (language === 'ko' ? expLabel.label : expLabel.label_en) : experience,
+        passed: true, // 경력은 참고용
+      });
+    }
 
     setTimeout(() => {
-      setCheckResult({ eligible, message, details });
+      setCheckResult({ eligible: allPassed, criteria });
       setIsChecking(false);
     }, 1500);
+  };
+
+  const resetForm = () => {
+    setCheckResult(null);
+    setSelectedVisaType("");
+    setSelectedRegion("");
+    setAge("");
+    setExperience("");
   };
 
   if (isLoading) {
@@ -213,9 +221,170 @@ export default function EligibilityCheckPage() {
     );
   }
 
+  // 결과 화면 표시
+  if (checkResult) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <main className="flex flex-1 flex-col items-center justify-center p-4 py-12">
+          <div className="w-full max-w-[640px]">
+            {/* Result Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-8 md:p-12 text-center flex flex-col items-center">
+              {/* Icon */}
+              <div className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full ${
+                checkResult.eligible ? 'bg-blue-100' : 'bg-red-100'
+              }`}>
+                <span className="text-5xl">
+                  {checkResult.eligible ? '✓' : '✗'}
+                </span>
+              </div>
+
+              {/* Headline */}
+              <h1 className="text-gray-900 text-2xl md:text-3xl font-extrabold leading-tight tracking-tight mb-3">
+                {checkResult.eligible ? (
+                  language === 'ko' ? (
+                    <>축하합니다!<br />지원 자격이 충족되었습니다.</>
+                  ) : (
+                    <>Congratulations!<br />You are eligible.</>
+                  )
+                ) : (
+                  language === 'ko' ? (
+                    <>아쉽지만<br />자격 조건이 일부 미충족입니다.</>
+                  ) : (
+                    <>Unfortunately<br />Some requirements are not met.</>
+                  )
+                )}
+              </h1>
+
+              {/* Body Text */}
+              <p className="text-gray-500 text-base font-normal leading-relaxed max-w-md mx-auto mb-8">
+                {checkResult.eligible ? (
+                  language === 'ko' ? (
+                    <>
+                      귀하는 <span className="text-gray-900 font-bold">{support.title}</span> 대상자입니다.<br className="hidden sm:block" />
+                      아래의 필수 자격 요건을 모두 만족하셨습니다.
+                    </>
+                  ) : (
+                    <>
+                      You are eligible for <span className="text-gray-900 font-bold">{support.title}</span>.<br className="hidden sm:block" />
+                      You have met all the required criteria below.
+                    </>
+                  )
+                ) : (
+                  language === 'ko' ? (
+                    <>
+                      <span className="text-gray-900 font-bold">{support.title}</span>의 일부 조건을 충족하지 못했습니다.<br className="hidden sm:block" />
+                      아래 내용을 확인해주세요.
+                    </>
+                  ) : (
+                    <>
+                      Some requirements for <span className="text-gray-900 font-bold">{support.title}</span> are not met.<br className="hidden sm:block" />
+                      Please check the details below.
+                    </>
+                  )
+                )}
+              </p>
+
+              {/* Criteria Summary Box */}
+              <div className="w-full bg-gray-50 rounded-xl p-6 mb-8 border border-gray-200">
+                <div className="flex flex-col gap-4">
+                  {checkResult.criteria.map((item, index) => (
+                    <div key={index}>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-xl shrink-0 ${item.passed ? 'text-blue-600' : 'text-red-500'}`}>
+                          {item.passed ? '✓' : '✗'}
+                        </span>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 text-left flex-1">
+                          <span className="text-gray-500 text-sm font-medium">{item.label}</span>
+                          <span className="hidden sm:block text-gray-300">|</span>
+                          <span className="text-gray-900 text-base font-bold">{item.value}</span>
+                        </div>
+                        <div className="ml-auto">
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            item.passed
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-red-100 text-red-700'
+                          }`}>
+                            {item.passed
+                              ? (language === 'ko' ? '충족' : 'Met')
+                              : (language === 'ko' ? '미충족' : 'Not Met')
+                            }
+                          </span>
+                        </div>
+                      </div>
+                      {index < checkResult.criteria.length - 1 && (
+                        <div className="h-px w-full bg-gray-200 mt-4"></div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col-reverse w-full gap-3 sm:flex-row sm:justify-center">
+                <button
+                  onClick={resetForm}
+                  className="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 border border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors text-base font-bold px-6"
+                >
+                  {language === 'ko' ? '다시 확인하기' : 'Check Again'}
+                </button>
+                {checkResult.eligible && support.official_link ? (
+                  <a
+                    href={support.official_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-colors text-base font-bold px-6 gap-2 flex"
+                  >
+                    <span>{language === 'ko' ? '지금 신청하기' : 'Apply Now'}</span>
+                    <span>→</span>
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => router.push(`/supports/${supportId}`)}
+                    className="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-colors text-base font-bold px-6 gap-2 flex"
+                  >
+                    <span>{language === 'ko' ? '프로그램 상세보기' : 'View Program'}</span>
+                    <span>→</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Help Link */}
+              <div className="mt-6">
+                <Link
+                  href="/support"
+                  className="text-sm text-gray-500 hover:text-blue-600 transition-colors underline decoration-dotted underline-offset-4"
+                >
+                  {language === 'ko' ? '결과에 대해 문의사항이 있으신가요?' : 'Have questions about the result?'}
+                </Link>
+              </div>
+            </div>
+
+            {/* Back Button */}
+            <div className="mt-6">
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/supports/${supportId}`)}
+                className="w-full"
+              >
+                ← {language === 'ko' ? '프로그램 상세로 돌아가기' : 'Back to Program Details'}
+              </Button>
+            </div>
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="py-6 text-center border-t border-gray-200 bg-white">
+          <p className="text-xs text-gray-400">
+            © 2024 easyK. {language === 'ko' ? '대한민국 정부 지원 프로그램 안내 서비스입니다.' : 'Korea government support program guide service.'}
+          </p>
+        </footer>
+      </div>
+    );
+  }
+
+  // 폼 화면
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-start pt-10 pb-20 px-4 md:px-6">
         {/* Page Heading */}
         <div className="w-full max-w-[800px] flex flex-col items-center text-center mb-10 gap-3">
@@ -361,50 +530,6 @@ export default function EligibilityCheckPage() {
                 </div>
               </label>
             </div>
-
-            {/* 결과 표시 */}
-            {checkResult && (
-              <div className={`rounded-lg p-5 ${
-                checkResult.eligible
-                  ? "bg-green-50 border border-green-200"
-                  : "bg-red-50 border border-red-200"
-              }`}>
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl">
-                    {checkResult.eligible ? "🎉" : "⚠️"}
-                  </span>
-                  <div className="flex-1">
-                    <p className={`font-bold mb-2 ${
-                      checkResult.eligible ? "text-green-800" : "text-red-800"
-                    }`}>
-                      {checkResult.message}
-                    </p>
-                    {checkResult.details.length > 0 && (
-                      <ul className="space-y-1">
-                        {checkResult.details.map((detail, index) => (
-                          <li key={index} className={`text-sm ${
-                            detail.startsWith("✓") ? "text-green-700" : "text-red-700"
-                          }`}>
-                            {detail}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {checkResult.eligible && support.official_link && (
-                      <a
-                        href={support.official_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-                      >
-                        {language === 'ko' ? '공식 사이트에서 신청하기' : 'Apply on Official Site'}
-                        <span>→</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* 안내 박스 */}
             <div className="bg-blue-50 rounded-lg p-4 flex items-start gap-3">

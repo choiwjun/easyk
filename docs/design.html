@@ -3,17 +3,17 @@
 <html class="light" lang="ko"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>easyK 자격 확인 폼</title>
-<!-- Google Fonts: Public Sans and Nanum Gothic -->
+<title>easyK - 자격 확인 결과</title>
+<!-- Google Fonts: Public Sans & Nanum Gothic -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&amp;family=Public+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&amp;family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Tailwind Config -->
+<!-- Tailwind Configuration -->
 <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -21,190 +21,144 @@
                 extend: {
                     colors: {
                         "primary": "#1e5a9f",
+                        "primary-dark": "#16457b",
                         "background-light": "#f6f7f8",
                         "background-dark": "#121920",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e2732",
                     },
                     fontFamily: {
-                        "display": ["Public Sans", "sans-serif"],
-                        "korean": ["Nanum Gothic", "sans-serif"],
+                        "display": ["Public Sans", "Nanum Gothic", "sans-serif"],
+                        "body": ["Nanum Gothic", "Public Sans", "sans-serif"],
                     },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
                 },
             },
         }
     </script>
-<style>body {
-    font-family: "Nanum Gothic", "Public Sans", sans-serif
-    }
-/* Custom select arrow style reused from examples */
-.select-chevron {
-    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuC2crtP4aQqTr0goDyadQ7voPvLE9eZ4mLJaEGhHEDpq7noroM7pyn02b3uSOWNW_yNBxLMYYyAbL1d9ItM_2YW1kacJKerSLo7rhYljRh6h8Lu5VV9nzVWFhbGbfCDHt0ro-e2LS63bwjKKKyP0oXtquR13ZZURBY8rrEBfkaTXt2J3wUcG2Gf5Oabk9oqe2Iq2wFJBHIp3USkIR4uqgu_TNYLGmRt_Aeb8uddAHp_W2cpDuofQoE6kvtBwKeV45N7Fmt8j8tBZXAI);
-    background-position: right 1rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5rem
-    }</style>
+<style>
+        body {
+            font-family: 'Nanum Gothic', 'Public Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-[#121417] dark:text-white min-h-screen flex flex-col">
-<!-- TopNavBar -->
-<header class="w-full bg-white dark:bg-[#1a202c] border-b border-[#f0f2f4] dark:border-gray-800">
-<div class="max-w-[1200px] mx-auto px-4 md:px-10 h-16 flex items-center justify-between">
+<body class="bg-background-light dark:bg-background-dark text-[#121417] dark:text-white transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-[#f0f2f4] dark:border-[#2a3441] bg-surface-light dark:bg-surface-dark px-6 py-3 lg:px-10">
 <div class="flex items-center gap-4">
-<div class="size-8 text-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-3xl">verified_user</span>
+<div class="flex items-center justify-center rounded-lg bg-primary/10 p-2">
+<span class="material-symbols-outlined text-primary" style="font-size: 24px;">diversity_3</span>
 </div>
-<h2 class="text-[#121417] dark:text-white text-xl font-bold tracking-tight">easyK</h2>
+<h2 class="text-primary dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display">easyK</h2>
 </div>
-<!-- Desktop Navigation -->
-<div class="hidden md:flex flex-1 justify-end items-center gap-8">
-<nav class="flex items-center gap-8">
-<a class="text-[#121417] dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">프로그램 찾기</a>
-<a class="text-[#121417] dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">커뮤니티</a>
-<a class="text-[#121417] dark:text-gray-300 hover:text-primary text-sm font-medium transition-colors" href="#">고객지원</a>
-</nav>
-<button class="flex items-center justify-center gap-2 rounded-lg h-9 px-4 bg-primary/10 hover:bg-primary/20 text-primary text-sm font-bold transition-colors">
-<span class="material-symbols-outlined text-lg">language</span>
-<span>Language</span>
+<div class="flex gap-3">
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-background-light dark:bg-background-dark hover:bg-[#e0e4e9] dark:hover:bg-[#2a3441] text-[#121417] dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-3 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">language</span>
+<span class="hidden sm:inline">한국어</span>
 </button>
-</div>
-<!-- Mobile Menu Icon -->
-<div class="md:hidden flex items-center">
-<button class="text-[#121417] dark:text-white p-2">
-<span class="material-symbols-outlined">menu</span>
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-background-light dark:bg-background-dark hover:bg-[#e0e4e9] dark:hover:bg-[#2a3441] text-[#121417] dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-3 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">person</span>
 </button>
-</div>
 </div>
 </header>
 <!-- Main Content -->
-<main class="flex-grow flex flex-col items-center justify-start pt-10 pb-20 px-4 md:px-6">
-<!-- Page Heading -->
-<div class="w-full max-w-[800px] flex flex-col items-center text-center mb-10 gap-3 animate-fade-in-up">
-<h1 class="text-[#121417] dark:text-white text-3xl md:text-4xl font-extrabold leading-tight tracking-tight">
-                정부 지원 프로그램 자격 확인
-            </h1>
-<p class="text-[#657486] dark:text-gray-400 text-base md:text-lg font-normal leading-relaxed max-w-[600px]">
-                간단한 정보를 입력하고 신청 가능한 지원 혜택을 확인해보세요.<br class="hidden md:block"/>
-                입력하신 정보는 자격 확인 용도로만 사용됩니다.
-            </p>
+<main class="flex flex-1 flex-col items-center justify-center p-4 py-12 lg:px-40">
+<div class="w-full max-w-[640px]">
+<!-- Success Card -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3441] overflow-hidden p-8 md:p-12 text-center flex flex-col items-center animate-fade-in-up">
+<!-- Icon -->
+<div class="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#e3f2fd] dark:bg-primary/20">
+<span class="material-symbols-outlined icon-filled text-primary" style="font-size: 48px;">check_circle</span>
 </div>
-<!-- Form Card -->
-<div class="w-full max-w-[800px] bg-white dark:bg-[#1a202c] rounded-xl shadow-[0_2px_12px_-2px_rgba(0,0,0,0.08)] border border-[#e5e7eb] dark:border-gray-800 p-6 md:p-10">
-<form action="#" class="flex flex-col gap-8">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-<!-- Field: Visa Type -->
-<label class="flex flex-col gap-2">
-<span class="text-[#121417] dark:text-gray-200 text-sm font-bold flex items-center gap-1">
-                            비자 종류
-                            <span class="text-red-500">*</span>
-</span>
-<div class="relative">
-<select class="select-chevron form-select appearance-none w-full h-12 md:h-14 pl-4 pr-10 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-[#2d3748] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base">
-<option disabled="" selected="" value="">비자 타입을 선택하세요</option>
-<option value="E-7">E-7 (특정활동)</option>
-<option value="F-2">F-2 (거주)</option>
-<option value="D-2">D-2 (유학)</option>
-<option value="E-9">E-9 (비전문취업)</option>
-<option value="F-5">F-5 (영주)</option>
-<option value="F-6">F-6 (결혼이민)</option>
-<option value="other">기타</option>
-</select>
-</div>
-</label>
-<!-- Field: Residence -->
-<label class="flex flex-col gap-2">
-<span class="text-[#121417] dark:text-gray-200 text-sm font-bold flex items-center gap-1">
-                            거주지
-                            <span class="text-red-500">*</span>
-</span>
-<div class="relative">
-<select class="select-chevron form-select appearance-none w-full h-12 md:h-14 pl-4 pr-10 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-[#2d3748] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base">
-<option disabled="" selected="" value="">거주 지역을 선택하세요</option>
-<option value="seoul">서울</option>
-<option value="gyeonggi">경기</option>
-<option value="incheon">인천</option>
-<option value="busan">부산</option>
-<option value="daegu">대구</option>
-<option value="gwangju">광주</option>
-<option value="daejeon">대전</option>
-<option value="ulsan">울산</option>
-<option value="sejong">세종</option>
-<option value="gangwon">강원</option>
-<option value="chungbuk">충북</option>
-<option value="chungnam">충남</option>
-<option value="jeonbuk">전북</option>
-<option value="jeonnam">전남</option>
-<option value="gyeongbuk">경북</option>
-<option value="gyeongnam">경남</option>
-<option value="jeju">제주</option>
-</select>
-</div>
-</label>
-<!-- Field: Age -->
-<label class="flex flex-col gap-2">
-<span class="text-[#121417] dark:text-gray-200 text-sm font-bold flex items-center gap-1">
-                            나이
-                            <span class="text-red-500">*</span>
-</span>
-<div class="relative">
-<input class="form-input w-full h-12 md:h-14 px-4 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-[#2d3748] text-[#121417] dark:text-white placeholder:text-[#9aa2ac] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base" placeholder="만 나이를 입력하세요 (예: 28)" type="number"/>
-</div>
-</label>
-<!-- Field: Career -->
-<label class="flex flex-col gap-2">
-<span class="text-[#121417] dark:text-gray-200 text-sm font-bold">
-                            경력
-                        </span>
-<div class="relative">
-<select class="select-chevron form-select appearance-none w-full h-12 md:h-14 pl-4 pr-10 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-[#2d3748] text-[#121417] dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base">
-<option disabled="" selected="" value="">경력 기간을 선택하세요</option>
-<option value="new">신입 (1년 미만)</option>
-<option value="1-3">1년 이상 ~ 3년 미만</option>
-<option value="3-5">3년 이상 ~ 5년 미만</option>
-<option value="5-7">5년 이상 ~ 7년 미만</option>
-<option value="7+">7년 이상</option>
-</select>
-</div>
-</label>
-</div>
-<!-- Info Box -->
-<div class="bg-primary/5 dark:bg-primary/10 rounded-lg p-4 flex items-start gap-3">
-<span class="material-symbols-outlined text-primary mt-0.5">info</span>
-<div class="flex flex-col gap-1">
-<p class="text-sm font-bold text-[#121417] dark:text-white">안내사항</p>
-<p class="text-sm text-[#657486] dark:text-gray-300">
-                            제출된 정보는 프로그램 매칭 알고리즘을 위해서만 사용되며, 외부에 공개되지 않습니다. 정확한 매칭을 위해 실제 정보를 입력해주세요.
-                        </p>
-</div>
-</div>
-<!-- Submit Button -->
-<div class="pt-2">
-<button class="w-full h-14 bg-primary hover:bg-[#164882] active:bg-[#123b6b] text-white text-lg font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 group" type="button">
-<span>자격 확인하기</span>
-<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-</button>
-<p class="text-center mt-4 text-sm text-[#657486] dark:text-gray-500">
-                        버튼을 누르면 <a class="underline hover:text-primary" href="#">이용약관</a> 및 <a class="underline hover:text-primary" href="#">개인정보처리방침</a>에 동의하게 됩니다.
+<!-- Headline -->
+<h1 class="text-[#121417] dark:text-white text-3xl font-extrabold leading-tight tracking-tight mb-3">
+                        축하합니다!<br/>지원 자격이 충족되었습니다.
+                    </h1>
+<!-- Body Text -->
+<p class="text-[#637588] dark:text-[#9ba1a6] text-base font-normal leading-relaxed max-w-md mx-auto mb-8">
+                        귀하는 <span class="text-[#121417] dark:text-white font-bold">[정착 지원 프로그램]</span> 대상자입니다.<br class="hidden sm:block"/>
+                        아래의 필수 자격 요건을 모두 만족하셨습니다.
                     </p>
+<!-- Criteria Summary Box -->
+<div class="w-full bg-background-light dark:bg-background-dark rounded-xl p-6 mb-8 border border-[#e5e7eb] dark:border-[#2a3441]">
+<div class="flex flex-col gap-4">
+<!-- Item 1 -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined icon-filled text-primary shrink-0" style="font-size: 22px;">check_circle</span>
+<div class="flex flex-col sm:flex-row sm:items-center sm:gap-2 text-left">
+<span class="text-[#637588] dark:text-[#9ba1a6] text-sm font-medium">비자 유형</span>
+<span class="hidden sm:block text-[#dce0e5] dark:text-[#4b5563]">|</span>
+<span class="text-[#121417] dark:text-white text-base font-bold">F-5 (영주권)</span>
 </div>
-</form>
+<div class="ml-auto">
+<span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                                        충족
+                                    </span>
+</div>
+</div>
+<!-- Separator -->
+<div class="h-px w-full bg-[#e5e7eb] dark:bg-[#2a3441]"></div>
+<!-- Item 2 -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined icon-filled text-primary shrink-0" style="font-size: 22px;">check_circle</span>
+<div class="flex flex-col sm:flex-row sm:items-center sm:gap-2 text-left">
+<span class="text-[#637588] dark:text-[#9ba1a6] text-sm font-medium">거주 기간</span>
+<span class="hidden sm:block text-[#dce0e5] dark:text-[#4b5563]">|</span>
+<span class="text-[#121417] dark:text-white text-base font-bold">2년 이상</span>
+</div>
+<div class="ml-auto">
+<span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                                        충족
+                                    </span>
+</div>
+</div>
+<!-- Separator -->
+<div class="h-px w-full bg-[#e5e7eb] dark:bg-[#2a3441]"></div>
+<!-- Item 3 -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined icon-filled text-primary shrink-0" style="font-size: 22px;">check_circle</span>
+<div class="flex flex-col sm:flex-row sm:items-center sm:gap-2 text-left">
+<span class="text-[#637588] dark:text-[#9ba1a6] text-sm font-medium">소득 요건</span>
+<span class="hidden sm:block text-[#dce0e5] dark:text-[#4b5563]">|</span>
+<span class="text-[#121417] dark:text-white text-base font-bold">기준 부합</span>
+</div>
+<div class="ml-auto">
+<span class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                                        충족
+                                    </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col-reverse w-full gap-3 sm:flex-row sm:justify-center">
+<button class="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 border border-primary text-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors text-base font-bold px-6">
+                            신청 가이드 보기
+                        </button>
+<button class="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 bg-primary hover:bg-primary-dark text-white shadow-md transition-colors text-base font-bold px-6 gap-2 flex">
+<span>지금 신청하기</span>
+<span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
+</button>
+</div>
+<!-- Help Link -->
+<div class="mt-6">
+<a class="text-sm text-[#637588] dark:text-[#9ba1a6] hover:text-primary dark:hover:text-primary transition-colors underline decoration-dotted underline-offset-4" href="#">
+                            결과에 대해 문의사항이 있으신가요?
+                        </a>
+</div>
+</div>
 </div>
 </main>
-<!-- Footer -->
-<footer class="w-full py-8 bg-white dark:bg-[#1a202c] border-t border-[#f0f2f4] dark:border-gray-800 mt-auto">
-<div class="max-w-[960px] mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-<div class="flex flex-col gap-1 items-center md:items-start">
-<div class="flex items-center gap-2 mb-2">
-<div class="size-5 text-gray-400 flex items-center justify-center">
-<span class="material-symbols-outlined text-xl">verified_user</span>
-</div>
-<span class="text-gray-500 font-bold text-sm">easyK</span>
-</div>
-<p class="text-xs text-[#9aa2ac]">© 2024 easyK Inc. All rights reserved.</p>
-</div>
-<div class="flex gap-6">
-<a class="text-xs text-[#657486] hover:text-primary transition-colors" href="#">이용약관</a>
-<a class="text-xs text-[#657486] hover:text-primary transition-colors" href="#">개인정보처리방침</a>
-<a class="text-xs text-[#657486] hover:text-primary transition-colors" href="#">고객센터</a>
-</div>
-</div>
+<!-- Simple Footer -->
+<footer class="py-6 text-center border-t border-[#f0f2f4] dark:border-[#2a3441] bg-white dark:bg-[#1e2732]">
+<p class="text-xs text-[#9ba1a6]">© 2024 easyK. 대한민국 정부 지원 프로그램 안내 서비스입니다.</p>
 </footer>
+</div>
 </body></html>
