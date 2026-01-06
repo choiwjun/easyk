@@ -330,7 +330,7 @@ export default function ConsultantDashboardPage() {
                     : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                 }`}
               >
-                {filter.label[language]} ({filter.key === 'all' ? stats.total : consultations.filter(c => c.status === filter.key).length})
+                {filter.label[language as 'ko' | 'en']} ({filter.key === 'all' ? stats.total : consultations.filter(c => c.status === filter.key).length})
               </button>
             ))}
           </div>
@@ -382,14 +382,14 @@ export default function ConsultantDashboardPage() {
                           </p>
                         </div>
                         <span className={`ml-auto px-3 py-1 rounded-full text-xs font-bold ${getStatusBadgeStyle(consultation.status)}`}>
-                          {STATUS_LABELS[consultation.status]?.[language] || consultation.status}
+                          {STATUS_LABELS[consultation.status]?.[language as 'ko' | 'en'] || consultation.status}
                         </span>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-400 mb-3">
                         <span className="flex items-center gap-1">
                           <span className="material-symbols-outlined text-base">category</span>
-                          {CONSULTATION_TYPE_LABELS[consultation.consultation_type]?.[language] || consultation.consultation_type}
+                          {CONSULTATION_TYPE_LABELS[consultation.consultation_type]?.[language as 'ko' | 'en'] || consultation.consultation_type}
                         </span>
                         <span className="flex items-center gap-1">
                           <span className="material-symbols-outlined text-base">chat</span>
