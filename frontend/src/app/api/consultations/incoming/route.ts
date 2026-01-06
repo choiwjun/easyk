@@ -7,7 +7,10 @@ export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
 
-    console.log('[API Route] Consultations Incoming - BACKEND_URL:', BACKEND_URL);
+    console.log('[API Route] Consultations Incoming - Environment check:');
+    console.log('  BACKEND_URL:', process.env.BACKEND_URL ? 'SET' : 'NOT SET');
+    console.log('  NEXT_PUBLIC_BACKEND_URL:', process.env.NEXT_PUBLIC_BACKEND_URL ? 'SET' : 'NOT SET');
+    console.log('  Resolved URL:', BACKEND_URL);
 
     if (!authHeader) {
       return NextResponse.json(
@@ -28,12 +31,27 @@ export async function GET(request: NextRequest) {
       method: 'GET',
       headers: {
         'Authorization': authHeader,
+        'Content-Type': 'application/json',
       },
+      cache: 'no-store',
     });
 
     console.log('[API Route] Response status:', response.status);
 
-    const data = await response.json();
+    // 응답 본문을 텍스트로 먼저 읽기 (JSON 파싱 에러 방지)
+    const responseText = await response.text();
+    console.log('[API Route] Response body (first 500 chars):', responseText.substring(0, 500));
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('[API Route] JSON parse error:', parseError);
+      return NextResponse.json(
+        { message: '백엔드 응답 파싱 실패', rawResponse: responseText.substring(0, 200) },
+        { status: 502 }
+      );
+    }
 
     if (!response.ok) {
       console.log('[API Route] Error response:', data);
@@ -50,8 +68,21 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     console.error('[API Route] Consultations Incoming GET error:', error);
+    console.error('[API Route] Error details:', {
+      name: (error as Error).name,
+      message: (error as Error).message,
+      stack: (error as Error).stack?.substring(0, 500),
+    });
     return NextResponse.json(
-      { message: '상담 요청 목록 조회 중 오류가 발생했습니다', error: String(error) },
+      {
+        message: '상담 요청 목록 조회 중 오류가 발생했습니다',
+        error: String(error),
+        backendUrl: BACKEND_URL,
+        envCheck: {
+          BACKEND_URL: process.env.BACKEND_URL ? 'SET' : 'NOT SET',
+          NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL ? 'SET' : 'NOT SET',
+        }
+      },
       { status: 500 }
     );
   }
