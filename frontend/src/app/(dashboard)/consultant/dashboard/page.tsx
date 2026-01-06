@@ -264,6 +264,15 @@ export default function ConsultantDashboardPage() {
 
   const handleAccept = async (consultationId: string) => {
     try {
+      // 샘플 ID인 경우 UI만 업데이트
+      if (consultationId.startsWith('sample-')) {
+        setConsultations(prev => prev.map(c =>
+          c.id === consultationId ? { ...c, status: 'scheduled' } : c
+        ));
+        alert(language === 'ko' ? '상담 요청을 수락했습니다' : 'Consultation request accepted');
+        return;
+      }
+
       const token = localStorage.getItem('access_token');
       const response = await fetch(`/api/consultations/${consultationId}/accept`, {
         method: 'POST',
@@ -291,6 +300,13 @@ export default function ConsultantDashboardPage() {
     }
 
     try {
+      // 샘플 ID인 경우 UI만 업데이트
+      if (consultationId.startsWith('sample-')) {
+        setConsultations(prev => prev.filter(c => c.id !== consultationId));
+        alert(language === 'ko' ? '상담 요청을 거절했습니다' : 'Consultation request rejected');
+        return;
+      }
+
       const token = localStorage.getItem('access_token');
       const response = await fetch(`/api/consultations/${consultationId}/reject`, {
         method: 'POST',
@@ -752,7 +768,8 @@ export default function ConsultantDashboardPage() {
                       filteredNewRequests.slice(0, 3).map((consultation) => (
                         <div
                           key={consultation.id}
-                          className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col sm:flex-row sm:items-center gap-5 transition-transform hover:scale-[1.01]"
+                          onClick={() => router.push(`/consultations/${consultation.id}`)}
+                          className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col sm:flex-row sm:items-center gap-5 transition-transform hover:scale-[1.01] cursor-pointer"
                         >
                           <div className="flex-shrink-0 relative">
                             <div className="w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xl overflow-hidden">
@@ -787,13 +804,13 @@ export default function ConsultantDashboardPage() {
 
                           <div className="flex items-center gap-2 sm:self-center self-end w-full sm:w-auto mt-2 sm:mt-0">
                             <button
-                              onClick={() => handleReject(consultation.id)}
+                              onClick={(e) => { e.stopPropagation(); handleReject(consultation.id); }}
                               className="flex-1 sm:flex-none px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-bold text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                             >
                               {language === 'ko' ? '거절' : 'Reject'}
                             </button>
                             <button
-                              onClick={() => handleAccept(consultation.id)}
+                              onClick={(e) => { e.stopPropagation(); handleAccept(consultation.id); }}
                               className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-sm transition-colors"
                             >
                               {language === 'ko' ? '수락' : 'Accept'}
@@ -1053,7 +1070,8 @@ export default function ConsultantDashboardPage() {
                   {newRequests.map((consultation) => (
                     <div
                       key={consultation.id}
-                      className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm"
+                      onClick={() => router.push(`/consultations/${consultation.id}`)}
+                      className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                     >
                       <div className="flex flex-col lg:flex-row lg:items-start gap-5">
                         <div className="flex-shrink-0 relative">
@@ -1109,13 +1127,13 @@ export default function ConsultantDashboardPage() {
 
                         <div className="flex lg:flex-col gap-2 lg:self-center">
                           <button
-                            onClick={() => handleReject(consultation.id)}
+                            onClick={(e) => { e.stopPropagation(); handleReject(consultation.id); }}
                             className="flex-1 lg:flex-none px-5 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-bold text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           >
                             {language === 'ko' ? '거절' : 'Reject'}
                           </button>
                           <button
-                            onClick={() => handleAccept(consultation.id)}
+                            onClick={(e) => { e.stopPropagation(); handleAccept(consultation.id); }}
                             className="flex-1 lg:flex-none px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-sm transition-colors"
                           >
                             {language === 'ko' ? '수락' : 'Accept'}
