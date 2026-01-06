@@ -93,6 +93,12 @@
       "govSupport": "정부 지원 정보 조회",
       "govSupportDesc": "외국인을 위한 다양한 정부 지원 프로그램 및 혜택을 조회하세요."
     },
+    "stats": {
+      "ongoingConsultations": "진행 중인 상담",
+      "appliedJobs": "지원한 일자리",
+      "availableSupports": "확인 가능한 지원금",
+      "visaExpiry": "비자 만료일"
+    },
     "lifeGuide": {
       "title": "생활 가이드",
       "laborLaw": "노동법 기초 상식",

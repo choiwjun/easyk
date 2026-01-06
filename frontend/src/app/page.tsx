@@ -64,6 +64,75 @@ export default function Home() {
             </div>
           </section>
 
+          {/* Stats Overview 섹션 - design.html 기반 */}
+          <section className="w-full">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* 진행 중인 상담 */}
+              <a
+                href="/consultations/my"
+                className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span className="material-symbols-outlined text-primary text-xl">gavel</span>
+                  </div>
+                </div>
+                <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">2</p>
+                <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
+                  {t('home.stats.ongoingConsultations')}
+                </p>
+              </a>
+
+              {/* 지원한 일자리 */}
+              <a
+                href="/applications"
+                className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span className="material-symbols-outlined text-purple-600 dark:text-purple-400 text-xl">work</span>
+                  </div>
+                </div>
+                <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">5</p>
+                <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
+                  {t('home.stats.appliedJobs')}
+                </p>
+              </a>
+
+              {/* 확인 가능한 지원금 */}
+              <a
+                href="/supports"
+                className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-xl">payments</span>
+                  </div>
+                </div>
+                <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">3</p>
+                <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
+                  {t('home.stats.availableSupports')}
+                </p>
+              </a>
+
+              {/* 비자 만료일 */}
+              <a
+                href="/profile"
+                className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span className="material-symbols-outlined text-orange-600 dark:text-orange-400 text-xl">calendar_month</span>
+                  </div>
+                </div>
+                <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">D-89</p>
+                <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
+                  {t('home.stats.visaExpiry')}
+                </p>
+              </a>
+            </div>
+          </section>
+
           {/* 신청 현황 섹션 */}
           <section className="w-full">
             <div className="flex items-center justify-between mb-4 px-1">

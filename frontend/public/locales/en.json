@@ -93,6 +93,12 @@
       "govSupport": "Government Support Information",
       "govSupportDesc": "Browse various government support programs and benefits for foreigners."
     },
+    "stats": {
+      "ongoingConsultations": "Ongoing Consultations",
+      "appliedJobs": "Applied Jobs",
+      "availableSupports": "Available Supports",
+      "visaExpiry": "Visa Expiry"
+    },
     "lifeGuide": {
       "title": "Life Guide",
       "laborLaw": "Labor Law Basics",
