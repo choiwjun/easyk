@@ -3,11 +3,11 @@
 <html class="light" lang="ko"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>easyK - 지원 상세 보기</title>
-<!-- Fonts -->
+<title>easyK - 채용 확정 알림</title>
+<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;family=Nanum+Gothic:wght@400;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Nanum+Gothic:wght@400;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -18,15 +18,24 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1e5a9f",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#121920",
+                        "primary": "#1E5BA0", // User requested primary color
+                        "primary-dark": "#16457a",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191220",
+                        "text-main": "#141217",
+                        "text-sub": "#746586",
                     },
                     fontFamily: {
-                        "display": ["Nanum Gothic", "Inter", "sans-serif"],
-                        "body": ["Nanum Gothic", "Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Nanum Gothic", "sans-serif"],
                     },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
                 },
             },
         }
@@ -36,236 +45,106 @@
             font-family: 'Nanum Gothic', 'Inter', sans-serif;
         }
         .material-symbols-outlined {
-            font-variation-settings:
-            'FILL' 0,
-            'wght' 400,
-            'GRAD' 0,
-            'opsz' 24
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-[#121417]">
-<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<body class="bg-background-light dark:bg-background-dark text-text-main min-h-screen flex flex-col">
 <!-- Navigation -->
-<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] bg-white px-4 md:px-10 py-3 shadow-sm">
-<div class="flex items-center gap-4 text-primary">
-<div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
-<span class="material-symbols-outlined">work</span>
+<header class="w-full bg-white border-b border-[#f2f0f4] sticky top-0 z-50">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<!-- Logo -->
+<div class="flex items-center gap-2">
+<div class="flex items-center justify-center size-8 bg-primary rounded-lg text-white">
+<span class="material-symbols-outlined text-[20px]">handshake</span>
 </div>
-<h2 class="text-[#121417] text-xl font-extrabold leading-tight tracking-[-0.015em]">easyK</h2>
+<span class="text-xl font-bold tracking-tight text-text-main font-display">easyK</span>
 </div>
-<div class="flex flex-1 justify-end gap-8">
-<div class="hidden md:flex items-center gap-9">
-<a class="text-[#121417] text-sm font-bold leading-normal hover:text-primary transition-colors" href="#">채용 공고</a>
-<a class="text-primary text-sm font-bold leading-normal" href="#">지원 현황</a>
-<a class="text-[#121417] text-sm font-bold leading-normal hover:text-primary transition-colors" href="#">커뮤니티</a>
-<a class="text-[#121417] text-sm font-bold leading-normal hover:text-primary transition-colors" href="#">마이페이지</a>
+<!-- Desktop Menu -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-bold text-text-main hover:text-primary transition-colors" href="#">채용 공고</a>
+<a class="text-sm font-medium text-text-sub hover:text-primary transition-colors" href="#">커뮤니티</a>
+<a class="text-sm font-medium text-text-sub hover:text-primary transition-colors" href="#">비자 정보</a>
+</nav>
+<!-- Icons -->
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-100 text-text-main transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white"></span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-full bg-gray-100 text-text-main hover:bg-gray-200 transition-colors">
+<span class="material-symbols-outlined">person</span>
+</button>
 </div>
-<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#e5e7eb]" data-alt="User profile picture placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZRGzbE509SPM4tO8b9Xr36KM4cN0939UEz68pcJ9x_iq_991fxz9M2mlx6nMFhpZfCD9WNHaFeNGbxUCnDw1SItc6rvQoXjh8mgeTH3ahnt_6W2xYvmIThfpiTeG_3FlRpYkxRrcRHyVQtdR_4yRhsf9HoAbmVzr_bzOZT-R1zg34Vu3S3bQy163VmMNcZq8u2MO0DmYOhovSQw-icl7PVNN-ItnRJT216U_nRtL20b_57Z4Rklcz7hxlpuI-_dIbnBINY1Nz-NGD");'></div>
+</div>
 </div>
 </header>
 <!-- Main Content -->
-<main class="layout-container flex h-full grow flex-col py-8 px-4 md:px-40">
-<div class="flex flex-1 justify-center">
-<div class="layout-content-container flex flex-col max-w-[960px] flex-1 gap-6">
-<!-- Page Header -->
-<div class="flex flex-col gap-2">
-<div class="flex items-center gap-2 text-sm text-[#657486]">
-<span class="material-symbols-outlined text-[18px]">arrow_back</span>
-<a class="hover:underline" href="#">지원 내역 목록으로 돌아가기</a>
-</div>
-<h1 class="text-[#121417] text-3xl font-extrabold leading-tight tracking-[-0.033em] mt-2">지원 상세 보기</h1>
-<p class="text-[#657486] text-base font-normal leading-normal">지원하신 공고의 상세 내역과 진행 상태를 투명하게 확인하세요.</p>
-</div>
-<!-- Progress Status Card -->
-<section class="rounded-xl border border-[#dce0e5] bg-white p-6 shadow-sm">
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-<div>
-<p class="text-[#657486] text-sm font-medium mb-1">현재 진행 상태</p>
-<div class="flex items-center gap-2">
-<span class="relative flex h-3 w-3">
-<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-</span>
-<p class="text-primary tracking-tight text-2xl font-bold leading-tight">서류 검토 중</p>
+<main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6">
+<div class="w-full max-w-[640px] flex flex-col gap-6">
+<!-- Success Card -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+<!-- Decorative Top Bar -->
+<div class="h-2 w-full bg-primary"></div>
+<div class="p-8 sm:p-12 flex flex-col items-center text-center">
+<!-- Icon Animation Wrapper -->
+<div class="mb-6 relative">
+<div class="absolute inset-0 bg-blue-100 rounded-full scale-150 opacity-20 animate-pulse"></div>
+<div class="size-20 bg-blue-50 rounded-full flex items-center justify-center relative z-10 text-primary">
+<span class="material-symbols-outlined text-[48px]">verified</span>
 </div>
 </div>
-<div class="text-right hidden md:block">
-<p class="text-sm text-[#657486]">최종 업데이트: 2023. 10. 25</p>
+<!-- Heading -->
+<h1 class="text-2xl sm:text-3xl font-extrabold text-text-main mb-3 leading-tight">
+                        축하합니다!<br/>채용이 확정되었습니다!
+                    </h1>
+<p class="text-text-sub text-base sm:text-lg mb-8 font-medium">
+                        easyK와 함께하는 <span class="text-text-main font-bold">김철수</span>님의<br class="sm:hidden"/> 새로운 시작을 응원합니다.
+                    </p>
+<!-- Job Details Box -->
+<div class="w-full bg-background-light rounded-xl p-6 sm:p-8 mb-8 border border-gray-100">
+<div class="grid grid-cols-1 gap-y-4">
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+<span class="text-text-sub text-sm mb-1 sm:mb-0">기업명</span>
+<span class="text-text-main font-bold text-base">(주)글로벌네트웍스</span>
 </div>
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+<span class="text-text-sub text-sm mb-1 sm:mb-0">직무</span>
+<span class="text-text-main font-bold text-base">마케팅 매니저 (Marketing Manager)</span>
 </div>
-<!-- Progress Bar Visual -->
-<div class="flex flex-col gap-2">
-<div class="flex justify-between text-xs font-bold text-[#657486] mb-1 px-1">
-<span class="text-primary">서류 제출</span>
-<span class="text-primary">검토 중</span>
-<span>면접</span>
-<span>최종 합격</span>
-</div>
-<div class="relative h-3 w-full rounded-full bg-[#f0f2f4]">
-<div class="absolute top-0 left-0 h-full w-[40%] rounded-full bg-primary transition-all duration-500"></div>
-<!-- Steps Dots -->
-<div class="absolute top-0 left-0 h-full w-full flex justify-between px-[2px]">
-<div class="h-3 w-3 rounded-full bg-primary border-2 border-white"></div>
-<div class="h-3 w-3 rounded-full bg-primary border-2 border-white ml-[33%]"></div> <!-- Position adjusted visually -->
-<div class="h-3 w-3 rounded-full bg-[#dce0e5] border-2 border-white ml-[33%]"></div>
-<div class="h-3 w-3 rounded-full bg-[#dce0e5] border-2 border-white"></div>
-</div>
-</div>
-<p class="text-[#657486] text-sm font-normal leading-normal mt-2">현재 인사담당자가 제출하신 서류를 꼼꼼히 검토하고 있습니다. 검토 결과는 약 1주일 내로 안내될 예정입니다.</p>
-</div>
-</section>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-<!-- Left Column: Job Info & Feedback -->
-<div class="lg:col-span-2 flex flex-col gap-6">
-<!-- Job Info Section -->
-<section class="rounded-xl border border-[#dce0e5] bg-white p-6 shadow-sm">
-<h2 class="text-[#121417] text-lg font-bold leading-tight mb-4 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">domain</span>
-                                    지원한 공고 정보
-                                </h2>
-<div class="flex gap-4 items-start">
-<div class="bg-center bg-no-repeat bg-contain bg-white rounded-lg border border-[#e5e7eb] w-20 h-20 shrink-0" data-alt="Company Logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDiMLPvQRa3AMbI5ooL3Natyfeg7q-Qk27CL7wfVqTb3Hozo1ckuRDkxmxu4DwC58j38e2aqMmGiwMjWoobkfahUklqtou2kLWp4Tjmnm5yONgFmL6H1BDNYZKw4_JZX-QZuU_ALM88v4-rhwGQF7khb9mmNBF5L-QlDuTZB0YPxns83kdTpMsNrz2VpjCfncVPym9C3qKz_hxxkmwAIppQVL11VXbdvhOPn-YwaUoB37kxK6_6MkOTjlIw6Yebiop5-qZUrL6qYvAx");'></div>
-<div class="flex flex-col gap-1">
-<h3 class="text-[#121417] text-xl font-bold">해외영업 담당자 (English/Korean)</h3>
-<p class="text-[#121417] font-medium">글로벌 트레이드 (Global Trade Co., Ltd.)</p>
-<div class="flex flex-wrap gap-2 mt-2">
-<span class="inline-flex items-center gap-1 rounded bg-background-light px-2 py-1 text-xs font-medium text-[#657486]">
-<span class="material-symbols-outlined text-[14px]">location_on</span> 서울 강남구
-                                            </span>
-<span class="inline-flex items-center gap-1 rounded bg-background-light px-2 py-1 text-xs font-medium text-[#657486]">
-<span class="material-symbols-outlined text-[14px]">schedule</span> 정규직
-                                            </span>
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+<span class="text-text-sub text-sm mb-1 sm:mb-0">입사 예정일</span>
+<span class="text-primary font-bold text-base">2023년 11월 1일</span>
 </div>
 </div>
 </div>
-<div class="mt-6 grid grid-cols-2 gap-4 border-t border-[#f0f2f4] pt-4">
-<div>
-<p class="text-xs text-[#657486] mb-1">지원 일시</p>
-<p class="text-sm font-semibold">2023. 10. 15 14:30</p>
+<!-- Body Text / Instructions -->
+<div class="flex gap-3 items-start text-left bg-blue-50/50 p-4 rounded-lg mb-8 w-full">
+<span class="material-symbols-outlined text-primary text-xl mt-0.5">info</span>
+<p class="text-text-main text-sm leading-relaxed">
+                            입사 준비에 필요한 계약서 및 안내 사항은 <strong>가입하신 이메일</strong>로 발송되었습니다.<br class="hidden sm:block"/>
+                            자세한 진행 상황은 마이페이지 내 [지원 내역]에서 확인하실 수 있습니다.
+                        </p>
 </div>
-<div>
-<p class="text-xs text-[#657486] mb-1">마감일</p>
-<p class="text-sm font-semibold">2023. 10. 31</p>
-</div>
-</div>
-</section>
-<!-- Documents Section -->
-<section class="rounded-xl border border-[#dce0e5] bg-white p-6 shadow-sm">
-<h2 class="text-[#121417] text-lg font-bold leading-tight mb-4 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">folder_open</span>
-                                    제출한 서류
-                                </h2>
-<div class="flex flex-col gap-3">
-<!-- Document Item 1 -->
-<div class="flex items-center justify-between rounded-lg border border-[#f0f2f4] bg-[#f8f9fa] p-3 hover:bg-[#f0f2f4] transition-colors">
-<div class="flex items-center gap-3">
-<div class="flex h-10 w-10 items-center justify-center rounded bg-white text-red-500 shadow-sm border border-[#f0f2f4]">
-<span class="material-symbols-outlined">picture_as_pdf</span>
-</div>
-<div class="flex flex-col">
-<p class="text-sm font-bold text-[#121417]">국문 이력서_김이지.pdf</p>
-<p class="text-xs text-[#657486]">540 KB</p>
-</div>
-</div>
-<div class="flex gap-2">
-<button class="flex items-center justify-center h-8 w-8 rounded-full hover:bg-white text-[#657486] hover:text-primary transition-colors" title="미리보기">
-<span class="material-symbols-outlined text-[20px]">visibility</span>
+<!-- Actions -->
+<div class="flex flex-col w-full gap-3 sm:flex-row sm:justify-center">
+<button class="w-full sm:w-auto min-w-[200px] h-12 bg-primary hover:bg-primary-dark text-white text-base font-bold rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+<span>내 지원 내역 확인하기</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
 </button>
-<button class="flex items-center justify-center h-8 w-8 rounded-full hover:bg-white text-[#657486] hover:text-primary transition-colors" title="다운로드">
-<span class="material-symbols-outlined text-[20px]">download</span>
-</button>
-</div>
-</div>
-<!-- Document Item 2 -->
-<div class="flex items-center justify-between rounded-lg border border-[#f0f2f4] bg-[#f8f9fa] p-3 hover:bg-[#f0f2f4] transition-colors">
-<div class="flex items-center gap-3">
-<div class="flex h-10 w-10 items-center justify-center rounded bg-white text-blue-500 shadow-sm border border-[#f0f2f4]">
-<span class="material-symbols-outlined">description</span>
-</div>
-<div class="flex flex-col">
-<p class="text-sm font-bold text-[#121417]">포트폴리오_Eng.docx</p>
-<p class="text-xs text-[#657486]">2.1 MB</p>
-</div>
-</div>
-<div class="flex gap-2">
-<button class="flex items-center justify-center h-8 w-8 rounded-full hover:bg-white text-[#657486] hover:text-primary transition-colors" title="미리보기">
-<span class="material-symbols-outlined text-[20px]">visibility</span>
-</button>
-<button class="flex items-center justify-center h-8 w-8 rounded-full hover:bg-white text-[#657486] hover:text-primary transition-colors" title="다운로드">
-<span class="material-symbols-outlined text-[20px]">download</span>
-</button>
+<button class="w-full sm:w-auto min-w-[140px] h-12 bg-white border border-gray-200 hover:bg-gray-50 text-text-main text-base font-bold rounded-lg transition-colors flex items-center justify-center">
+                            메인으로
+                        </button>
 </div>
 </div>
 </div>
-</section>
-<!-- HR Feedback Section (Conditional) -->
-<section class="rounded-xl border border-[#dce0e5] bg-white p-6 shadow-sm">
-<h2 class="text-[#121417] text-lg font-bold leading-tight mb-4 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">chat</span>
-                                    채용 담당자 피드백
-                                </h2>
-<div class="rounded-lg bg-primary/5 p-4 border border-primary/10">
-<div class="flex gap-3">
-<div class="mt-1 h-8 w-8 shrink-0 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined text-sm">person</span>
-</div>
-<div>
-<p class="text-sm font-bold text-[#121417] mb-1">인사팀 김담당</p>
-<p class="text-sm text-[#121417] leading-relaxed">
-                                                안녕하세요, 김이지님. 이지K를 통해 지원해 주셔서 감사합니다. 현재 보내주신 이력서와 포트폴리오를 관련 부서에서 긍정적으로 검토하고 있습니다. 추가적인 서류가 필요할 경우 연락드리겠습니다.
-                                            </p>
-<p class="text-xs text-[#657486] mt-2">2023. 10. 18 09:30 작성됨</p>
-</div>
-</div>
-</div>
-</section>
-</div>
-<!-- Right Column: Additional Info & Actions -->
-<div class="flex flex-col gap-6">
-<!-- Additional Info -->
-<section class="rounded-xl border border-[#dce0e5] bg-white p-6 shadow-sm h-fit">
-<h2 class="text-[#121417] text-lg font-bold leading-tight mb-4">추가 정보</h2>
-<div class="flex flex-col gap-4">
-<div class="flex justify-between items-center border-b border-[#f0f2f4] pb-3">
-<span class="text-sm text-[#657486]">비자 타입</span>
-<span class="text-sm font-bold text-[#121417]">E-7 (특정활동)</span>
-</div>
-<div class="flex justify-between items-center border-b border-[#f0f2f4] pb-3">
-<span class="text-sm text-[#657486]">한국어 능력</span>
-<span class="text-sm font-bold text-[#121417]">TOPIK 5급</span>
-</div>
-<div class="flex justify-between items-center border-b border-[#f0f2f4] pb-3">
-<span class="text-sm text-[#657486]">희망 연봉</span>
-<span class="text-sm font-bold text-[#121417]">회사 내규에 따름</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="text-sm text-[#657486]">근무 가능일</span>
-<span class="text-sm font-bold text-[#121417]">즉시 가능</span>
-</div>
-</div>
-</section>
-<!-- Actions Box -->
-<section class="rounded-xl border border-[#dce0e5] bg-white p-6 shadow-sm h-fit">
-<h2 class="text-[#121417] text-lg font-bold leading-tight mb-4">관리</h2>
-<p class="text-xs text-[#657486] mb-4 leading-normal">
-                                    서류 검토 단계에서는 지원 취소가 가능합니다. 면접 단계 이후에는 인사담당자에게 문의해주세요.
-                                </p>
-<div class="flex flex-col gap-3">
-<button class="flex w-full items-center justify-center gap-2 rounded-lg bg-white border border-[#dce0e5] px-4 py-3 text-sm font-bold text-[#121417] hover:bg-[#f8f9fa] transition-colors">
-<span class="material-symbols-outlined text-[18px]">mail</span>
-                                        담당자에게 문의하기
-                                    </button>
-<button class="flex w-full items-center justify-center gap-2 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-100 transition-colors">
-<span class="material-symbols-outlined text-[18px]">cancel</span>
-                                        지원 취소하기
-                                    </button>
-</div>
-</section>
-</div>
-</div>
+<!-- Help Footer -->
+<div class="text-center">
+<p class="text-xs text-text-sub">
+                    채용 과정에 대해 궁금한 점이 있으신가요? <a class="text-primary font-bold hover:underline" href="#">고객센터 문의하기</a>
+</p>
 </div>
 </div>
 </main>
-</div>
 </body></html>

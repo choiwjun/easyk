@@ -420,7 +420,7 @@ export default function ApplicationsPage() {
                     </Link>
                     {application.status === "hired" ? (
                       <Link
-                        href={`/applications/${application.id}`}
+                        href={`/applications/${application.id}/hired`}
                         className="h-10 flex-1 md:flex-none px-4 rounded-lg bg-white dark:bg-[#1a222b] border border-primary text-primary text-sm font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors shadow-sm flex items-center justify-center"
                       >
                         합격 확인
