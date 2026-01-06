@@ -273,7 +273,8 @@ export default function AgencyDashboard() {
             expired: { ko: "만료", en: "Expired" },
             draft: { ko: "임시저장", en: "Draft" },
         };
-        return labels[status]?.[language] || status;
+        const lang = language as 'ko' | 'en';
+        return labels[status]?.[lang] || status;
     };
 
     const getStatusBadgeStyle = (status: string) => {
@@ -297,7 +298,8 @@ export default function AgencyDashboard() {
             visa: { ko: "비자/체류", en: "Visa/Stay" },
             housing: { ko: "주거", en: "Housing" },
         };
-        return labels[category]?.[language] || category;
+        const lang = language as 'ko' | 'en';
+        return labels[category]?.[lang] || category;
     };
 
     // 통계 계산
