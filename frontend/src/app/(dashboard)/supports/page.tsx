@@ -58,11 +58,6 @@ export default function SupportsPage() {
     try {
       const token = localStorage.getItem("access_token");
 
-      if (!token) {
-        router.push("/login");
-        return;
-      }
-
       // 샘플 데이터 사용 모드인 경우 API 호출 스킵
       if (useSampleData) {
         setSupports(SAMPLE_SUPPORTS);
@@ -81,18 +76,18 @@ export default function SupportsPage() {
       const queryString = params.toString();
       const url = `/api/supports${queryString ? `?${queryString}` : ""}`;
 
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // 토큰이 있으면 헤더에 추가, 없으면 헤더 없이 요청
+      const headers: HeadersInit = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(url, { headers });
 
       if (response.ok) {
         const data = await response.json();
         setSupports(data.supports || []);
         setTotal(data.total || 0);
-      } else if (response.status === 403 || response.status === 401) {
-        router.push("/login");
       } else {
         // API 실패 시 샘플 데이터 사용
         console.warn('[Supports] API 호출 실패, 샘플 데이터 사용:', response.status);
