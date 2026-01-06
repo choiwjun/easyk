@@ -550,7 +550,7 @@ export default function AgencyDashboard() {
                                                 className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
                                             >
                                                 {Object.entries(EMPLOYMENT_TYPES).map(([value, label]) => (
-                                                    <option key={value} value={value}>{label[language]}</option>
+                                                    <option key={value} value={value}>{label[language as 'ko' | 'en']}</option>
                                                 ))}
                                             </select>
                                         </div>
@@ -718,7 +718,7 @@ export default function AgencyDashboard() {
                                                             </span>
                                                             <span className="flex items-center gap-1">
                                                                 <span className="material-symbols-outlined text-base">badge</span>
-                                                                {EMPLOYMENT_TYPES[job.employment_type]?.[language] || job.employment_type}
+                                                                {EMPLOYMENT_TYPES[job.employment_type]?.[language as 'ko' | 'en'] || job.employment_type}
                                                             </span>
                                                             {job.salary_range && (
                                                                 <span className="flex items-center gap-1">
