@@ -9,36 +9,33 @@ export async function GET(
 ) {
   try {
     const authHeader = request.headers.get('authorization');
-
-    if (!authHeader) {
-      return NextResponse.json(
-        { message: '인증이 필요합니다' },
-        { status: 401 }
-      );
-    }
-
     const { id: supportId } = await params;
 
-    const url = `${BACKEND_URL}/api/supports/${supportId}`;
+    // 토큰이 있을 때만 백엔드 호출 시도
+    if (authHeader) {
+      const url = `${BACKEND_URL}/api/supports/${supportId}`;
 
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': authHeader,
-        },
-      });
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': authHeader,
+          },
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok && data) {
-        return NextResponse.json(data, { status: response.status });
+        if (response.ok && data) {
+          return NextResponse.json(data, { status: response.status });
+        }
+
+        // 백엔드 실패 시 샘플 데이터에서 조회
+        console.info('[API Route] Backend failed, checking sample data for support:', supportId);
+      } catch (fetchError) {
+        console.info('[API Route] Backend fetch failed, using sample data:', fetchError);
       }
-
-      // 백엔드 실패 시 샘플 데이터에서 조회
-      console.info('[API Route] Backend failed, checking sample data for support:', supportId);
-    } catch (fetchError) {
-      console.info('[API Route] Backend fetch failed, using sample data:', fetchError);
+    } else {
+      console.info('[API Route] No auth token, using sample data for support:', supportId);
     }
 
     // 샘플 데이터에서 해당 ID 찾기

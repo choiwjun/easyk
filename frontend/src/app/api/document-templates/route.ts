@@ -40,42 +40,40 @@ export async function GET(request: NextRequest) {
   try {
     const token = request.headers.get('authorization');
 
-    if (!token) {
-      return NextResponse.json(
-        { message: '인증이 필요합니다' },
-        { status: 401 }
-      );
-    }
-
     // URL 파라미터 추출
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const language = searchParams.get('language') || 'ko';
 
-    // 쿼리 파라미터 구성
-    const queryParams = new URLSearchParams({ language });
-    if (category) queryParams.append('category', category);
+    // 토큰이 있을 때만 백엔드 호출 시도
+    if (token) {
+      // 쿼리 파라미터 구성
+      const queryParams = new URLSearchParams({ language });
+      if (category) queryParams.append('category', category);
 
-    const url = `${BACKEND_URL}/api/document-templates?${queryParams}`;
+      const url = `${BACKEND_URL}/api/document-templates?${queryParams}`;
 
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': token,
-        },
-      });
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': token,
+          },
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (response.ok && Array.isArray(data) && data.length > 0) {
-        return NextResponse.json(data, { status: response.status });
+        if (response.ok && Array.isArray(data) && data.length > 0) {
+          return NextResponse.json(data, { status: response.status });
+        }
+
+        // 백엔드 응답이 비어있거나 실패한 경우 샘플 데이터 반환
+        console.info('[API Route] Backend returned empty/failed, using sample document templates');
+      } catch (fetchError) {
+        console.info('[API Route] Backend fetch failed, using sample document templates:', fetchError);
       }
-
-      // 백엔드 응답이 비어있거나 실패한 경우 샘플 데이터 반환
-      console.info('[API Route] Backend returned empty/failed, using sample document templates');
-    } catch (fetchError) {
-      console.info('[API Route] Backend fetch failed, using sample document templates:', fetchError);
+    } else {
+      console.info('[API Route] No auth token, using sample document templates');
     }
 
     // 샘플 데이터 필터링
