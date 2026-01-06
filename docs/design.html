@@ -3,14 +3,10 @@
 <html class="light" lang="ko"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>easyK - 일자리 목록 조회</title>
-<!-- Google Fonts: Nanum Gothic & Public Sans & Material Symbols -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&amp;family=Public+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<title>easyK - 지원 폼 작성</title>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Nanum+Gothic:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS with Config -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
         tailwind.config = {
@@ -19,19 +15,14 @@
                 extend: {
                     colors: {
                         "primary": "#1e5a9f",
-                        "primary-dark": "#164275",
                         "background-light": "#f6f7f8",
                         "background-dark": "#121920",
                         "surface-light": "#ffffff",
-                        "surface-dark": "#1a222d",
-                        "text-main": "#121417",
-                        "text-sub": "#657486",
-                        "border-light": "#dce0e5",
-                        "border-dark": "#2a3441",
+                        "surface-dark": "#1C242F", 
                     },
                     fontFamily: {
-                        "display": ["Public Sans", "sans-serif"],
-                        "korean": ["Nanum Gothic", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Nanum Gothic", "sans-serif"],
                     },
                     borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
                 },
@@ -39,422 +30,131 @@
         }
     </script>
 <style>
-        body {
-            font-family: "Nanum Gothic", "Public Sans", sans-serif;
-        }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            vertical-align: middle;
-        }
+        body { font-family: 'Nanum Gothic', sans-serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col text-text-main dark:text-white transition-colors duration-200">
-<!-- Navigation Bar -->
-<header class="sticky top-0 z-50 w-full bg-white dark:bg-surface-dark border-b border-border-light dark:border-border-dark px-4 lg:px-10 py-3">
-<div class="max-w-[1280px] mx-auto flex items-center justify-between whitespace-nowrap">
-<div class="flex items-center gap-4 text-text-main dark:text-white">
-<div class="size-8 text-primary flex items-center justify-center">
-<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-<path clip-rule="evenodd" d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col text-[#121417] dark:text-[#e0e0e0] overflow-x-hidden">
+<!-- Top Navbar -->
+<div class="w-full bg-white dark:bg-surface-dark border-b border-[#f0f2f4] dark:border-[#2a3441] sticky top-0 z-50">
+<div class="px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between mx-auto max-w-[1440px]">
+<div class="flex items-center gap-4 text-[#121417] dark:text-white">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">diversity_2</span>
 </div>
-<h2 class="text-xl font-bold leading-tight tracking-[-0.015em] text-primary dark:text-white">easyK</h2>
+<h2 class="text-xl md:text-2xl font-bold leading-tight tracking-[-0.015em] font-inter">easyK</h2>
 </div>
-<nav class="hidden md:flex flex-1 justify-center gap-8">
-<a class="text-primary font-bold text-sm leading-normal hover:text-primary-dark dark:text-white" href="#">일자리 찾기</a>
-<a class="text-text-main dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">커뮤니티</a>
-<a class="text-text-main dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">생활 지원</a>
-<a class="text-text-main dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">마이페이지</a>
-</nav>
-<div class="flex justify-end gap-4">
-<button class="hidden sm:flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary hover:bg-primary-dark transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em] shadow-sm">
-<span class="truncate">로그인</span>
-</button>
-<button class="md:hidden text-text-main dark:text-white">
-<span class="material-symbols-outlined">menu</span>
+<div class="hidden md:flex items-center gap-9">
+<a class="text-[#121417] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">채용 정보</a>
+<a class="text-[#121417] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">비자 가이드</a>
+<a class="text-[#121417] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#">커뮤니티</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex min-w-[84px] items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold shadow-sm">
+<span>로그인</span>
 </button>
 </div>
 </div>
-</header>
+</div>
 <!-- Main Content -->
-<main class="flex-1 w-full max-w-[1280px] mx-auto px-4 lg:px-10 py-8 flex flex-col gap-8">
-<!-- Page Header & Search -->
-<section class="flex flex-col gap-6">
+<main class="flex-grow flex flex-col items-center py-8 px-4 md:px-10 lg:px-40 w-full">
+<div class="w-full max-w-[960px] flex flex-col gap-6">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 items-center text-sm">
+<a class="text-[#657486] dark:text-gray-400 font-medium hover:text-primary" href="#">홈</a>
+<span class="material-symbols-outlined text-[16px] text-[#657486] dark:text-gray-500">chevron_right</span>
+<a class="text-[#657486] dark:text-gray-400 font-medium hover:text-primary" href="#">채용 정보</a>
+<span class="material-symbols-outlined text-[16px] text-[#657486] dark:text-gray-500">chevron_right</span>
+<span class="text-[#121417] dark:text-white font-bold">지원서 작성</span>
+</div>
+<!-- Header Section -->
 <div class="flex flex-col gap-2">
-<h1 class="text-text-main dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">일자리 찾기</h1>
-<p class="text-text-sub dark:text-gray-400 text-base font-normal">한국에서의 새로운 시작, easyK가 검증된 일자리를 연결해드립니다.</p>
-</div>
-<!-- Search Box -->
-<div class="w-full bg-white dark:bg-surface-dark p-6 rounded-xl shadow-sm border border-border-light dark:border-border-dark">
-<div class="flex flex-col lg:flex-row gap-4">
-<!-- Text Search -->
-<div class="flex-1 relative">
-<input class="w-full h-12 pl-12 pr-4 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-[#252f3e] text-text-main dark:text-white placeholder:text-text-sub focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" placeholder="직종, 회사명 또는 지역을 입력하세요 (예: 제조업, 평택)"/>
-<div class="absolute left-4 top-1/2 -translate-y-1/2 text-text-sub">
-<span class="material-symbols-outlined">search</span>
-</div>
-</div>
-<!-- Filters Row -->
-<div class="flex flex-wrap gap-3 items-center">
-<!-- Job Type Filter -->
-<div class="relative group">
-<button class="flex items-center justify-between gap-2 h-12 px-4 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-[#252f3e] text-sm font-medium hover:border-primary dark:hover:border-primary transition-colors min-w-[140px]">
-<span>직종 전체</span>
-<span class="material-symbols-outlined text-lg">keyboard_arrow_down</span>
-</button>
-</div>
-<!-- Salary Filter -->
-<div class="relative group">
-<button class="flex items-center justify-between gap-2 h-12 px-4 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-[#252f3e] text-sm font-medium hover:border-primary dark:hover:border-primary transition-colors min-w-[140px]">
-<span>급여 전체</span>
-<span class="material-symbols-outlined text-lg">keyboard_arrow_down</span>
-</button>
-</div>
-<!-- Employment Type Filter -->
-<div class="relative group">
-<button class="flex items-center justify-between gap-2 h-12 px-4 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-[#252f3e] text-sm font-medium hover:border-primary dark:hover:border-primary transition-colors min-w-[140px]">
-<span>고용형태 전체</span>
-<span class="material-symbols-outlined text-lg">keyboard_arrow_down</span>
-</button>
-</div>
-<!-- Search Button -->
-<button class="h-12 px-8 bg-primary hover:bg-primary-dark text-white rounded-lg font-bold text-sm shadow-sm transition-colors flex items-center gap-2">
-                            검색하기
-                        </button>
-</div>
-</div>
-<!-- Quick Filter Chips -->
-<div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border-light dark:border-border-dark">
-<span class="text-xs font-bold text-text-sub dark:text-gray-400 uppercase tracking-wider py-1.5 mr-2">추천 검색어:</span>
-<button class="px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary dark:text-blue-300 text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
-                        #비자지원
-                    </button>
-<button class="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-text-sub dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        #제조업
-                    </button>
-<button class="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-text-sub dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        #기숙사제공
-                    </button>
-<button class="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-text-sub dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        #초보가능
-                    </button>
-<button class="px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-text-sub dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        #건설현장
-                    </button>
-</div>
-</div>
-</section>
-<!-- Job List Section -->
-<section class="flex flex-col gap-6">
-<!-- List Header -->
-<div class="flex flex-wrap items-center justify-between gap-4">
-<h3 class="text-lg font-bold text-text-main dark:text-white">
-                    총 <span class="text-primary">1,240</span>건의 일자리가 있습니다
-                </h3>
-<div class="flex items-center gap-2">
-<select class="form-select bg-transparent border-none text-sm font-medium text-text-sub focus:ring-0 cursor-pointer pr-8 py-0 dark:text-gray-300">
-<option>최신순</option>
-<option>급여순</option>
-<option>인기순</option>
-</select>
-</div>
-</div>
-<!-- Job Cards Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-<!-- Card 1 -->
-<article class="group flex flex-col bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-<div class="flex justify-between items-start mb-4">
-<div class="flex gap-2 mb-2">
-<span class="px-2 py-1 rounded bg-red-50 text-red-600 text-xs font-bold border border-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-900/30">긴급</span>
-<span class="px-2 py-1 rounded bg-blue-50 text-primary text-xs font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-900/30">비자지원</span>
-</div>
-<button class="text-text-sub hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark_border</span>
-</button>
-</div>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 overflow-hidden">
-<!-- Logo placeholder with gradient -->
-<div class="w-full h-full bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-slate-800 flex items-center justify-center text-primary font-bold text-lg" data-alt="Company Logo Abstract">H</div>
-</div>
-<div>
-<h4 class="font-bold text-lg text-text-main dark:text-white leading-tight group-hover:text-primary transition-colors line-clamp-1">자동차 부품 조립 생산직</h4>
-<p class="text-sm text-text-sub dark:text-gray-400 mt-0.5">(주)한성모터스</p>
-</div>
-</div>
-<div class="space-y-2 mb-6 flex-1">
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span>경기 평택시 포승읍</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">payments</span>
-<span class="font-semibold text-text-main dark:text-gray-200">월 320만원 이상</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">schedule</span>
-<span>주 5일 / 주간 고정</span>
-</div>
-</div>
-<button class="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
-                        상세 보기
-                    </button>
-</article>
-<!-- Card 2 -->
-<article class="group flex flex-col bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-<div class="flex justify-between items-start mb-4">
-<div class="flex gap-2 mb-2">
-<span class="px-2 py-1 rounded bg-green-50 text-green-700 text-xs font-bold border border-green-100 dark:bg-green-900/20 dark:text-green-300 dark:border-green-900/30">정규직</span>
-<span class="px-2 py-1 rounded bg-gray-100 text-text-sub text-xs font-bold border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">기숙사</span>
-</div>
-<button class="text-text-sub hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark_border</span>
-</button>
-</div>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 overflow-hidden">
-<div class="w-full h-full bg-gradient-to-br from-green-100 to-emerald-50 dark:from-green-900 dark:to-emerald-950 flex items-center justify-center text-green-700 font-bold text-lg" data-alt="Company Logo Abstract">G</div>
-</div>
-<div>
-<h4 class="font-bold text-lg text-text-main dark:text-white leading-tight group-hover:text-primary transition-colors line-clamp-1">식품 가공 및 포장 (초보가능)</h4>
-<p class="text-sm text-text-sub dark:text-gray-400 mt-0.5">그린푸드 시스템</p>
-</div>
-</div>
-<div class="space-y-2 mb-6 flex-1">
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span>충북 음성군</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">payments</span>
-<span class="font-semibold text-text-main dark:text-gray-200">월 270만원 ~ 300만원</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">schedule</span>
-<span>교대근무 가능자 우대</span>
-</div>
-</div>
-<button class="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
-                        상세 보기
-                    </button>
-</article>
-<!-- Card 3 -->
-<article class="group flex flex-col bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-<div class="flex justify-between items-start mb-4">
-<div class="flex gap-2 mb-2">
-<span class="px-2 py-1 rounded bg-purple-50 text-purple-700 text-xs font-bold border border-purple-100 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-900/30">F-4 비자</span>
-</div>
-<button class="text-text-sub hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark_border</span>
-</button>
-</div>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 overflow-hidden">
-<div class="w-full h-full bg-gradient-to-br from-purple-100 to-indigo-50 dark:from-purple-900 dark:to-indigo-950 flex items-center justify-center text-purple-700 font-bold text-lg" data-alt="Company Logo Abstract">K</div>
-</div>
-<div>
-<h4 class="font-bold text-lg text-text-main dark:text-white leading-tight group-hover:text-primary transition-colors line-clamp-1">반도체 장비 배관 조공</h4>
-<p class="text-sm text-text-sub dark:text-gray-400 mt-0.5">케이테크 엔지니어링</p>
-</div>
-</div>
-<div class="space-y-2 mb-6 flex-1">
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span>경기 화성시</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">payments</span>
-<span class="font-semibold text-text-main dark:text-gray-200">일급 160,000원</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">schedule</span>
-<span>08:00 ~ 17:00 (연장 별도)</span>
-</div>
-</div>
-<button class="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
-                        상세 보기
-                    </button>
-</article>
-<!-- Card 4 -->
-<article class="group flex flex-col bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-<div class="flex justify-between items-start mb-4">
-<div class="flex gap-2 mb-2">
-<span class="px-2 py-1 rounded bg-gray-100 text-text-sub text-xs font-bold border border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">파트타임</span>
-</div>
-<button class="text-text-sub hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark_border</span>
-</button>
-</div>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 overflow-hidden">
-<div class="w-full h-full bg-gradient-to-br from-orange-100 to-amber-50 dark:from-orange-900 dark:to-amber-950 flex items-center justify-center text-orange-700 font-bold text-lg" data-alt="Company Logo Abstract">S</div>
-</div>
-<div>
-<h4 class="font-bold text-lg text-text-main dark:text-white leading-tight group-hover:text-primary transition-colors line-clamp-1">호텔 하우스키핑 및 룸메이드</h4>
-<p class="text-sm text-text-sub dark:text-gray-400 mt-0.5">스카이 호텔 서비스</p>
-</div>
-</div>
-<div class="space-y-2 mb-6 flex-1">
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span>서울 중구</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">payments</span>
-<span class="font-semibold text-text-main dark:text-gray-200">시급 11,000원</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">schedule</span>
-<span>주말 근무 가능자</span>
-</div>
-</div>
-<button class="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
-                        상세 보기
-                    </button>
-</article>
-<!-- Card 5 -->
-<article class="group flex flex-col bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-<div class="flex justify-between items-start mb-4">
-<div class="flex gap-2 mb-2">
-<span class="px-2 py-1 rounded bg-blue-50 text-primary text-xs font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-900/30">언어무관</span>
-</div>
-<button class="text-text-sub hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark_border</span>
-</button>
-</div>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 overflow-hidden">
-<div class="w-full h-full bg-gradient-to-br from-cyan-100 to-sky-50 dark:from-cyan-900 dark:to-sky-950 flex items-center justify-center text-cyan-700 font-bold text-lg" data-alt="Company Logo Abstract">D</div>
-</div>
-<div>
-<h4 class="font-bold text-lg text-text-main dark:text-white leading-tight group-hover:text-primary transition-colors line-clamp-1">단순 물류 상하차 (야간)</h4>
-<p class="text-sm text-text-sub dark:text-gray-400 mt-0.5">대한로지스틱스</p>
-</div>
-</div>
-<div class="space-y-2 mb-6 flex-1">
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span>경기 이천시</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">payments</span>
-<span class="font-semibold text-text-main dark:text-gray-200">일급 180,000원</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">schedule</span>
-<span>21:00 ~ 06:00 (셔틀운행)</span>
-</div>
-</div>
-<button class="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
-                        상세 보기
-                    </button>
-</article>
-<!-- Card 6 -->
-<article class="group flex flex-col bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
-<div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
-<div class="flex justify-between items-start mb-4">
-<div class="flex gap-2 mb-2">
-<span class="px-2 py-1 rounded bg-green-50 text-green-700 text-xs font-bold border border-green-100 dark:bg-green-900/20 dark:text-green-300 dark:border-green-900/30">정규직</span>
-<span class="px-2 py-1 rounded bg-blue-50 text-primary text-xs font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-900/30">E-9 가능</span>
-</div>
-<button class="text-text-sub hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark_border</span>
-</button>
-</div>
-<div class="flex items-center gap-3 mb-4">
-<div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 overflow-hidden">
-<div class="w-full h-full bg-gradient-to-br from-indigo-100 to-blue-50 dark:from-indigo-900 dark:to-blue-950 flex items-center justify-center text-indigo-700 font-bold text-lg" data-alt="Company Logo Abstract">W</div>
-</div>
-<div>
-<h4 class="font-bold text-lg text-text-main dark:text-white leading-tight group-hover:text-primary transition-colors line-clamp-1">용접 및 제관 기술자 모집</h4>
-<p class="text-sm text-text-sub dark:text-gray-400 mt-0.5">(주)우성테크</p>
-</div>
-</div>
-<div class="space-y-2 mb-6 flex-1">
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-<span>충남 천안시</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">payments</span>
-<span class="font-semibold text-text-main dark:text-gray-200">연봉 4,000만원 ~</span>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400">
-<span class="material-symbols-outlined text-[18px]">schedule</span>
-<span>경력자 우대, 상여금 300%</span>
-</div>
-</div>
-<button class="w-full py-2.5 rounded-lg border border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-200">
-                        상세 보기
-                    </button>
-</article>
-</div>
-<!-- Pagination -->
-<div class="flex justify-center mt-8">
-<nav aria-label="Pagination" class="flex items-center gap-1">
-<a class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-text-sub hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50" href="#">
-<span class="material-symbols-outlined text-sm">chevron_left</span>
-</a>
-<a class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-white font-bold shadow-md" href="#">1</a>
-<a class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-text-main dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" href="#">2</a>
-<a class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-text-main dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" href="#">3</a>
-<a class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-text-main dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" href="#">4</a>
-<a class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-text-main dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" href="#">5</a>
-<a class="w-10 h-10 flex items-center justify-center rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-text-sub hover:bg-gray-50 dark:hover:bg-gray-800" href="#">
-<span class="material-symbols-outlined text-sm">chevron_right</span>
-</a>
-</nav>
-</div>
-</section>
-</main>
-<!-- Footer -->
-<footer class="bg-white dark:bg-surface-dark border-t border-border-light dark:border-border-dark py-12 px-4 lg:px-10 mt-auto">
-<div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-<div class="col-span-1 md:col-span-2">
-<div class="flex items-center gap-2 mb-4">
-<div class="size-6 text-primary flex items-center justify-center">
-<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-<path clip-rule="evenodd" d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-<span class="text-xl font-bold text-text-main dark:text-white">easyK</span>
-</div>
-<p class="text-text-sub dark:text-gray-400 text-sm leading-relaxed max-w-sm">
-                    easyK는 외국인 주민들이 한국에서 안정적으로 정착할 수 있도록 돕는 통합 지원 플랫폼입니다. 일자리부터 생활 정보까지 easyK와 함께하세요.
+<h1 class="text-[#121417] dark:text-white text-3xl md:text-[32px] font-bold leading-tight tracking-[-0.015em]">지원 폼 작성</h1>
+<p class="text-[#657486] dark:text-gray-400 text-sm md:text-base font-normal">
+                    귀하의 역량을 보여주세요. 지원하려는 포지션에 맞춰 정보를 입력해주세요.
                 </p>
 </div>
-<div>
-<h5 class="font-bold text-text-main dark:text-white mb-4">서비스</h5>
-<ul class="space-y-2 text-sm text-text-sub dark:text-gray-400">
-<li><a class="hover:text-primary" href="#">일자리 찾기</a></li>
-<li><a class="hover:text-primary" href="#">커뮤니티</a></li>
-<li><a class="hover:text-primary" href="#">생활 지원</a></li>
-<li><a class="hover:text-primary" href="#">비자 가이드</a></li>
-</ul>
+<!-- Form Card -->
+<form class="w-full bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3441] p-6 md:p-8 flex flex-col gap-8">
+<!-- Personal Information Summary (Read-only context) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6 border-b border-[#f0f2f4] dark:border-[#2a3441]">
+<div class="flex flex-col gap-2">
+<label class="text-[#121417] dark:text-gray-200 text-sm font-bold">이름</label>
+<input class="bg-background-light dark:bg-[#121920] border-0 rounded-lg text-gray-500 dark:text-gray-400 px-4 py-3 text-sm focus:ring-0 cursor-not-allowed" readonly="" type="text" value="홍길동"/>
 </div>
-<div>
-<h5 class="font-bold text-text-main dark:text-white mb-4">고객센터</h5>
-<ul class="space-y-2 text-sm text-text-sub dark:text-gray-400">
-<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">call</span> 1588-0000</li>
-<li class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">mail</span> support@easyk.kr</li>
-<li>평일 09:00 - 18:00 (주말/공휴일 휴무)</li>
-</ul>
+<div class="flex flex-col gap-2">
+<label class="text-[#121417] dark:text-gray-200 text-sm font-bold">이메일</label>
+<input class="bg-background-light dark:bg-[#121920] border-0 rounded-lg text-gray-500 dark:text-gray-400 px-4 py-3 text-sm focus:ring-0 cursor-not-allowed" readonly="" type="text" value="hong@example.com"/>
 </div>
 </div>
-<div class="max-w-[1280px] mx-auto mt-12 pt-8 border-t border-border-light dark:border-border-dark flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-text-sub dark:text-gray-500">
-<p>© 2023 easyK. All rights reserved.</p>
-<div class="flex gap-4">
-<a class="hover:text-text-main dark:hover:text-gray-300" href="#">이용약관</a>
-<a class="hover:text-text-main dark:hover:text-gray-300 font-bold" href="#">개인정보처리방침</a>
+<!-- Resume Upload Section -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="text-[#121417] dark:text-white text-lg font-bold">이력서 첨부 <span class="text-primary text-sm font-normal ml-1">*필수</span></h2>
+<span class="material-symbols-outlined text-green-600 hidden">check_circle</span>
+</div>
+<div class="group relative flex flex-col items-center justify-center w-full h-48 rounded-xl border-2 border-dashed border-[#dce0e5] dark:border-gray-600 bg-[#f9fafb] dark:bg-[#121920]/50 hover:bg-[#f0f2f4] dark:hover:bg-[#121920] hover:border-primary transition-all cursor-pointer">
+<input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" type="file"/>
+<div class="flex flex-col items-center gap-3 text-center px-4">
+<div class="p-3 bg-white dark:bg-surface-dark rounded-full shadow-sm text-[#657486] dark:text-gray-400 group-hover:text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">upload_file</span>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-[#121417] dark:text-white text-sm font-bold">클릭하여 파일을 선택하거나 이곳에 드래그하세요</p>
+<p class="text-[#657486] dark:text-gray-500 text-xs">PDF, Word 형식 (최대 10MB)</p>
+</div>
+<button class="mt-2 px-4 py-2 bg-white dark:bg-[#2a3441] border border-[#dce0e5] dark:border-gray-600 rounded-lg text-xs font-bold text-[#121417] dark:text-gray-200 shadow-sm group-hover:border-primary/50 transition-colors" type="button">
+                                파일 선택
+                            </button>
 </div>
 </div>
-</footer>
+</div>
+<!-- Cover Letter Upload Section -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="text-[#121417] dark:text-white text-lg font-bold">자기소개서 첨부 <span class="text-[#657486] dark:text-gray-500 text-sm font-normal ml-1">(선택)</span></h2>
+</div>
+<div class="group relative flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-[#dce0e5] dark:border-gray-600 bg-[#f9fafb] dark:bg-[#121920]/50 hover:bg-[#f0f2f4] dark:hover:bg-[#121920] hover:border-primary transition-all cursor-pointer">
+<input class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" type="file"/>
+<div class="flex flex-col items-center gap-3 text-center px-4">
+<div class="flex items-center gap-2 text-[#657486] dark:text-gray-400 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">description</span>
+<span class="text-sm font-medium">자기소개서 파일 업로드</span>
+</div>
+<p class="text-[#9aa2ac] dark:text-gray-600 text-xs">자유 형식, PDF 권장</p>
+</div>
+</div>
+</div>
+<!-- Additional Info Section -->
+<div class="flex flex-col gap-4">
+<label class="text-[#121417] dark:text-white text-lg font-bold" for="additional-info">추가 정보</label>
+<div class="relative">
+<textarea class="w-full rounded-xl border border-[#dce0e5] dark:border-[#2a3441] bg-white dark:bg-[#121920] p-4 text-sm text-[#121417] dark:text-gray-200 placeholder:text-[#9aa2ac] focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none transition-shadow" id="additional-info" placeholder="채용 담당자에게 전달하고 싶은 말이 있다면 적어주세요. (예: 포트폴리오 링크, 업무 가능 시작일 등)" rows="5"></textarea>
+<div class="absolute bottom-3 right-4 text-xs text-[#9aa2ac]">0 / 1000자</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-[#f0f2f4] dark:border-[#2a3441]">
+<button class="w-full sm:w-auto px-6 py-3 rounded-lg border border-[#dce0e5] dark:border-gray-600 bg-white dark:bg-transparent text-[#121417] dark:text-gray-300 text-sm font-bold hover:bg-gray-50 dark:hover:bg-[#2a3441] transition-colors" type="button">
+                        임시 저장
+                    </button>
+<button class="w-full sm:w-auto px-8 py-3 rounded-lg bg-primary hover:bg-[#164885] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2" type="submit">
+<span>지원 제출</span>
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</form>
+<!-- Trust Badges / Footer Info -->
+<div class="flex justify-center gap-8 py-4 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#657486]">lock</span>
+<span class="text-xs text-[#657486] font-medium">SSL 보안 전송</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#657486]">verified_user</span>
+<span class="text-xs text-[#657486] font-medium">개인정보 보호</span>
+</div>
+</div>
+</div>
+</main>
 </body></html>

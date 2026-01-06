@@ -564,10 +564,11 @@ export default function JobDetailPage() {
                         const token = localStorage.getItem("access_token");
                         if (!token) {
                           // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
-                          router.push(`/login?redirect=/jobs/${jobId}`);
+                          router.push(`/login?redirect=/jobs/${jobId}/apply`);
                           return;
                         }
-                        setShowApplyModal(true);
+                        // 새 지원서 작성 페이지로 이동
+                        router.push(`/jobs/${jobId}/apply`);
                       }}
                       className="w-full h-12 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg shadow-md shadow-primary/20 transition-all transform active:scale-95 flex items-center justify-center gap-2"
                     >
