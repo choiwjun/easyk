@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+// 서버 사이드에서는 BACKEND_URL, 클라이언트에서는 NEXT_PUBLIC_BACKEND_URL 사용
+const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
 
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
+
+    console.log('[API Route] Consultations Incoming - BACKEND_URL:', BACKEND_URL);
 
     if (!authHeader) {
       return NextResponse.json(
@@ -18,16 +21,22 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const queryString = status ? `?status=${status}` : '';
 
-    const response = await fetch(`${BACKEND_URL}/api/consultations/incoming${queryString}`, {
+    const targetUrl = `${BACKEND_URL}/api/consultations/incoming${queryString}`;
+    console.log('[API Route] Fetching:', targetUrl);
+
+    const response = await fetch(targetUrl, {
       method: 'GET',
       headers: {
         'Authorization': authHeader,
       },
     });
 
+    console.log('[API Route] Response status:', response.status);
+
     const data = await response.json();
 
     if (!response.ok) {
+      console.log('[API Route] Error response:', data);
       const errorMessages: Record<string, string> = {
         'Unauthorized': '인증이 필요합니다',
         'Forbidden': '접근 권한이 없습니다. 전문가 계정으로 로그인해주세요.',
@@ -42,7 +51,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('[API Route] Consultations Incoming GET error:', error);
     return NextResponse.json(
-      { message: '상담 요청 목록 조회 중 오류가 발생했습니다' },
+      { message: '상담 요청 목록 조회 중 오류가 발생했습니다', error: String(error) },
       { status: 500 }
     );
   }
