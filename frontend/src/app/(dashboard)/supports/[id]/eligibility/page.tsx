@@ -223,19 +223,28 @@ export default function EligibilityCheckPage() {
 
   // 결과 화면 표시
   if (checkResult) {
+    const passedCount = checkResult.criteria.filter(c => c.passed).length;
+    const totalCount = checkResult.criteria.length;
+
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        <main className="flex flex-1 flex-col items-center justify-center p-4 py-12">
+        <main className="flex flex-1 flex-col items-center justify-center p-4 py-12 lg:px-40">
           <div className="w-full max-w-[640px]">
             {/* Result Card */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-8 md:p-12 text-center flex flex-col items-center">
               {/* Icon */}
               <div className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full ${
-                checkResult.eligible ? 'bg-blue-100' : 'bg-red-100'
+                checkResult.eligible ? 'bg-blue-50' : 'bg-red-50'
               }`}>
-                <span className="text-5xl">
-                  {checkResult.eligible ? '✓' : '✗'}
-                </span>
+                {checkResult.eligible ? (
+                  <svg className="w-12 h-12 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                ) : (
+                  <svg className="w-12 h-12 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                  </svg>
+                )}
               </div>
 
               {/* Headline */}
@@ -286,13 +295,29 @@ export default function EligibilityCheckPage() {
 
               {/* Criteria Summary Box */}
               <div className="w-full bg-gray-50 rounded-xl p-6 mb-8 border border-gray-200">
+                {/* Summary Header */}
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                  <span className="text-sm font-bold text-gray-900">
+                    {language === 'ko' ? '자격 요건 확인 결과' : 'Eligibility Check Results'}
+                  </span>
+                  <span className={`text-sm font-bold ${checkResult.eligible ? 'text-blue-600' : 'text-red-500'}`}>
+                    {passedCount}/{totalCount} {language === 'ko' ? '충족' : 'met'}
+                  </span>
+                </div>
+
                 <div className="flex flex-col gap-4">
                   {checkResult.criteria.map((item, index) => (
                     <div key={index}>
                       <div className="flex items-center gap-3">
-                        <span className={`text-xl shrink-0 ${item.passed ? 'text-blue-600' : 'text-red-500'}`}>
-                          {item.passed ? '✓' : '✗'}
-                        </span>
+                        {item.passed ? (
+                          <svg className="w-5 h-5 text-blue-600 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                          </svg>
+                        )}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 text-left flex-1">
                           <span className="text-gray-500 text-sm font-medium">{item.label}</span>
                           <span className="hidden sm:block text-gray-300">|</span>
@@ -323,27 +348,46 @@ export default function EligibilityCheckPage() {
               <div className="flex flex-col-reverse w-full gap-3 sm:flex-row sm:justify-center">
                 <button
                   onClick={resetForm}
-                  className="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 border border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors text-base font-bold px-6"
+                  className="flex-1 flex cursor-pointer items-center justify-center rounded-lg h-12 border border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors text-base font-bold px-6"
                 >
-                  {language === 'ko' ? '다시 확인하기' : 'Check Again'}
+                  {checkResult.eligible
+                    ? (language === 'ko' ? '신청 가이드 보기' : 'View Application Guide')
+                    : (language === 'ko' ? '다시 확인하기' : 'Check Again')
+                  }
                 </button>
-                {checkResult.eligible && support.official_link ? (
-                  <a
-                    href={support.official_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-colors text-base font-bold px-6 gap-2 flex"
-                  >
-                    <span>{language === 'ko' ? '지금 신청하기' : 'Apply Now'}</span>
-                    <span>→</span>
-                  </a>
+                {checkResult.eligible ? (
+                  support.official_link ? (
+                    <a
+                      href={support.official_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-colors text-base font-bold px-6 gap-2 flex"
+                    >
+                      <span>{language === 'ko' ? '지금 신청하기' : 'Apply Now'}</span>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => router.push(`/supports/${supportId}`)}
+                      className="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-colors text-base font-bold px-6 gap-2 flex"
+                    >
+                      <span>{language === 'ko' ? '지금 신청하기' : 'Apply Now'}</span>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </button>
+                  )
                 ) : (
                   <button
-                    onClick={() => router.push(`/supports/${supportId}`)}
+                    onClick={() => router.push(`/supports`)}
                     className="flex-1 cursor-pointer items-center justify-center rounded-lg h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-md transition-colors text-base font-bold px-6 gap-2 flex"
                   >
-                    <span>{language === 'ko' ? '프로그램 상세보기' : 'View Program'}</span>
-                    <span>→</span>
+                    <span>{language === 'ko' ? '다른 프로그램 찾기' : 'Find Other Programs'}</span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                   </button>
                 )}
               </div>
