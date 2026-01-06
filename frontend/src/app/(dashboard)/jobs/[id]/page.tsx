@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import DesignHeader from "@/components/ui/DesignHeader";
+import DesignFooter from "@/components/ui/DesignFooter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Job {
   id: string;
@@ -141,6 +144,7 @@ const SAMPLE_JOBS_DETAIL: Record<string, Job> = {
 export default function JobDetailPage() {
   const router = useRouter();
   const params = useParams();
+  const { language } = useLanguage();
   const jobId = params.id as string;
 
   const [job, setJob] = useState<Job | null>(null);
@@ -314,27 +318,41 @@ export default function JobDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background-light flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-text-secondary">로딩 중...</span>
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
+        <DesignHeader />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-text-sub dark:text-gray-400">
+              {language === 'ko' ? '로딩 중...' : 'Loading...'}
+            </span>
+          </div>
         </div>
+        <DesignFooter />
       </div>
     );
   }
 
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-background-light py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl shadow-soft p-12 text-center">
-            <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">error_outline</span>
-            <p className="text-error mb-6">{error || "일자리를 찾을 수 없습니다."}</p>
-            <Link href="/jobs">
-              <Button variant="outline">일자리 목록으로 돌아가기</Button>
-            </Link>
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
+        <DesignHeader />
+        <div className="flex-1 py-8 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-12 text-center">
+              <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">error_outline</span>
+              <p className="text-red-600 dark:text-red-400 mb-6">
+                {error || (language === 'ko' ? '일자리를 찾을 수 없습니다.' : 'Job not found.')}
+              </p>
+              <Link href="/jobs">
+                <Button variant="outline">
+                  {language === 'ko' ? '일자리 목록으로 돌아가기' : 'Back to Job List'}
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
+        <DesignFooter />
       </div>
     );
   }
@@ -342,15 +360,20 @@ export default function JobDetailPage() {
   const daysRemaining = getDaysRemaining(job.deadline);
 
   return (
-    <div className="min-h-screen bg-background-light">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
+      <DesignHeader />
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-text-muted mb-6 font-medium">
-          <Link href="/" className="hover:text-primary transition-colors">홈</Link>
+        <div className="flex items-center gap-2 text-sm text-text-sub dark:text-gray-400 mb-6 font-medium">
+          <Link href="/" className="hover:text-primary transition-colors">
+            {language === 'ko' ? '홈' : 'Home'}
+          </Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <Link href="/jobs" className="hover:text-primary transition-colors">채용 정보</Link>
+          <Link href="/jobs" className="hover:text-primary transition-colors">
+            {language === 'ko' ? '채용 정보' : 'Jobs'}
+          </Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="text-text-primary font-bold truncate max-w-[200px]">{job.position}</span>
+          <span className="text-text-main dark:text-white font-bold truncate max-w-[200px]">{job.position}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -750,6 +773,8 @@ export default function JobDetailPage() {
           </div>
         </div>
       )}
+
+      <DesignFooter />
     </div>
   );
 }
