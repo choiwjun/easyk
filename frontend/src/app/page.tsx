@@ -70,14 +70,17 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-text-primary dark:text-white tracking-tight">
                 {t('home.dashboard.myApplications')}
               </h2>
-              <a className="text-primary text-sm font-bold hover:underline flex items-center gap-1" href="#">
+              <a className="text-primary text-sm font-bold hover:underline flex items-center gap-1" href="/profile">
                 {t('home.dashboard.goToDashboard')}
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </a>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* 법률 상담 카드 */}
-              <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all cursor-pointer group border border-transparent hover:border-primary/10">
+              <a
+                href="/consultations/my"
+                className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all cursor-pointer group border border-transparent hover:border-primary/10"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                     <span className="material-symbols-outlined">gavel</span>
@@ -93,10 +96,13 @@ export default function Home() {
                   {t('home.dashboard.lawyer')}
                   <span className="text-primary font-bold">김철수</span>
                 </p>
-              </div>
+              </a>
 
               {/* 일자리 지원 카드 */}
-              <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all cursor-pointer group border border-transparent hover:border-primary/10">
+              <a
+                href="/applications"
+                className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all cursor-pointer group border border-transparent hover:border-primary/10"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
                     <span className="material-symbols-outlined">work</span>
@@ -112,10 +118,13 @@ export default function Home() {
                   {t('home.dashboard.company')}
                   (주)대한정밀
                 </p>
-              </div>
+              </a>
 
               {/* 새 신청하기 카드 */}
-              <div className="bg-gradient-to-br from-primary to-[#16447a] p-6 rounded-2xl shadow-soft hover:shadow-lg transition-all cursor-pointer text-white flex flex-col justify-between group">
+              <a
+                href="/consultations"
+                className="bg-gradient-to-br from-primary to-[#16447a] p-6 rounded-2xl shadow-soft hover:shadow-lg transition-all cursor-pointer text-white flex flex-col justify-between group"
+              >
                 <div className="flex items-start justify-between">
                   <div className="p-3 bg-white/20 rounded-xl text-white backdrop-blur-sm">
                     <span className="material-symbols-outlined">add_circle</span>
@@ -129,7 +138,7 @@ export default function Home() {
                     {t('home.dashboard.newApplicationDesc')}
                   </p>
                 </div>
-              </div>
+              </a>
             </div>
           </section>
 
