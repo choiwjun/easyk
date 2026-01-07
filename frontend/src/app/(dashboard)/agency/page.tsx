@@ -1443,78 +1443,148 @@ Example:
                       </button>
                     </div>
 
-                    <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                      <table className="w-full text-left">
-                        <thead className="bg-slate-50 dark:bg-slate-800">
-                          <tr className="text-slate-500 text-xs uppercase tracking-wider">
-                            <th className="px-6 py-4 font-medium">{language === "ko" ? "공고명" : "Position"}</th>
-                            <th className="px-6 py-4 font-medium">{language === "ko" ? "기업명" : "Company"}</th>
-                            <th className="px-6 py-4 font-medium">{language === "ko" ? "지역" : "Location"}</th>
-                            <th className="px-6 py-4 font-medium">{language === "ko" ? "마감일" : "Deadline"}</th>
-                            <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "상태" : "Status"}</th>
-                            <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "지원자" : "Applicants"}</th>
-                            <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "액션" : "Actions"}</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                          {jobs.map((job) => (
-                            <tr key={job.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                              <td className="px-6 py-4 font-medium">
-                                <button
-                                  onClick={() => handleEditJob(job)}
-                                  className="text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left"
-                                >
-                                  {job.position}
-                                </button>
-                              </td>
-                              <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{job.company_name}</td>
-                              <td className="px-6 py-4 text-slate-500">{job.location}</td>
-                              <td className="px-6 py-4 text-slate-500">{formatDate(job.deadline)}</td>
-                              <td className="px-6 py-4 text-center">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(job.status)}`}>
-                                  {getStatusLabel(job.status)}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 text-center">
-                                <button
-                                  onClick={() => setActiveMenu("applicants")}
-                                  className="text-primary hover:text-blue-700 font-medium"
-                                >
-                                  {job.applicant_count || 0}
-                                  {language === "ko" ? "명" : ""}
-                                </button>
-                              </td>
-                              <td className="px-6 py-4 text-center">
-                                <div className="flex items-center justify-center gap-1">
+                    {/* Mobile Card View */}
+                    <div className="md:hidden space-y-4">
+                      {jobs.map((job) => (
+                        <div key={job.id} className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-4">
+                          <div className="flex justify-between items-start mb-3">
+                            <button
+                              onClick={() => handleEditJob(job)}
+                              className="text-slate-900 dark:text-white font-medium hover:text-primary text-left flex-1"
+                            >
+                              {job.position}
+                            </button>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(job.status)}`}>
+                              {getStatusLabel(job.status)}
+                            </span>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">{language === "ko" ? "기업명" : "Company"}</span>
+                              <span className="text-slate-700 dark:text-slate-300">{job.company_name}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">{language === "ko" ? "지역" : "Location"}</span>
+                              <span className="text-slate-700 dark:text-slate-300">{job.location}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">{language === "ko" ? "마감일" : "Deadline"}</span>
+                              <span className="text-slate-700 dark:text-slate-300">{formatDate(job.deadline)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-slate-500">{language === "ko" ? "지원자" : "Applicants"}</span>
+                              <button
+                                onClick={() => setActiveMenu("applicants")}
+                                className="text-primary hover:text-blue-700 font-medium"
+                              >
+                                {job.applicant_count || 0}{language === "ko" ? "명" : ""}
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700">
+                            <button
+                              onClick={() => handleEditJob(job)}
+                              className="px-3 py-1.5 text-sm text-slate-600 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-1"
+                            >
+                              <span className="material-symbols-outlined text-[16px]">edit</span>
+                              {language === "ko" ? "수정" : "Edit"}
+                            </button>
+                            {job.status === "active" && (
+                              <button
+                                onClick={() => handleCloseJob(job.id)}
+                                className="px-3 py-1.5 text-sm text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors flex items-center gap-1"
+                              >
+                                <span className="material-symbols-outlined text-[16px]">block</span>
+                                {language === "ko" ? "마감" : "Close"}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDeleteJob(job.id)}
+                              className="px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex items-center gap-1"
+                            >
+                              <span className="material-symbols-outlined text-[16px]">delete</span>
+                              {language === "ko" ? "삭제" : "Delete"}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left min-w-[800px]">
+                          <thead className="bg-slate-50 dark:bg-slate-800">
+                            <tr className="text-slate-500 text-xs uppercase tracking-wider">
+                              <th className="px-6 py-4 font-medium">{language === "ko" ? "공고명" : "Position"}</th>
+                              <th className="px-6 py-4 font-medium">{language === "ko" ? "기업명" : "Company"}</th>
+                              <th className="px-6 py-4 font-medium">{language === "ko" ? "지역" : "Location"}</th>
+                              <th className="px-6 py-4 font-medium">{language === "ko" ? "마감일" : "Deadline"}</th>
+                              <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "상태" : "Status"}</th>
+                              <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "지원자" : "Applicants"}</th>
+                              <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "액션" : "Actions"}</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                            {jobs.map((job) => (
+                              <tr key={job.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                <td className="px-6 py-4 font-medium">
                                   <button
                                     onClick={() => handleEditJob(job)}
-                                    className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
-                                    title={language === "ko" ? "수정" : "Edit"}
+                                    className="text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left"
                                   >
-                                    <span className="material-symbols-outlined text-[18px]">edit</span>
+                                    {job.position}
                                   </button>
-                                  {job.status === "active" && (
-                                    <button
-                                      onClick={() => handleCloseJob(job.id)}
-                                      className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
-                                      title={language === "ko" ? "마감" : "Close"}
-                                    >
-                                      <span className="material-symbols-outlined text-[18px]">block</span>
-                                    </button>
-                                  )}
+                                </td>
+                                <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{job.company_name}</td>
+                                <td className="px-6 py-4 text-slate-500">{job.location}</td>
+                                <td className="px-6 py-4 text-slate-500">{formatDate(job.deadline)}</td>
+                                <td className="px-6 py-4 text-center">
+                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(job.status)}`}>
+                                    {getStatusLabel(job.status)}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 text-center">
                                   <button
-                                    onClick={() => handleDeleteJob(job.id)}
-                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                                    title={language === "ko" ? "삭제" : "Delete"}
+                                    onClick={() => setActiveMenu("applicants")}
+                                    className="text-primary hover:text-blue-700 font-medium"
                                   >
-                                    <span className="material-symbols-outlined text-[18px]">delete</span>
+                                    {job.applicant_count || 0}
+                                    {language === "ko" ? "명" : ""}
                                   </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                                </td>
+                                <td className="px-6 py-4 text-center">
+                                  <div className="flex items-center justify-center gap-1">
+                                    <button
+                                      onClick={() => handleEditJob(job)}
+                                      className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
+                                      title={language === "ko" ? "수정" : "Edit"}
+                                    >
+                                      <span className="material-symbols-outlined text-[18px]">edit</span>
+                                    </button>
+                                    {job.status === "active" && (
+                                      <button
+                                        onClick={() => handleCloseJob(job.id)}
+                                        className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
+                                        title={language === "ko" ? "마감" : "Close"}
+                                      >
+                                        <span className="material-symbols-outlined text-[18px]">block</span>
+                                      </button>
+                                    )}
+                                    <button
+                                      onClick={() => handleDeleteJob(job.id)}
+                                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                      title={language === "ko" ? "삭제" : "Delete"}
+                                    >
+                                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </>
                 )}
