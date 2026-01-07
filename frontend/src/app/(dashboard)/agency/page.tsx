@@ -1608,80 +1608,153 @@ Example:
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                  <table className="w-full text-left">
-                    <thead className="bg-slate-50 dark:bg-slate-800">
-                      <tr className="text-slate-500 text-xs uppercase tracking-wider">
-                        <th className="px-6 py-4 font-medium">{language === "ko" ? "지원자" : "Applicant"}</th>
-                        <th className="px-6 py-4 font-medium">{language === "ko" ? "비자" : "Visa"}</th>
-                        <th className="px-6 py-4 font-medium">{language === "ko" ? "국적" : "Nationality"}</th>
-                        <th className="px-6 py-4 font-medium">{language === "ko" ? "지원일" : "Applied"}</th>
-                        <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "상태" : "Status"}</th>
-                        <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "액션" : "Actions"}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                      {applicants.map((applicant) => (
-                        <tr key={applicant.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                                {applicant.first_name.charAt(0)}
-                              </div>
-                              <div>
-                                <p className="font-medium text-slate-900 dark:text-white">
-                                  {applicant.last_name} {applicant.first_name}
-                                </p>
-                                <p className="text-xs text-slate-500">{applicant.email}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{applicant.visa_type}</td>
-                          <td className="px-6 py-4 text-slate-500">{applicant.nationality}</td>
-                          <td className="px-6 py-4 text-slate-500">{formatRelativeTime(applicant.applied_at)}</td>
-                          <td className="px-6 py-4 text-center">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(applicant.status)}`}>
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4">
+                  {applicants.map((applicant) => (
+                    <div key={applicant.id} className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-lg">
+                          {applicant.first_name.charAt(0)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="font-medium text-slate-900 dark:text-white truncate">
+                              {applicant.last_name} {applicant.first_name}
+                            </p>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium shrink-0 ${getStatusBadgeStyle(applicant.status)}`}>
                               {getStatusLabel(applicant.status)}
                             </span>
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <button
-                                onClick={() => {
-                                  setSelectedApplicant(applicant);
-                                  setShowApplicantModal(true);
-                                }}
-                                className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
-                                title={language === "ko" ? "상세보기" : "View Details"}
-                              >
-                                <span className="material-symbols-outlined text-[18px]">visibility</span>
-                              </button>
-                              {applicant.status === "pending" && (
-                                <>
-                                  <button
-                                    onClick={() => handleApplicantAction(applicant.id, "hired")}
-                                    disabled={isUpdatingApplicant}
-                                    className="p-1.5 text-slate-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                    title={language === "ko" ? "채용" : "Hire"}
-                                  >
-                                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                                  </button>
-                                  <button
-                                    onClick={() => handleApplicantAction(applicant.id, "rejected")}
-                                    disabled={isUpdatingApplicant}
-                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                    title={language === "ko" ? "거절" : "Reject"}
-                                  >
-                                    <span className="material-symbols-outlined text-[18px]">cancel</span>
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
+                          </div>
+                          <p className="text-sm text-slate-500 truncate">{applicant.email}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">{language === "ko" ? "비자" : "Visa"}</span>
+                          <span className="text-slate-700 dark:text-slate-300">{applicant.visa_type}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">{language === "ko" ? "국적" : "Nationality"}</span>
+                          <span className="text-slate-700 dark:text-slate-300">{applicant.nationality}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">{language === "ko" ? "지원일" : "Applied"}</span>
+                          <span className="text-slate-700 dark:text-slate-300">{formatRelativeTime(applicant.applied_at)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700">
+                        <button
+                          onClick={() => {
+                            setSelectedApplicant(applicant);
+                            setShowApplicantModal(true);
+                          }}
+                          className="px-3 py-1.5 text-sm text-slate-600 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex items-center gap-1"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">visibility</span>
+                          {language === "ko" ? "상세" : "Detail"}
+                        </button>
+                        {applicant.status === "pending" && (
+                          <>
+                            <button
+                              onClick={() => handleApplicantAction(applicant.id, "hired")}
+                              disabled={isUpdatingApplicant}
+                              className="px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors flex items-center gap-1 disabled:opacity-50"
+                            >
+                              <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                              {language === "ko" ? "채용" : "Hire"}
+                            </button>
+                            <button
+                              onClick={() => handleApplicantAction(applicant.id, "rejected")}
+                              disabled={isUpdatingApplicant}
+                              className="px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex items-center gap-1 disabled:opacity-50"
+                            >
+                              <span className="material-symbols-outlined text-[16px]">cancel</span>
+                              {language === "ko" ? "거절" : "Reject"}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[700px]">
+                      <thead className="bg-slate-50 dark:bg-slate-800">
+                        <tr className="text-slate-500 text-xs uppercase tracking-wider">
+                          <th className="px-6 py-4 font-medium">{language === "ko" ? "지원자" : "Applicant"}</th>
+                          <th className="px-6 py-4 font-medium">{language === "ko" ? "비자" : "Visa"}</th>
+                          <th className="px-6 py-4 font-medium">{language === "ko" ? "국적" : "Nationality"}</th>
+                          <th className="px-6 py-4 font-medium">{language === "ko" ? "지원일" : "Applied"}</th>
+                          <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "상태" : "Status"}</th>
+                          <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "액션" : "Actions"}</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        {applicants.map((applicant) => (
+                          <tr key={applicant.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                                  {applicant.first_name.charAt(0)}
+                                </div>
+                                <div>
+                                  <p className="font-medium text-slate-900 dark:text-white">
+                                    {applicant.last_name} {applicant.first_name}
+                                  </p>
+                                  <p className="text-xs text-slate-500">{applicant.email}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{applicant.visa_type}</td>
+                            <td className="px-6 py-4 text-slate-500">{applicant.nationality}</td>
+                            <td className="px-6 py-4 text-slate-500">{formatRelativeTime(applicant.applied_at)}</td>
+                            <td className="px-6 py-4 text-center">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(applicant.status)}`}>
+                                {getStatusLabel(applicant.status)}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <button
+                                  onClick={() => {
+                                    setSelectedApplicant(applicant);
+                                    setShowApplicantModal(true);
+                                  }}
+                                  className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
+                                  title={language === "ko" ? "상세보기" : "View Details"}
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">visibility</span>
+                                </button>
+                                {applicant.status === "pending" && (
+                                  <>
+                                    <button
+                                      onClick={() => handleApplicantAction(applicant.id, "hired")}
+                                      disabled={isUpdatingApplicant}
+                                      className="p-1.5 text-slate-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      title={language === "ko" ? "채용" : "Hire"}
+                                    >
+                                      <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                                    </button>
+                                    <button
+                                      onClick={() => handleApplicantAction(applicant.id, "rejected")}
+                                      disabled={isUpdatingApplicant}
+                                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      title={language === "ko" ? "거절" : "Reject"}
+                                    >
+                                      <span className="material-symbols-outlined text-[18px]">cancel</span>
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
