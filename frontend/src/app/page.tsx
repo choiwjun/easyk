@@ -64,152 +64,252 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Stats Overview 섹션 - design.html 기반 */}
-          <section className="w-full">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* 진행 중인 상담 */}
-              <a
-                href="/consultations/my"
-                className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-primary text-xl">gavel</span>
+          {/* 로그인 사용자: Stats Overview 섹션 */}
+          {isAuthenticated && (
+            <section className="w-full">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* 진행 중인 상담 */}
+                <a
+                  href="/consultations/my"
+                  className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <span className="material-symbols-outlined text-primary text-xl">gavel</span>
+                    </div>
                   </div>
-                </div>
-                <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">2</p>
-                <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
-                  {t('home.stats.ongoingConsultations')}
-                </p>
-              </a>
-
-              {/* 지원한 일자리 */}
-              <a
-                href="/applications"
-                className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-purple-600 dark:text-purple-400 text-xl">work</span>
-                  </div>
-                </div>
-                <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">5</p>
-                <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
-                  {t('home.stats.appliedJobs')}
-                </p>
-              </a>
-
-              {/* 확인 가능한 지원금 */}
-              <a
-                href="/supports"
-                className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-xl">payments</span>
-                  </div>
-                </div>
-                <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">3</p>
-                <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
-                  {t('home.stats.availableSupports')}
-                </p>
-              </a>
-
-              {/* 비자 만료일 */}
-              <a
-                href="/profile"
-                className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-orange-600 dark:text-orange-400 text-xl">calendar_month</span>
-                  </div>
-                </div>
-                <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">D-89</p>
-                <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
-                  {t('home.stats.visaExpiry')}
-                </p>
-              </a>
-            </div>
-          </section>
-
-          {/* 신청 현황 섹션 */}
-          <section className="w-full">
-            <div className="flex items-center justify-between mb-4 px-1">
-              <h2 className="text-2xl font-bold text-text-primary dark:text-white tracking-tight">
-                {t('home.dashboard.myApplications')}
-              </h2>
-              <a className="text-primary text-sm font-bold hover:underline flex items-center gap-1" href="/profile">
-                {t('home.dashboard.goToDashboard')}
-                <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-              </a>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* 법률 상담 카드 */}
-              <a
-                href="/consultations/my"
-                className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all cursor-pointer group border border-transparent hover:border-primary/10"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined">gavel</span>
-                  </div>
-                  <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold rounded-md">
-                    {t('home.dashboard.consultationMatched')}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-text-primary dark:text-white mb-1">
-                  {t('home.dashboard.wageConsultation')}
-                </h3>
-                <p className="text-sm text-text-muted dark:text-gray-400">
-                  {t('home.dashboard.lawyer')}
-                  <span className="text-primary font-bold">김철수</span>
-                </p>
-              </a>
-
-              {/* 일자리 지원 카드 */}
-              <a
-                href="/applications"
-                className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all cursor-pointer group border border-transparent hover:border-primary/10"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined">work</span>
-                  </div>
-                  <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-bold rounded-md">
-                    {t('home.dashboard.consultationPending')}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-text-primary dark:text-white mb-1">
-                  {t('home.dashboard.jobApplication')}
-                </h3>
-                <p className="text-sm text-text-muted dark:text-gray-400">
-                  {t('home.dashboard.company')}
-                  (주)대한정밀
-                </p>
-              </a>
-
-              {/* 새 신청하기 카드 */}
-              <a
-                href="/consultations"
-                className="bg-gradient-to-br from-primary to-[#16447a] p-6 rounded-2xl shadow-soft hover:shadow-lg transition-all cursor-pointer text-white flex flex-col justify-between group"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="p-3 bg-white/20 rounded-xl text-white backdrop-blur-sm">
-                    <span className="material-symbols-outlined">add_circle</span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white mb-1">
-                    {t('home.dashboard.newApplication')}
-                  </h3>
-                  <p className="text-sm text-white/80 group-hover:text-white transition-colors">
-                    {t('home.dashboard.newApplicationDesc')}
+                  <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">2</p>
+                  <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
+                    {t('home.stats.ongoingConsultations')}
                   </p>
+                </a>
+
+                {/* 지원한 일자리 */}
+                <a
+                  href="/applications"
+                  className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <span className="material-symbols-outlined text-purple-600 dark:text-purple-400 text-xl">work</span>
+                    </div>
+                  </div>
+                  <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">5</p>
+                  <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
+                    {t('home.stats.appliedJobs')}
+                  </p>
+                </a>
+
+                {/* 확인 가능한 지원금 */}
+                <a
+                  href="/supports"
+                  className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-xl">payments</span>
+                    </div>
+                  </div>
+                  <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">3</p>
+                  <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
+                    {t('home.stats.availableSupports')}
+                  </p>
+                </a>
+
+                {/* 비자 만료일 */}
+                <a
+                  href="/profile"
+                  className="group bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all border border-transparent hover:border-primary/20"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <span className="material-symbols-outlined text-orange-600 dark:text-orange-400 text-xl">calendar_month</span>
+                    </div>
+                  </div>
+                  <p className="text-2xl font-extrabold text-text-primary dark:text-white mb-1">D-89</p>
+                  <p className="text-sm text-text-muted dark:text-gray-400 font-medium">
+                    {t('home.stats.visaExpiry')}
+                  </p>
+                </a>
+              </div>
+            </section>
+          )}
+
+          {/* 로그인 사용자: 신청 현황 섹션 */}
+          {isAuthenticated && (
+            <section className="w-full">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="text-2xl font-bold text-text-primary dark:text-white tracking-tight">
+                  {t('home.dashboard.myApplications')}
+                </h2>
+                <a className="text-primary text-sm font-bold hover:underline flex items-center gap-1" href="/profile">
+                  {t('home.dashboard.goToDashboard')}
+                  <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                </a>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* 법률 상담 카드 */}
+                <a
+                  href="/consultations/my"
+                  className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all cursor-pointer group border border-transparent hover:border-primary/10"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                      <span className="material-symbols-outlined">gavel</span>
+                    </div>
+                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold rounded-md">
+                      {t('home.dashboard.consultationMatched')}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-text-primary dark:text-white mb-1">
+                    {t('home.dashboard.wageConsultation')}
+                  </h3>
+                  <p className="text-sm text-text-muted dark:text-gray-400">
+                    {t('home.dashboard.lawyer')}
+                    <span className="text-primary font-bold">김철수</span>
+                  </p>
+                </a>
+
+                {/* 일자리 지원 카드 */}
+                <a
+                  href="/applications"
+                  className="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-soft hover:shadow-soft-hover transition-all cursor-pointer group border border-transparent hover:border-primary/10"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                      <span className="material-symbols-outlined">work</span>
+                    </div>
+                    <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-bold rounded-md">
+                      {t('home.dashboard.consultationPending')}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-text-primary dark:text-white mb-1">
+                    {t('home.dashboard.jobApplication')}
+                  </h3>
+                  <p className="text-sm text-text-muted dark:text-gray-400">
+                    {t('home.dashboard.company')}
+                    (주)대한정밀
+                  </p>
+                </a>
+
+                {/* 새 신청하기 카드 */}
+                <a
+                  href="/consultations"
+                  className="bg-gradient-to-br from-primary to-[#16447a] p-6 rounded-2xl shadow-soft hover:shadow-lg transition-all cursor-pointer text-white flex flex-col justify-between group"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="p-3 bg-white/20 rounded-xl text-white backdrop-blur-sm">
+                      <span className="material-symbols-outlined">add_circle</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-1">
+                      {t('home.dashboard.newApplication')}
+                    </h3>
+                    <p className="text-sm text-white/80 group-hover:text-white transition-colors">
+                      {t('home.dashboard.newApplicationDesc')}
+                    </p>
+                  </div>
+                </a>
+              </div>
+            </section>
+          )}
+
+          {/* 비로그인 사용자: 서비스 소개 & 가입 유도 섹션 */}
+          {!isAuthenticated && (
+            <section className="w-full">
+              {/* 왜 easyK인가? */}
+              <div className="bg-gradient-to-br from-primary/5 to-blue-50 dark:from-primary/10 dark:to-blue-900/20 rounded-3xl p-8 md:p-10 mb-6">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-text-primary dark:text-white mb-6 text-center">
+                  {t('home.whyEasyK.title')}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* 전문가 상담 */}
+                  <div className="flex flex-col items-center text-center p-4">
+                    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-800 shadow-soft flex items-center justify-center mb-4">
+                      <span className="material-symbols-outlined text-primary text-[32px]">verified</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-text-primary dark:text-white mb-2">
+                      {t('home.whyEasyK.expert')}
+                    </h3>
+                    <p className="text-sm text-text-muted dark:text-gray-400">
+                      {t('home.whyEasyK.expertDesc')}
+                    </p>
+                  </div>
+                  {/* 다국어 지원 */}
+                  <div className="flex flex-col items-center text-center p-4">
+                    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-800 shadow-soft flex items-center justify-center mb-4">
+                      <span className="material-symbols-outlined text-green-600 text-[32px]">translate</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-text-primary dark:text-white mb-2">
+                      {t('home.whyEasyK.multilingual')}
+                    </h3>
+                    <p className="text-sm text-text-muted dark:text-gray-400">
+                      {t('home.whyEasyK.multilingualDesc')}
+                    </p>
+                  </div>
+                  {/* 원스톱 서비스 */}
+                  <div className="flex flex-col items-center text-center p-4">
+                    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-gray-800 shadow-soft flex items-center justify-center mb-4">
+                      <span className="material-symbols-outlined text-purple-600 text-[32px]">hub</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-text-primary dark:text-white mb-2">
+                      {t('home.whyEasyK.oneStop')}
+                    </h3>
+                    <p className="text-sm text-text-muted dark:text-gray-400">
+                      {t('home.whyEasyK.oneStopDesc')}
+                    </p>
+                  </div>
                 </div>
-              </a>
-            </div>
-          </section>
+              </div>
+
+              {/* 통계 & 신뢰도 */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft text-center">
+                  <p className="text-3xl font-extrabold text-primary mb-1">15,000+</p>
+                  <p className="text-sm text-text-muted dark:text-gray-400">{t('home.trust.users')}</p>
+                </div>
+                <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft text-center">
+                  <p className="text-3xl font-extrabold text-green-600 mb-1">98%</p>
+                  <p className="text-sm text-text-muted dark:text-gray-400">{t('home.trust.satisfaction')}</p>
+                </div>
+                <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft text-center">
+                  <p className="text-3xl font-extrabold text-purple-600 mb-1">500+</p>
+                  <p className="text-sm text-text-muted dark:text-gray-400">{t('home.trust.experts')}</p>
+                </div>
+                <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft text-center">
+                  <p className="text-3xl font-extrabold text-orange-600 mb-1">24h</p>
+                  <p className="text-sm text-text-muted dark:text-gray-400">{t('home.trust.response')}</p>
+                </div>
+              </div>
+
+              {/* 회원가입 유도 CTA */}
+              <div className="bg-gradient-to-r from-primary to-[#16447a] rounded-3xl p-8 md:p-10 text-center text-white">
+                <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+                  {t('home.cta.title')}
+                </h2>
+                <p className="text-white/80 mb-6 max-w-lg mx-auto">
+                  {t('home.cta.description')}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    onClick={() => router.push('/signup')}
+                    className="h-12 px-8 rounded-xl bg-white hover:bg-gray-100 text-primary font-bold text-[15px] shadow-lg transition-all hover:-translate-y-0.5 active:scale-95"
+                  >
+                    {t('home.cta.signup')}
+                    <span className="material-symbols-outlined text-[18px] ml-1">person_add</span>
+                  </Button>
+                  <Button
+                    onClick={() => router.push('/login')}
+                    variant="secondary"
+                    className="h-12 px-8 rounded-xl bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-[15px] transition-all"
+                  >
+                    {t('home.cta.login')}
+                  </Button>
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* 서비스 섹션 */}
           <section className="w-full py-4">

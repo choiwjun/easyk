@@ -61,7 +61,27 @@
   "home": {
     "title": "Settle comfortably in Korea",
     "subtitle": "Legal consultations, job matching, and government support information in one place",
-    "cta": "Get Started",
+    "cta": {
+      "title": "Get Started Today",
+      "description": "Sign up for free and access legal consultations, job matching, and government support information all in one place.",
+      "signup": "Sign Up Free",
+      "login": "Login"
+    },
+    "whyEasyK": {
+      "title": "Why easyK?",
+      "expert": "Verified Experts",
+      "expertDesc": "Consultations provided by verified immigration lawyers and labor attorneys.",
+      "multilingual": "Multilingual Support",
+      "multilingualDesc": "Services available in Korean, English, Vietnamese, Chinese, and more.",
+      "oneStop": "One-Stop Service",
+      "oneStopDesc": "From consultations to job matching and support info - all in one place."
+    },
+    "trust": {
+      "users": "Total Users",
+      "satisfaction": "Satisfaction",
+      "experts": "Expert Consultants",
+      "response": "Avg Response Time"
+    },
     "hero": {
       "badge": "New Update 2.0",
       "title": "Life in Korea,",

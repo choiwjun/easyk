@@ -61,7 +61,27 @@
   "home": {
     "title": "한국에서 안정적으로 정착하세요",
     "subtitle": "법률 상담, 일자리 매칭, 정부 지원 정보를 한 곳에서",
-    "cta": "시작하기",
+    "cta": {
+      "title": "지금 바로 시작하세요",
+      "description": "무료로 가입하고 법률 상담, 일자리 매칭, 정부 지원 정보를 한 번에 이용하세요.",
+      "signup": "무료 회원가입",
+      "login": "로그인"
+    },
+    "whyEasyK": {
+      "title": "왜 easyK인가요?",
+      "expert": "검증된 전문가",
+      "expertDesc": "이민 전문 변호사, 노무사 등 검증된 전문가들이 상담을 제공합니다.",
+      "multilingual": "다국어 지원",
+      "multilingualDesc": "한국어, 영어, 베트남어, 중국어 등 다양한 언어로 서비스를 이용할 수 있습니다.",
+      "oneStop": "원스톱 서비스",
+      "oneStopDesc": "상담 신청부터 일자리 매칭, 지원금 정보까지 모든 것을 한 곳에서."
+    },
+    "trust": {
+      "users": "누적 이용자",
+      "satisfaction": "만족도",
+      "experts": "전문 상담사",
+      "response": "평균 응답 시간"
+    },
     "hero": {
       "badge": "새로운 업데이트 2.0",
       "title": "한국 생활,",
