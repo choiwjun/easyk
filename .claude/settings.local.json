@@ -64,7 +64,9 @@
       "Bash(cd:*)",
       "Bash(find . -name \"page.tsx\" -exec echo \"=== {} ===\" ; -exec head -50 {} ;)",
       "Bash(git pull:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(find:*)",
+      "Bash(layout \")"
     ]
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useConsultantGuard } from '@/hooks/useRoleGuard';
@@ -16,6 +16,7 @@ interface Consultation {
     nationality: string;
   };
   consultation_type: string;
+  title: string;
   content: string;
   consultation_method: string;
   amount: number;
@@ -75,6 +76,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
       nationality: 'Vietnam',
     },
     consultation_type: 'visa',
+    title: 'E-9 비자 연장 상담',
     content: 'E-9 비자 연장 절차와 필요 서류에 대해 상담 요청드립니다. 현재 체류 기간이 2개월 후 만료됩니다.',
     consultation_method: 'video',
     amount: 50000,
@@ -92,6 +94,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
       nationality: 'Philippines',
     },
     consultation_type: 'labor',
+    title: '임금 체불 법적 대응 상담',
     content: '임금 체불 문제로 상담 요청드립니다. 3개월째 급여를 받지 못하고 있으며 법적 대응 방법을 알고 싶습니다.',
     consultation_method: 'chat',
     amount: 30000,
@@ -109,6 +112,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
       nationality: 'China',
     },
     consultation_type: 'real_estate',
+    title: '전세 보증금 반환 분쟁',
     content: '전세 계약 만료 후 보증금 반환 문제가 발생했습니다. 집주인이 보증금 일부만 돌려주겠다고 합니다.',
     consultation_method: 'video',
     amount: 50000,
@@ -126,6 +130,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
       nationality: 'Japan',
     },
     consultation_type: 'visa',
+    title: 'F-2 거주비자 자격 변경',
     content: 'F-2 비자(거주) 자격 변경 조건과 절차에 대해 알고 싶습니다. 현재 E-7 비자로 5년째 체류 중입니다.',
     consultation_method: 'phone',
     amount: 40000,
@@ -144,6 +149,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
       nationality: 'Indonesia',
     },
     consultation_type: 'labor',
+    title: '산업재해 산재처리 거부 대응',
     content: '산업재해를 당했는데 회사에서 산재 처리를 거부하고 있습니다. 어떻게 해야 하나요?',
     consultation_method: 'video',
     amount: 50000,
@@ -162,6 +168,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
       nationality: 'USA',
     },
     consultation_type: 'tax',
+    title: '프리랜서 세금 신고 상담',
     content: '한국에서 프리랜서로 일하고 있는데 세금 신고 방법과 공제 항목에 대해 알고 싶습니다.',
     consultation_method: 'chat',
     amount: 30000,
@@ -179,6 +186,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
       nationality: 'Thailand',
     },
     consultation_type: 'visa',
+    title: '결혼 비자 F-6 신청 상담',
     content: '결혼 비자(F-6) 신청 절차와 필요 서류에 대해 상담받고 싶습니다.',
     consultation_method: 'video',
     amount: 50000,
@@ -190,6 +198,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
 
 export default function ConsultantDashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { language } = useLanguage();
   const isAuthorized = useConsultantGuard();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
@@ -200,6 +209,14 @@ export default function ConsultantDashboardPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Handle tab parameter from URL
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['dashboard', 'requests', 'cases', 'schedule', 'history', 'community', 'profile'].includes(tab)) {
+      setActiveMenu(tab);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchConsultations();
@@ -433,11 +450,16 @@ export default function ConsultantDashboardPage() {
     ? `${userProfile.last_name}${userProfile.first_name}`
     : language === 'ko' ? '전문가' : 'Consultant';
 
+  // Count active cases (in_progress or scheduled)
+  const activeCases = consultations.filter(c => c.status === 'in_progress' || c.status === 'scheduled');
+
   const sidebarMenuItems = [
     { key: 'dashboard', icon: 'dashboard', label: { ko: '대시보드', en: 'Dashboard' }, badge: 0 },
     { key: 'requests', icon: 'notifications_active', label: { ko: '상담 요청', en: 'Requests' }, badge: newRequests.length },
+    { key: 'cases', icon: 'work', label: { ko: '내 사건', en: 'My Cases' }, badge: activeCases.length },
     { key: 'schedule', icon: 'calendar_month', label: { ko: '일정 관리', en: 'Schedule' }, badge: 0 },
     { key: 'history', icon: 'history', label: { ko: '상담 내역', en: 'History' }, badge: 0 },
+    { key: 'community', icon: 'forum', label: { ko: '커뮤니티', en: 'Community' }, badge: 0 },
     { key: 'profile', icon: 'person', label: { ko: '프로필 관리', en: 'Profile' }, badge: 0 },
   ];
 
@@ -616,15 +638,19 @@ export default function ConsultantDashboardPage() {
             <h2 className="text-gray-900 dark:text-white text-lg font-bold leading-tight">
               {activeMenu === 'dashboard' && (language === 'ko' ? `안녕하세요, ${consultantName} 변호사님 👋` : `Hello, ${consultantName} 👋`)}
               {activeMenu === 'requests' && (language === 'ko' ? '상담 요청' : 'Consultation Requests')}
+              {activeMenu === 'cases' && (language === 'ko' ? '내 사건' : 'My Cases')}
               {activeMenu === 'schedule' && (language === 'ko' ? '일정 관리' : 'Schedule Management')}
               {activeMenu === 'history' && (language === 'ko' ? '상담 내역' : 'Consultation History')}
+              {activeMenu === 'community' && (language === 'ko' ? '커뮤니티' : 'Community')}
               {activeMenu === 'profile' && (language === 'ko' ? '프로필 관리' : 'Profile Management')}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {activeMenu === 'dashboard' && (language === 'ko' ? '오늘의 새로운 상담 요청을 확인해보세요.' : 'Check out today\'s new consultation requests.')}
               {activeMenu === 'requests' && (language === 'ko' ? '새로운 상담 요청을 관리하세요.' : 'Manage new consultation requests.')}
+              {activeMenu === 'cases' && (language === 'ko' ? '진행 중인 사건을 관리하세요.' : 'Manage your active cases.')}
               {activeMenu === 'schedule' && (language === 'ko' ? '예정된 상담 일정을 확인하세요.' : 'Check your scheduled consultations.')}
               {activeMenu === 'history' && (language === 'ko' ? '완료된 상담 내역을 확인하세요.' : 'Review your completed consultations.')}
+              {activeMenu === 'community' && (language === 'ko' ? '전문가들과 지식을 공유하세요.' : 'Share knowledge with other experts.')}
               {activeMenu === 'profile' && (language === 'ko' ? '프로필 정보를 수정하세요.' : 'Update your profile information.')}
             </p>
           </div>
@@ -1346,6 +1372,232 @@ export default function ConsultantDashboardPage() {
                     )}
                   </tbody>
                 </table>
+              </div>
+            </section>
+          )}
+
+          {/* My Cases View - 내 사건 탭 */}
+          {activeMenu === 'cases' && (
+            <section className="space-y-6">
+              {/* Case Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">pending_actions</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{language === 'ko' ? '진행 중' : 'In Progress'}</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeCases.filter(c => c.status === 'in_progress').length}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-green-600 dark:text-green-400">event</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{language === 'ko' ? '예정됨' : 'Scheduled'}</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeCases.filter(c => c.status === 'scheduled').length}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-purple-600 dark:text-purple-400">work</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{language === 'ko' ? '전체 활성 사건' : 'Total Active'}</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeCases.length}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Cases List */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                    {language === 'ko' ? '진행 중인 사건' : 'Active Cases'}
+                  </h3>
+                </div>
+                {activeCases.length === 0 ? (
+                  <div className="p-12 text-center">
+                    <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 text-5xl mb-4">work_off</span>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      {language === 'ko' ? '진행 중인 사건이 없습니다.' : 'No active cases.'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                    {activeCases.map((consultation) => (
+                      <div
+                        key={consultation.id}
+                        onClick={() => router.push(`/consultant/consultations/${consultation.id}`)}
+                        className="p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                            <span className="material-symbols-outlined text-gray-400 dark:text-gray-500">person</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-4 mb-1">
+                              <h4 className="font-bold text-gray-900 dark:text-white truncate">
+                                {consultation.user.last_name}{consultation.user.first_name}
+                              </h4>
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+                                consultation.status === 'in_progress'
+                                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                  : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                              }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${consultation.status === 'in_progress' ? 'bg-blue-500' : 'bg-green-500'}`}></span>
+                                {STATUS_LABELS[consultation.status]?.[language as 'ko' | 'en'] || consultation.status}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 truncate mb-2">
+                              {consultation.title}
+                            </p>
+                            <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                              <span className="flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[14px]">category</span>
+                                {CONSULTATION_TYPE_LABELS[consultation.consultation_type]?.[language as 'ko' | 'en'] || consultation.consultation_type}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[14px]">schedule</span>
+                                {new Date(consultation.created_at).toLocaleDateString(language === 'ko' ? 'ko-KR' : 'en-US')}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/consultant/consultations/${consultation.id}/chat`);
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">chat</span>
+                            {language === 'ko' ? '채팅' : 'Chat'}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* Community View - 커뮤니티 탭 */}
+          {activeMenu === 'community' && (
+            <section className="space-y-6">
+              {/* Community Header */}
+              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-6 text-white">
+                <h3 className="text-xl font-bold mb-2">
+                  {language === 'ko' ? '전문가 커뮤니티' : 'Expert Community'}
+                </h3>
+                <p className="text-white/80">
+                  {language === 'ko'
+                    ? '다른 전문가들과 지식을 공유하고, 복잡한 사례에 대한 조언을 구하세요.'
+                    : 'Share knowledge with other experts and seek advice on complex cases.'}
+                </p>
+              </div>
+
+              {/* Community Categories */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { icon: 'gavel', title: { ko: '법률 토론', en: 'Legal Discussion' }, count: 128 },
+                  { icon: 'lightbulb', title: { ko: '사례 공유', en: 'Case Studies' }, count: 56 },
+                  { icon: 'school', title: { ko: '판례 분석', en: 'Case Law Analysis' }, count: 89 },
+                  { icon: 'help', title: { ko: 'Q&A', en: 'Q&A' }, count: 234 },
+                ].map((category, idx) => (
+                  <div key={idx} className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-primary">{category.icon}</span>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 dark:text-white">{category.title[language as 'ko' | 'en']}</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{category.count} {language === 'ko' ? '개 글' : 'posts'}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Recent Posts */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                    {language === 'ko' ? '최근 게시글' : 'Recent Posts'}
+                  </h3>
+                  <button className="text-primary text-sm font-medium hover:underline">
+                    {language === 'ko' ? '전체보기' : 'View All'}
+                  </button>
+                </div>
+                <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {[
+                    {
+                      title: { ko: 'E-7 비자 변경 시 주의사항 공유드립니다', en: 'Tips for E-7 visa status change' },
+                      author: { ko: '김법무', en: 'Kim' },
+                      category: { ko: '비자', en: 'Visa' },
+                      replies: 12,
+                      views: 156,
+                      time: '2시간 전'
+                    },
+                    {
+                      title: { ko: '외국인 근로자 임금체불 대응 사례', en: 'Handling unpaid wages for foreign workers' },
+                      author: { ko: '박변호사', en: 'Park' },
+                      category: { ko: '근로', en: 'Labor' },
+                      replies: 8,
+                      views: 98,
+                      time: '5시간 전'
+                    },
+                    {
+                      title: { ko: '최근 출입국관리법 개정안 분석', en: 'Analysis of recent immigration law amendments' },
+                      author: { ko: '이전문가', en: 'Lee' },
+                      category: { ko: '법률', en: 'Law' },
+                      replies: 23,
+                      views: 412,
+                      time: '1일 전'
+                    },
+                  ].map((post, idx) => (
+                    <div key={idx} className="p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                          <span className="text-sm font-bold text-gray-600 dark:text-gray-400">{post.author[language as 'ko' | 'en'].charAt(0)}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-gray-900 dark:text-white mb-1 hover:text-primary transition-colors">
+                            {post.title[language as 'ko' | 'en']}
+                          </h4>
+                          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                            <span>{post.author[language as 'ko' | 'en']}</span>
+                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">{post.category[language as 'ko' | 'en']}</span>
+                            <span className="flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[14px]">chat_bubble</span>
+                              {post.replies}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[14px]">visibility</span>
+                              {post.views}
+                            </span>
+                            <span>{post.time}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Write Post Button */}
+              <div className="flex justify-center">
+                <button className="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl transition-colors shadow-sm">
+                  <span className="material-symbols-outlined">edit</span>
+                  {language === 'ko' ? '새 글 작성' : 'Write New Post'}
+                </button>
               </div>
             </section>
           )}

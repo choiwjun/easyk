@@ -274,10 +274,10 @@ export default function ConsultantConsultationDetailPage() {
             <span className="text-sm font-bold text-primary dark:text-white">
               {language === 'ko' ? '상담 요청 관리' : 'Consultation Requests'}
             </span>
-            <Link href="#" className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white">
+            <Link href="/consultant/dashboard?tab=cases" className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white">
               {language === 'ko' ? '내 사건' : 'My Cases'}
             </Link>
-            <Link href="#" className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white">
+            <Link href="/consultant/dashboard?tab=community" className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white">
               {language === 'ko' ? '커뮤니티' : 'Community'}
             </Link>
           </nav>
