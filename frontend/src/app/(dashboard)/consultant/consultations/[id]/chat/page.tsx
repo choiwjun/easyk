@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/hooks/useAuth";
+import { useConsultantGuard } from "@/hooks/useRoleGuard";
 
 interface Message {
   id: string;
@@ -69,7 +69,7 @@ export default function ConsultantChatPage() {
   const params = useParams();
   const router = useRouter();
   const { language } = useLanguage();
-  const { requireAuth } = useAuth();
+  const isAuthorized = useConsultantGuard();
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [messages, setMessages] = useState<Message[]>(SAMPLE_MESSAGES);
   const [newMessage, setNewMessage] = useState("");
@@ -80,9 +80,10 @@ export default function ConsultantChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    requireAuth();
-    fetchConsultation();
-  }, []);
+    if (isAuthorized) {
+      fetchConsultation();
+    }
+  }, [isAuthorized]);
 
   useEffect(() => {
     scrollToBottom();

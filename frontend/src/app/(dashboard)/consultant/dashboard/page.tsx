@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useRoleGuard } from '@/hooks/useRoleGuard';
+import { useConsultantGuard } from '@/hooks/useRoleGuard';
 
 interface Consultation {
   id: string;
@@ -191,7 +191,7 @@ const SAMPLE_CONSULTATIONS: Consultation[] = [
 export default function ConsultantDashboardPage() {
   const router = useRouter();
   const { language } = useLanguage();
-  const isAuthorized = useRoleGuard(['consultant', 'admin']);
+  const isAuthorized = useConsultantGuard();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');

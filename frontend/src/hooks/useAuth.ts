@@ -25,6 +25,9 @@ interface UseAuthReturn extends AuthState {
   getAuthHeader: () => { Authorization: string } | {};
   requireAuth: (redirectTo?: string) => void;
   requireRole: (allowedRoles: string[], redirectTo?: string) => boolean;
+  requireConsultant: () => void;
+  requireUser: () => void;
+  isConsultant: boolean;
 }
 
 export function useAuth(): UseAuthReturn {
@@ -115,6 +118,8 @@ export function useAuth(): UseAuthReturn {
   // Require specific role (return false if not authorized)
   const requireRole = useCallback(
     (allowedRoles: string[], redirectTo: string = '/') => {
+      if (authState.isLoading) return true; // Still loading, don't redirect yet
+
       if (!authState.isAuthenticated || !authState.user) {
         router.push('/login');
         return false;
@@ -127,8 +132,47 @@ export function useAuth(): UseAuthReturn {
 
       return true;
     },
-    [authState.isAuthenticated, authState.user, router]
+    [authState.isLoading, authState.isAuthenticated, authState.user, router]
   );
+
+  // Require consultant role - redirect to consultant dashboard if consultant tries to access user pages
+  const requireConsultant = useCallback(
+    () => {
+      if (authState.isLoading) return;
+
+      if (!authState.isAuthenticated || !authState.user) {
+        router.push('/login');
+        return;
+      }
+
+      if (authState.user.role !== 'consultant') {
+        router.push('/');
+        return;
+      }
+    },
+    [authState.isLoading, authState.isAuthenticated, authState.user, router]
+  );
+
+  // Require user role - redirect consultants to their dashboard
+  const requireUser = useCallback(
+    () => {
+      if (authState.isLoading) return;
+
+      if (!authState.isAuthenticated || !authState.user) {
+        router.push('/login');
+        return;
+      }
+
+      if (authState.user.role === 'consultant') {
+        router.push('/consultant/dashboard');
+        return;
+      }
+    },
+    [authState.isLoading, authState.isAuthenticated, authState.user, router]
+  );
+
+  // Check if current user is a consultant
+  const isConsultant = authState.user?.role === 'consultant';
 
   return {
     ...authState,
@@ -137,6 +181,9 @@ export function useAuth(): UseAuthReturn {
     getAuthHeader,
     requireAuth,
     requireRole,
+    requireConsultant,
+    requireUser,
+    isConsultant,
   };
 }
 

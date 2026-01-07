@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useConsultantGuard } from '@/hooks/useRoleGuard';
 
 interface Consultation {
   id: string;
@@ -81,6 +82,7 @@ export default function ConsultantConsultationDetailPage() {
   const router = useRouter();
   const params = useParams();
   const { language } = useLanguage();
+  const isAuthorized = useConsultantGuard();
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showRejectModal, setShowRejectModal] = useState(false);
