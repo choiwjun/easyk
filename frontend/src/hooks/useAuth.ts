@@ -7,7 +7,7 @@ interface User {
   email: string;
   first_name: string;
   last_name: string;
-  role: 'foreign' | 'consultant' | 'admin';
+  role: 'foreign' | 'consultant' | 'agency' | 'admin';
   nationality?: string;
   phone_number?: string;
   visa_type?: string;

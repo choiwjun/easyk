@@ -59,7 +59,16 @@ export function useRoleGuard(allowedRoles: string[], redirectTo?: string): boole
 
         if (!allowedRoles.includes(user.role)) {
           // Determine redirect based on user role
-          const redirect = redirectTo || (user.role === 'consultant' ? '/consultant/dashboard' : '/');
+          let redirect = redirectTo;
+          if (!redirect) {
+            if (user.role === 'consultant') {
+              redirect = '/consultant/dashboard';
+            } else if (user.role === 'agency') {
+              redirect = '/agency';
+            } else {
+              redirect = '/';
+            }
+          }
           router.push(redirect);
           return;
         }
