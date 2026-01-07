@@ -184,6 +184,7 @@ export default function AgencyDashboard() {
   const [publishedJob, setPublishedJob] = useState<{ position: string; id: string; createdAt: string } | null>(null);
   const [userName, setUserName] = useState("김지자 관리자");
   const [userDept, setUserDept] = useState("서울시 외국인지원팀");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [jobForm, setJobForm] = useState({
     position: "",
@@ -558,15 +559,30 @@ export default function AgencyDashboard() {
 
   return (
     <div className="min-h-screen bg-[#f7f6f8] dark:bg-[#191220] text-slate-900 dark:text-white flex overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-[#201a2d] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen fixed left-0 top-0 z-20">
+      <aside className={`w-64 bg-white dark:bg-[#201a2d] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen fixed left-0 top-0 z-40 transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         {/* Logo */}
-        <div className="p-6 flex items-center gap-3">
-          <button onClick={() => setActiveMenu("dashboard")} className="flex items-center gap-3">
+        <div className="p-6 flex items-center justify-between">
+          <button onClick={() => { setActiveMenu("dashboard"); setSidebarOpen(false); }} className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
               eK
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">easyK</span>
+          </button>
+          {/* Mobile Close Button */}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
@@ -591,7 +607,7 @@ export default function AgencyDashboard() {
           {menuItems.slice(0, 1).map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveMenu(item.id as ActiveMenu)}
+              onClick={() => { setActiveMenu(item.id as ActiveMenu); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
                 activeMenu === item.id
                   ? "bg-primary/10 text-primary font-medium"
@@ -609,7 +625,7 @@ export default function AgencyDashboard() {
           {menuItems.slice(1).map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveMenu(item.id as ActiveMenu)}
+              onClick={() => { setActiveMenu(item.id as ActiveMenu); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors group ${
                 activeMenu === item.id
                   ? "bg-primary/10 text-primary font-medium"
@@ -644,22 +660,34 @@ export default function AgencyDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 ml-0 md:ml-64 flex flex-col h-screen overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 bg-white dark:bg-[#201a2d] border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 sticky top-0 z-10 shrink-0">
-          {/* Breadcrumbs */}
-          <nav className="flex items-center text-sm font-medium text-slate-500">
-            <Link href="/" className="hover:text-primary transition-colors">
-              {language === "ko" ? "홈" : "Home"}
-            </Link>
-            <span className="mx-2 text-slate-300">/</span>
-            <span className="text-slate-900 dark:text-white">
-              {menuItems.find((m) => m.id === activeMenu)?.label[language as "ko" | "en"] || (language === "ko" ? "대시보드" : "Dashboard")}
-            </span>
-          </nav>
+        <header className="h-16 bg-white dark:bg-[#201a2d] border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 shrink-0">
+          {/* Mobile Menu Button + Breadcrumbs */}
+          <div className="flex items-center gap-3">
+            {/* Mobile Hamburger Menu */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Open menu"
+            >
+              <span className="material-symbols-outlined text-[24px] text-slate-600 dark:text-slate-300">menu</span>
+            </button>
+
+            {/* Breadcrumbs */}
+            <nav className="flex items-center text-sm font-medium text-slate-500">
+              <Link href="/" className="hover:text-primary transition-colors hidden sm:inline">
+                {language === "ko" ? "홈" : "Home"}
+              </Link>
+              <span className="mx-2 text-slate-300 hidden sm:inline">/</span>
+              <span className="text-slate-900 dark:text-white">
+                {menuItems.find((m) => m.id === activeMenu)?.label[language as "ko" | "en"] || (language === "ko" ? "대시보드" : "Dashboard")}
+              </span>
+            </nav>
+          </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <button className="relative p-2 text-slate-500 hover:text-primary transition-colors rounded-full hover:bg-slate-50 dark:hover:bg-slate-800">
               <span className="material-symbols-outlined">notifications</span>
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#201a2d]"></span>
@@ -669,16 +697,16 @@ export default function AgencyDashboard() {
                 setActiveMenu("jobs");
                 setShowJobForm(true);
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/30 text-sm font-medium"
+              className="flex items-center gap-2 px-3 md:px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/30 text-sm font-medium"
             >
               <span className="material-symbols-outlined text-[20px]">add</span>
-              <span>{language === "ko" ? "새 공고 등록" : "New Job"}</span>
+              <span className="hidden sm:inline">{language === "ko" ? "새 공고 등록" : "New Job"}</span>
             </button>
           </div>
         </header>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
           <div className="max-w-[1280px] mx-auto flex flex-col gap-8">
             {/* Dashboard View */}
             {activeMenu === "dashboard" && (
