@@ -37,14 +37,19 @@ export async function POST(request: NextRequest) {
     }
 
     if (!response.ok) {
-      // 에러 메시지 다국어 지원 개선
+      // 백엔드에서 이미 한국어 메시지를 반환하면 그대로 사용
+      // 영문 메시지인 경우 한국어로 변환
       const errorMessages: Record<string, string> = {
         'Incorrect email or password': '이메일 또는 비밀번호가 올바르지 않습니다',
-        'User not found': '사용자를 찾을 수 없습니다',
+        'User not found': '등록되지 않은 이메일입니다',
         'Invalid credentials': '인증 정보가 유효하지 않습니다',
+        'Email not verified': '이메일 인증이 필요합니다',
+        'Account is disabled': '비활성화된 계정입니다',
       };
 
-      const message = errorMessages[data.detail] || data.message || '로그인 중 오류가 발생했습니다';
+      // 백엔드 메시지 그대로 사용하거나 영문→한국어 변환
+      const backendMessage = data.detail || data.message;
+      const message = errorMessages[backendMessage] || backendMessage || '이메일 또는 비밀번호를 확인해주세요';
       return NextResponse.json({ message }, { status: response.status });
     }
 
