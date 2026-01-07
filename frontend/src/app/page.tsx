@@ -15,18 +15,25 @@ export default function Home() {
   const router = useRouter();
 
   // 전문가/기관 유저는 각자의 대시보드로 리다이렉트
+  // foreign과 admin만 메인페이지 접근 가능
   useEffect(() => {
     if (!isLoading && isAuthenticated && user) {
-      if (user.role === 'consultant') {
-        router.replace('/consultant/dashboard');
-      } else if (user.role === 'agency') {
-        router.replace('/agency');
+      const role = user.role;
+      // foreign과 admin만 메인페이지에 머물 수 있음
+      if (role !== 'foreign' && role !== 'admin') {
+        if (role === 'consultant') {
+          router.replace('/consultant/dashboard');
+        } else {
+          // agency 또는 기타 role은 /agency로
+          router.replace('/agency');
+        }
       }
     }
   }, [isLoading, isAuthenticated, user, router]);
 
   // 로딩 중이거나 리다이렉트 대상인 경우 로딩 표시
-  if (isLoading || (isAuthenticated && user && (user.role === 'consultant' || user.role === 'agency'))) {
+  const shouldRedirect = isAuthenticated && user && user.role !== 'foreign' && user.role !== 'admin';
+  if (isLoading || shouldRedirect) {
     return (
       <div className="min-h-screen bg-background-light flex items-center justify-center">
         <div className="text-text-secondary">{t('common.loading')}</div>
