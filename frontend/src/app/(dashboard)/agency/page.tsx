@@ -173,6 +173,7 @@ export default function AgencyDashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
+  const [isUpdatingApplicant, setIsUpdatingApplicant] = useState(false);
   const [userName, setUserName] = useState("김지자 관리자");
   const [userDept, setUserDept] = useState("서울시 외국인지원팀");
 
@@ -338,8 +339,32 @@ export default function AgencyDashboard() {
     }
   };
 
-  const handleCloseJob = (jobId: string) => {
-    setJobs(jobs.map((j) => (j.id === jobId ? { ...j, status: "closed" } : j)));
+  const handleCloseJob = async (jobId: string) => {
+    if (!confirm(language === "ko" ? "이 공고를 마감하시겠습니까?" : "Are you sure you want to close this job posting?")) return;
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const job = jobs.find((j) => j.id === jobId);
+      if (!job) return;
+
+      const response = await fetch(`/api/jobs/${jobId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ...job, status: "closed" }),
+      });
+
+      if (response.ok) {
+        setJobs(jobs.map((j) => (j.id === jobId ? { ...j, status: "closed" } : j)));
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || (language === "ko" ? "공고 마감에 실패했습니다." : "Failed to close job posting."));
+      }
+    } catch {
+      setError(language === "ko" ? "네트워크 오류가 발생했습니다." : "Network error occurred.");
+    }
   };
 
   const handleEditJob = (job: Job) => {
@@ -374,10 +399,35 @@ export default function AgencyDashboard() {
     });
   };
 
-  const handleApplicantAction = (applicantId: string, action: "hired" | "rejected") => {
-    setApplicants(applicants.map((a) => (a.id === applicantId ? { ...a, status: action } : a)));
-    setShowApplicantModal(false);
-    setSelectedApplicant(null);
+  const handleApplicantAction = async (applicantId: string, action: "hired" | "rejected") => {
+    setIsUpdatingApplicant(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      // Map frontend status to backend status
+      const backendStatus = action === "hired" ? "accepted" : "rejected";
+
+      const response = await fetch(`/api/jobs/applications/${applicantId}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: backendStatus }),
+      });
+
+      if (response.ok) {
+        setApplicants(applicants.map((a) => (a.id === applicantId ? { ...a, status: action } : a)));
+        setShowApplicantModal(false);
+        setSelectedApplicant(null);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || (language === "ko" ? "지원자 상태 변경에 실패했습니다." : "Failed to update applicant status."));
+      }
+    } catch {
+      setError(language === "ko" ? "네트워크 오류가 발생했습니다." : "Network error occurred.");
+    } finally {
+      setIsUpdatingApplicant(false);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -1317,14 +1367,16 @@ export default function AgencyDashboard() {
                                 <>
                                   <button
                                     onClick={() => handleApplicantAction(applicant.id, "hired")}
-                                    className="p-1.5 text-slate-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
+                                    disabled={isUpdatingApplicant}
+                                    className="p-1.5 text-slate-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     title={language === "ko" ? "채용" : "Hire"}
                                   >
                                     <span className="material-symbols-outlined text-[18px]">check_circle</span>
                                   </button>
                                   <button
                                     onClick={() => handleApplicantAction(applicant.id, "rejected")}
-                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                    disabled={isUpdatingApplicant}
+                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     title={language === "ko" ? "거절" : "Reject"}
                                   >
                                     <span className="material-symbols-outlined text-[18px]">cancel</span>
@@ -1449,16 +1501,26 @@ export default function AgencyDashboard() {
                 <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
                   <button
                     onClick={() => handleApplicantAction(selectedApplicant.id, "hired")}
-                    className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                    disabled={isUpdatingApplicant}
+                    className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span className="material-symbols-outlined">check_circle</span>
+                    {isUpdatingApplicant ? (
+                      <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                    ) : (
+                      <span className="material-symbols-outlined">check_circle</span>
+                    )}
                     {language === "ko" ? "채용 확정" : "Hire"}
                   </button>
                   <button
                     onClick={() => handleApplicantAction(selectedApplicant.id, "rejected")}
-                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                    disabled={isUpdatingApplicant}
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span className="material-symbols-outlined">cancel</span>
+                    {isUpdatingApplicant ? (
+                      <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                    ) : (
+                      <span className="material-symbols-outlined">cancel</span>
+                    )}
                     {language === "ko" ? "거절" : "Reject"}
                   </button>
                 </div>
