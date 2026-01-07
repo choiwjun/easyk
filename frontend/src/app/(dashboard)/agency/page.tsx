@@ -307,9 +307,10 @@ export default function AgencyDashboard() {
         fetchJobs();
       } else {
         const errorData = await response.json();
-        setError(errorData.detail || (language === "ko" ? "공고 등록에 실패했습니다." : "Failed to create job posting."));
+        setError(errorData.message || errorData.detail || (language === "ko" ? "공고 등록에 실패했습니다." : "Failed to create job posting."));
       }
-    } catch {
+    } catch (err) {
+      console.error("Job creation error:", err);
       setError(language === "ko" ? "네트워크 오류가 발생했습니다." : "Network error occurred.");
     } finally {
       setIsSubmitting(false);
