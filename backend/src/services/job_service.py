@@ -232,10 +232,10 @@ def create_job(
     # 사용자 조회 및 권한 검증
     user = db.query(User).filter(User.id == user_id).first()
 
-    if not user or user.role != "admin":
+    if not user or user.role not in ["admin", "agency"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            detail="Admin or Agency access required"
         )
 
     # required_languages를 JSON 문자열로 변환
@@ -296,10 +296,10 @@ def update_job(
     # 사용자 조회 및 권한 검증
     user = db.query(User).filter(User.id == user_id).first()
 
-    if not user or user.role != "admin":
+    if not user or user.role not in ["admin", "agency"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            detail="Admin or Agency access required"
         )
 
     # 일자리 조회
@@ -349,10 +349,10 @@ def delete_job(
     # 사용자 조회 및 권한 검증
     user = db.query(User).filter(User.id == user_id).first()
 
-    if not user or user.role != "admin":
+    if not user or user.role not in ["admin", "agency"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            detail="Admin or Agency access required"
         )
 
     # 일자리 조회
@@ -397,10 +397,10 @@ def get_job_applications(
     # 사용자 조회 및 권한 검증
     user = db.query(User).filter(User.id == user_id).first()
 
-    if not user or user.role != "admin":
+    if not user or user.role not in ["admin", "agency"]:
         raise HTTPException(
             status_code=http_status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            detail="Admin or Agency access required"
         )
 
     # 일자리 조회
@@ -455,10 +455,10 @@ def update_job_application_status(
     # 사용자 조회 및 권한 검증
     user = db.query(User).filter(User.id == user_id).first()
 
-    if not user or user.role != "admin":
+    if not user or user.role not in ["admin", "agency"]:
         raise HTTPException(
             status_code=http_status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            detail="Admin or Agency access required"
         )
 
     # 지원 내역 조회
