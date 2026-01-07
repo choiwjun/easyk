@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
+import authStorage from "@/utils/authStorage";
 
 interface Job {
   id: string;
@@ -225,7 +226,7 @@ export default function AgencyDashboard() {
   }, [activeMenu]);
 
   const checkAuth = async () => {
-    const token = localStorage.getItem("access_token");
+    const token = authStorage.getToken();
     if (!token) {
       router.push("/login");
       return;
@@ -254,7 +255,7 @@ export default function AgencyDashboard() {
   const fetchJobs = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authStorage.getToken();
       const response = await fetch("/api/jobs", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -278,7 +279,7 @@ export default function AgencyDashboard() {
     setError("");
 
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authStorage.getToken();
       // Exclude job_type and work_hours as they are not in the backend schema
       const { job_type, work_hours, ...jobData } = jobForm;
       const response = await fetch("/api/jobs", {
@@ -325,7 +326,7 @@ export default function AgencyDashboard() {
     setError("");
 
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authStorage.getToken();
       // Exclude job_type and work_hours as they are not in the backend schema
       const { job_type, work_hours, ...jobData } = jobForm;
       const response = await fetch(`/api/jobs/${editingJob.id}`, {
@@ -357,7 +358,7 @@ export default function AgencyDashboard() {
     if (!confirm(language === "ko" ? "정말 이 공고를 삭제하시겠습니까?" : "Are you sure you want to delete this job posting?")) return;
 
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authStorage.getToken();
       const response = await fetch(`/api/jobs/${jobId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -378,7 +379,7 @@ export default function AgencyDashboard() {
     if (!confirm(language === "ko" ? "이 공고를 마감하시겠습니까?" : "Are you sure you want to close this job posting?")) return;
 
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authStorage.getToken();
       const job = jobs.find((j) => j.id === jobId);
       if (!job) return;
 
@@ -443,7 +444,7 @@ export default function AgencyDashboard() {
   const handleApplicantAction = async (applicantId: string, action: "hired" | "rejected") => {
     setIsUpdatingApplicant(true);
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authStorage.getToken();
       // Map frontend status to backend status
       const backendStatus = action === "hired" ? "accepted" : "rejected";
 
@@ -542,8 +543,7 @@ export default function AgencyDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user");
+    authStorage.clearAll();
     router.push("/login");
   };
 
