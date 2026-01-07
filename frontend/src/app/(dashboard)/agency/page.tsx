@@ -1396,10 +1396,181 @@ export default function AgencyDashboard() {
             {/* Stats View */}
             {activeMenu === "stats" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{language === "ko" ? "통계 대시보드" : "Statistics Dashboard"}</h2>
-                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-12 text-center">
-                  <span className="material-symbols-outlined text-5xl text-slate-300 mb-4">bar_chart</span>
-                  <p className="text-slate-500">{language === "ko" ? "상세 통계 기능이 준비 중입니다." : "Detailed statistics feature coming soon."}</p>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{language === "ko" ? "통계 대시보드" : "Statistics Dashboard"}</h2>
+                  <div className="flex gap-2">
+                    <select className="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm">
+                      <option value="month">{language === "ko" ? "이번 달" : "This Month"}</option>
+                      <option value="quarter">{language === "ko" ? "이번 분기" : "This Quarter"}</option>
+                      <option value="year">{language === "ko" ? "올해" : "This Year"}</option>
+                    </select>
+                    <button className="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-600">
+                      <span className="material-symbols-outlined text-[18px]">download</span>
+                      {language === "ko" ? "리포트 내보내기" : "Export Report"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Stats Summary Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-white dark:bg-[#201a2d] p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                        <span className="material-symbols-outlined">campaign</span>
+                      </div>
+                      <span className="text-sm text-slate-500">{language === "ko" ? "총 공고 수" : "Total Jobs"}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{jobs.length}</p>
+                    <p className="text-xs text-green-600 mt-1">+12% {language === "ko" ? "전월 대비" : "vs last month"}</p>
+                  </div>
+
+                  <div className="bg-white dark:bg-[#201a2d] p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                        <span className="material-symbols-outlined">group</span>
+                      </div>
+                      <span className="text-sm text-slate-500">{language === "ko" ? "총 지원자 수" : "Total Applicants"}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{applicants.length}</p>
+                    <p className="text-xs text-green-600 mt-1">+8% {language === "ko" ? "전월 대비" : "vs last month"}</p>
+                  </div>
+
+                  <div className="bg-white dark:bg-[#201a2d] p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+                        <span className="material-symbols-outlined">check_circle</span>
+                      </div>
+                      <span className="text-sm text-slate-500">{language === "ko" ? "채용 완료" : "Hired"}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{applicants.filter(a => a.status === "hired").length}</p>
+                    <p className="text-xs text-green-600 mt-1">+15% {language === "ko" ? "전월 대비" : "vs last month"}</p>
+                  </div>
+
+                  <div className="bg-white dark:bg-[#201a2d] p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600">
+                        <span className="material-symbols-outlined">percent</span>
+                      </div>
+                      <span className="text-sm text-slate-500">{language === "ko" ? "채용률" : "Hire Rate"}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                      {applicants.length > 0 ? Math.round((applicants.filter(a => a.status === "hired").length / applicants.length) * 100) : 0}%
+                    </p>
+                    <p className="text-xs text-green-600 mt-1">+5% {language === "ko" ? "전월 대비" : "vs last month"}</p>
+                  </div>
+                </div>
+
+                {/* Charts Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Monthly Trend Chart */}
+                  <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{language === "ko" ? "월별 지원자 추이" : "Monthly Applicant Trend"}</h3>
+                    <div className="h-64 flex items-end justify-between gap-2 px-4">
+                      {[65, 45, 78, 52, 89, 67, 94, 71, 83, 56, 92, 78].map((value, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                          <div
+                            className="w-full bg-primary/80 rounded-t transition-all hover:bg-primary"
+                            style={{ height: `${value}%` }}
+                          ></div>
+                          <span className="text-[10px] text-slate-400">{i + 1}{language === "ko" ? "월" : ""}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Visa Type Distribution */}
+                  <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{language === "ko" ? "비자 유형별 분포" : "Visa Type Distribution"}</h3>
+                    <div className="flex items-center justify-center h-48">
+                      <div className="relative w-40 h-40">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="#e2e8f0" strokeWidth="20" />
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="#3b82f6" strokeWidth="20" strokeDasharray="100 151" strokeDashoffset="0" />
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="#8b5cf6" strokeWidth="20" strokeDasharray="60 191" strokeDashoffset="-100" />
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" strokeWidth="20" strokeDasharray="50 201" strokeDashoffset="-160" />
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="#f59e0b" strokeWidth="20" strokeDasharray="41 210" strokeDashoffset="-210" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-4">
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                        <span className="text-sm text-slate-600 dark:text-slate-300">E-9 (40%)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full bg-purple-500"></span>
+                        <span className="text-sm text-slate-600 dark:text-slate-300">F-6 (24%)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                        <span className="text-sm text-slate-600 dark:text-slate-300">D-2 (20%)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full bg-amber-500"></span>
+                        <span className="text-sm text-slate-600 dark:text-slate-300">E-7 (16%)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Nationality Distribution */}
+                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{language === "ko" ? "국적별 지원자 현황" : "Applicants by Nationality"}</h3>
+                  <div className="space-y-4">
+                    {[
+                      { country: language === "ko" ? "베트남" : "Vietnam", count: 145, percent: 35, flag: "🇻🇳" },
+                      { country: language === "ko" ? "중국" : "China", count: 98, percent: 24, flag: "🇨🇳" },
+                      { country: language === "ko" ? "인도네시아" : "Indonesia", count: 67, percent: 16, flag: "🇮🇩" },
+                      { country: language === "ko" ? "필리핀" : "Philippines", count: 52, percent: 13, flag: "🇵🇭" },
+                      { country: language === "ko" ? "기타" : "Others", count: 50, percent: 12, flag: "🌍" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-4">
+                        <span className="text-2xl">{item.flag}</span>
+                        <div className="flex-1">
+                          <div className="flex justify-between mb-1">
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{item.country}</span>
+                            <span className="text-sm text-slate-500">{item.count}{language === "ko" ? "명" : ""} ({item.percent}%)</span>
+                          </div>
+                          <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                            <div className="bg-primary h-2 rounded-full" style={{ width: `${item.percent}%` }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Job Performance Table */}
+                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{language === "ko" ? "공고별 성과" : "Job Performance"}</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-slate-100 dark:border-slate-700 text-slate-500 text-xs uppercase">
+                          <th className="pb-3 font-medium">{language === "ko" ? "공고명" : "Job Title"}</th>
+                          <th className="pb-3 font-medium text-center">{language === "ko" ? "조회수" : "Views"}</th>
+                          <th className="pb-3 font-medium text-center">{language === "ko" ? "지원자" : "Applicants"}</th>
+                          <th className="pb-3 font-medium text-center">{language === "ko" ? "채용" : "Hired"}</th>
+                          <th className="pb-3 font-medium text-center">{language === "ko" ? "전환율" : "Conversion"}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-sm">
+                        {jobs.slice(0, 5).map((job, i) => (
+                          <tr key={job.id} className="border-b border-slate-50 dark:border-slate-800">
+                            <td className="py-3 font-medium text-slate-900 dark:text-white">{job.position}</td>
+                            <td className="py-3 text-center text-slate-600 dark:text-slate-300">{Math.floor(Math.random() * 500) + 100}</td>
+                            <td className="py-3 text-center text-slate-600 dark:text-slate-300">{job.applicant_count || Math.floor(Math.random() * 50) + 5}</td>
+                            <td className="py-3 text-center text-green-600">{Math.floor(Math.random() * 10) + 1}</td>
+                            <td className="py-3 text-center">
+                              <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                {Math.floor(Math.random() * 30) + 10}%
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
@@ -1407,10 +1578,173 @@ export default function AgencyDashboard() {
             {/* Members View */}
             {activeMenu === "members" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{language === "ko" ? "회원 관리" : "Member Management"}</h2>
-                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-12 text-center">
-                  <span className="material-symbols-outlined text-5xl text-slate-300 mb-4">manage_accounts</span>
-                  <p className="text-slate-500">{language === "ko" ? "회원 관리 기능이 준비 중입니다." : "Member management feature coming soon."}</p>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">{language === "ko" ? "회원 관리" : "Member Management"}</h2>
+                  <div className="flex gap-2">
+                    <div className="relative">
+                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                      <input
+                        type="text"
+                        placeholder={language === "ko" ? "회원 검색..." : "Search members..."}
+                        className="pl-10 pr-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm w-64"
+                      />
+                    </div>
+                    <select className="px-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm">
+                      <option value="">{language === "ko" ? "전체 유형" : "All Types"}</option>
+                      <option value="foreign">{language === "ko" ? "외국인" : "Foreign"}</option>
+                      <option value="consultant">{language === "ko" ? "전문가" : "Consultant"}</option>
+                      <option value="company">{language === "ko" ? "기업" : "Company"}</option>
+                    </select>
+                    <button className="px-4 py-2 bg-primary text-white rounded-lg text-sm flex items-center gap-2 hover:bg-blue-700">
+                      <span className="material-symbols-outlined text-[18px]">download</span>
+                      {language === "ko" ? "내보내기" : "Export"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Member Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-white dark:bg-[#201a2d] p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                      <span className="material-symbols-outlined">public</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-500">{language === "ko" ? "외국인 주민" : "Foreign Residents"}</p>
+                      <p className="text-xl font-bold text-slate-900 dark:text-white">11,204</p>
+                    </div>
+                  </div>
+                  <div className="bg-white dark:bg-[#201a2d] p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600">
+                      <span className="material-symbols-outlined">support_agent</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-500">{language === "ko" ? "전문가" : "Consultants"}</p>
+                      <p className="text-xl font-bold text-slate-900 dark:text-white">356</p>
+                    </div>
+                  </div>
+                  <div className="bg-white dark:bg-[#201a2d] p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
+                      <span className="material-symbols-outlined">business</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-500">{language === "ko" ? "협력 기업" : "Partner Companies"}</p>
+                      <p className="text-xl font-bold text-slate-900 dark:text-white">842</p>
+                    </div>
+                  </div>
+                  <div className="bg-white dark:bg-[#201a2d] p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
+                      <span className="material-symbols-outlined">trending_up</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-500">{language === "ko" ? "이번 달 신규" : "New This Month"}</p>
+                      <p className="text-xl font-bold text-slate-900 dark:text-white">+127</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Members Table */}
+                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                  <table className="w-full text-left">
+                    <thead className="bg-slate-50 dark:bg-slate-800">
+                      <tr className="text-slate-500 text-xs uppercase tracking-wider">
+                        <th className="px-6 py-4 font-medium">{language === "ko" ? "회원" : "Member"}</th>
+                        <th className="px-6 py-4 font-medium">{language === "ko" ? "유형" : "Type"}</th>
+                        <th className="px-6 py-4 font-medium">{language === "ko" ? "국적/비자" : "Nationality/Visa"}</th>
+                        <th className="px-6 py-4 font-medium">{language === "ko" ? "가입일" : "Joined"}</th>
+                        <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "상태" : "Status"}</th>
+                        <th className="px-6 py-4 font-medium text-center">{language === "ko" ? "액션" : "Actions"}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                      {[
+                        { id: 1, name: "Nguyen Van A", email: "nguyen.a@email.com", type: "foreign", nationality: "베트남", visa: "E-9", joined: "2024-10-15", status: "active" },
+                        { id: 2, name: "김변호사", email: "lawyer.kim@email.com", type: "consultant", nationality: "한국", visa: "-", joined: "2024-09-20", status: "active" },
+                        { id: 3, name: "Zhang Wei", email: "zhang.wei@email.com", type: "foreign", nationality: "중국", visa: "D-2", joined: "2024-11-01", status: "pending" },
+                        { id: 4, name: "(주)미래테크", email: "hr@miraetech.com", type: "company", nationality: "-", visa: "-", joined: "2024-08-10", status: "active" },
+                        { id: 5, name: "Elena Petrova", email: "elena.p@email.com", type: "foreign", nationality: "러시아", visa: "F-6", joined: "2024-10-28", status: "active" },
+                        { id: 6, name: "박전문가", email: "expert.park@email.com", type: "consultant", nationality: "한국", visa: "-", joined: "2024-07-15", status: "inactive" },
+                        { id: 7, name: "Michael Singh", email: "michael.s@email.com", type: "foreign", nationality: "인도", visa: "E-7", joined: "2024-11-10", status: "active" },
+                        { id: 8, name: "CJ대한통운", email: "recruit@cjlogistics.com", type: "company", nationality: "-", visa: "-", joined: "2024-06-01", status: "active" },
+                      ].map((member) => (
+                        <tr key={member.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                                member.type === "foreign" ? "bg-blue-100 text-blue-600" :
+                                member.type === "consultant" ? "bg-teal-100 text-teal-600" :
+                                "bg-purple-100 text-purple-600"
+                              }`}>
+                                {member.name.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="font-medium text-slate-900 dark:text-white">{member.name}</p>
+                                <p className="text-xs text-slate-500">{member.email}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              member.type === "foreign" ? "bg-blue-100 text-blue-700" :
+                              member.type === "consultant" ? "bg-teal-100 text-teal-700" :
+                              "bg-purple-100 text-purple-700"
+                            }`}>
+                              {member.type === "foreign" ? (language === "ko" ? "외국인" : "Foreign") :
+                               member.type === "consultant" ? (language === "ko" ? "전문가" : "Consultant") :
+                               (language === "ko" ? "기업" : "Company")}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+                            {member.nationality}{member.visa !== "-" && ` / ${member.visa}`}
+                          </td>
+                          <td className="px-6 py-4 text-slate-500">{member.joined}</td>
+                          <td className="px-6 py-4 text-center">
+                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              member.status === "active" ? "bg-green-100 text-green-700" :
+                              member.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+                              "bg-gray-100 text-gray-700"
+                            }`}>
+                              {member.status === "active" ? (language === "ko" ? "활성" : "Active") :
+                               member.status === "pending" ? (language === "ko" ? "대기" : "Pending") :
+                               (language === "ko" ? "비활성" : "Inactive")}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <button className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors" title={language === "ko" ? "상세보기" : "View"}>
+                                <span className="material-symbols-outlined text-[18px]">visibility</span>
+                              </button>
+                              <button className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors" title={language === "ko" ? "수정" : "Edit"}>
+                                <span className="material-symbols-outlined text-[18px]">edit</span>
+                              </button>
+                              <button className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors" title={language === "ko" ? "비활성화" : "Deactivate"}>
+                                <span className="material-symbols-outlined text-[18px]">block</span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* Pagination */}
+                  <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                    <p className="text-sm text-slate-500">
+                      {language === "ko" ? "총 12,402명 중 1-8" : "Showing 1-8 of 12,402"}
+                    </p>
+                    <div className="flex gap-1">
+                      <button className="px-3 py-1 rounded border border-slate-200 dark:border-slate-600 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm">
+                        {language === "ko" ? "이전" : "Prev"}
+                      </button>
+                      <button className="px-3 py-1 rounded bg-primary text-white text-sm">1</button>
+                      <button className="px-3 py-1 rounded border border-slate-200 dark:border-slate-600 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm">2</button>
+                      <button className="px-3 py-1 rounded border border-slate-200 dark:border-slate-600 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm">3</button>
+                      <span className="px-3 py-1 text-slate-400">...</span>
+                      <button className="px-3 py-1 rounded border border-slate-200 dark:border-slate-600 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm">1551</button>
+                      <button className="px-3 py-1 rounded border border-slate-200 dark:border-slate-600 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm">
+                        {language === "ko" ? "다음" : "Next"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1419,9 +1753,179 @@ export default function AgencyDashboard() {
             {activeMenu === "settings" && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">{language === "ko" ? "설정" : "Settings"}</h2>
-                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-12 text-center">
-                  <span className="material-symbols-outlined text-5xl text-slate-300 mb-4">settings</span>
-                  <p className="text-slate-500">{language === "ko" ? "설정 기능이 준비 중입니다." : "Settings feature coming soon."}</p>
+
+                {/* Profile Settings */}
+                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary">person</span>
+                    {language === "ko" ? "프로필 설정" : "Profile Settings"}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {language === "ko" ? "담당자명" : "Manager Name"}
+                      </label>
+                      <input
+                        type="text"
+                        defaultValue={userName}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {language === "ko" ? "부서명" : "Department"}
+                      </label>
+                      <input
+                        type="text"
+                        defaultValue={userDept}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {language === "ko" ? "이메일" : "Email"}
+                      </label>
+                      <input
+                        type="email"
+                        defaultValue="admin@seoul.go.kr"
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {language === "ko" ? "연락처" : "Phone"}
+                      </label>
+                      <input
+                        type="tel"
+                        defaultValue="02-1234-5678"
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notification Settings */}
+                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary">notifications</span>
+                    {language === "ko" ? "알림 설정" : "Notification Settings"}
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      { id: "new_applicant", label: language === "ko" ? "새 지원자 알림" : "New Applicant Notifications", desc: language === "ko" ? "새로운 지원자가 있을 때 알림을 받습니다." : "Get notified when new applicants apply.", default: true },
+                      { id: "job_expired", label: language === "ko" ? "공고 마감 알림" : "Job Expiry Notifications", desc: language === "ko" ? "공고 마감 3일 전에 알림을 받습니다." : "Get notified 3 days before job posting expires.", default: true },
+                      { id: "weekly_report", label: language === "ko" ? "주간 리포트" : "Weekly Reports", desc: language === "ko" ? "매주 월요일에 주간 통계 리포트를 받습니다." : "Receive weekly statistics report every Monday.", default: false },
+                      { id: "email_digest", label: language === "ko" ? "이메일 다이제스트" : "Email Digest", desc: language === "ko" ? "일일 활동 요약을 이메일로 받습니다." : "Receive daily activity summary via email.", default: true },
+                    ].map((item) => (
+                      <div key={item.id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                        <div>
+                          <p className="font-medium text-slate-900 dark:text-white">{item.label}</p>
+                          <p className="text-sm text-slate-500">{item.desc}</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" defaultChecked={item.default} className="sr-only peer" />
+                          <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Display Settings */}
+                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary">palette</span>
+                    {language === "ko" ? "화면 설정" : "Display Settings"}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {language === "ko" ? "언어" : "Language"}
+                      </label>
+                      <select className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+                        <option value="ko">한국어</option>
+                        <option value="en">English</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {language === "ko" ? "테마" : "Theme"}
+                      </label>
+                      <select className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+                        <option value="light">{language === "ko" ? "라이트 모드" : "Light Mode"}</option>
+                        <option value="dark">{language === "ko" ? "다크 모드" : "Dark Mode"}</option>
+                        <option value="system">{language === "ko" ? "시스템 설정" : "System Default"}</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {language === "ko" ? "대시보드 기본 탭" : "Default Dashboard Tab"}
+                      </label>
+                      <select className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+                        <option value="dashboard">{language === "ko" ? "대시보드" : "Dashboard"}</option>
+                        <option value="jobs">{language === "ko" ? "일자리 관리" : "Job Management"}</option>
+                        <option value="applicants">{language === "ko" ? "지원자 목록" : "Applicants"}</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {language === "ko" ? "목록당 항목 수" : "Items per Page"}
+                      </label>
+                      <select className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Security Settings */}
+                <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary">security</span>
+                    {language === "ko" ? "보안 설정" : "Security Settings"}
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">{language === "ko" ? "비밀번호 변경" : "Change Password"}</p>
+                        <p className="text-sm text-slate-500">{language === "ko" ? "마지막 변경: 30일 전" : "Last changed: 30 days ago"}</p>
+                      </div>
+                      <button className="px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                        {language === "ko" ? "변경" : "Change"}
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">{language === "ko" ? "2단계 인증" : "Two-Factor Authentication"}</p>
+                        <p className="text-sm text-slate-500">{language === "ko" ? "계정 보안을 강화합니다." : "Enhance your account security."}</p>
+                      </div>
+                      <button className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                        {language === "ko" ? "활성화" : "Enable"}
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">{language === "ko" ? "로그인 기록" : "Login History"}</p>
+                        <p className="text-sm text-slate-500">{language === "ko" ? "최근 로그인 활동을 확인합니다." : "View recent login activity."}</p>
+                      </div>
+                      <button className="px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                        {language === "ko" ? "보기" : "View"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="flex justify-end gap-3">
+                  <button className="px-6 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                    {language === "ko" ? "취소" : "Cancel"}
+                  </button>
+                  <button className="px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                    {language === "ko" ? "변경사항 저장" : "Save Changes"}
+                  </button>
                 </div>
               </div>
             )}
