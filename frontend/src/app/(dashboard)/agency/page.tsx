@@ -562,12 +562,12 @@ export default function AgencyDashboard() {
       <aside className="w-64 bg-white dark:bg-[#201a2d] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen fixed left-0 top-0 z-20">
         {/* Logo */}
         <div className="p-6 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-3">
+          <button onClick={() => setActiveMenu("dashboard")} className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
               eK
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">easyK</span>
-          </Link>
+          </button>
         </div>
 
         {/* User Profile Card */}
