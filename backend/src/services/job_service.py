@@ -238,8 +238,8 @@ def create_job(
             detail="Admin or Agency access required"
         )
 
-    # required_languages를 JSON 문자열로 변환
-    required_languages_json = json.dumps(job_data.required_languages) if job_data.required_languages else "[]"
+    # required_languages를 PostgreSQL 배열 또는 None으로 변환
+    required_languages_value = job_data.required_languages if job_data.required_languages else None
 
     # 일자리 생성
     new_job = Job(
@@ -256,7 +256,7 @@ def create_job(
         requirements=job_data.requirements,
         preferred_qualifications=job_data.preferred_qualifications,
         benefits=job_data.benefits,
-        required_languages=required_languages_json,
+        required_languages=required_languages_value,
         status=job_data.status or "active",
         deadline=job_data.deadline,
     )
@@ -324,9 +324,11 @@ def update_job(
     # 수정할 필드만 업데이트
     update_data = job_data.model_dump(exclude_unset=True)
 
-    # required_languages를 JSON 문자열로 변환
-    if "required_languages" in update_data and update_data["required_languages"] is not None:
-        update_data["required_languages"] = json.dumps(update_data["required_languages"])
+    # required_languages는 이미 리스트이므로 변환 불필요 (PostgreSQL ARRAY 타입)
+    # 빈 리스트일 경우 None으로 변환
+    if "required_languages" in update_data:
+        if not update_data["required_languages"]:
+            update_data["required_languages"] = None
 
     for field, value in update_data.items():
         setattr(job, field, value)
