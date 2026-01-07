@@ -768,7 +768,7 @@ export default function ConsultantDashboardPage() {
                       filteredNewRequests.slice(0, 3).map((consultation) => (
                         <div
                           key={consultation.id}
-                          onClick={() => router.push(`/consultations/${consultation.id}`)}
+                          onClick={() => router.push(`/consultant/consultations/${consultation.id}`)}
                           className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col sm:flex-row sm:items-center gap-5 transition-transform hover:scale-[1.01] cursor-pointer"
                         >
                           <div className="flex-shrink-0 relative">
@@ -873,7 +873,7 @@ export default function ConsultantDashboardPage() {
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                   <button
-                                    onClick={() => router.push(`/consultations/${consultation.id}`)}
+                                    onClick={() => router.push(`/consultant/consultations/${consultation.id}`)}
                                     className="text-primary hover:text-primary/80 font-medium text-xs"
                                   >
                                     {language === 'ko' ? '상세보기' : 'View'}
@@ -1070,7 +1070,7 @@ export default function ConsultantDashboardPage() {
                   {newRequests.map((consultation) => (
                     <div
                       key={consultation.id}
-                      onClick={() => router.push(`/consultations/${consultation.id}`)}
+                      onClick={() => router.push(`/consultant/consultations/${consultation.id}`)}
                       className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                     >
                       <div className="flex flex-col lg:flex-row lg:items-start gap-5">
@@ -1335,7 +1335,7 @@ export default function ConsultantDashboardPage() {
                           </td>
                           <td className="px-6 py-4 text-right">
                             <button
-                              onClick={() => router.push(`/consultations/${consultation.id}`)}
+                              onClick={() => router.push(`/consultant/consultations/${consultation.id}`)}
                               className="text-primary hover:text-primary/80 font-medium text-xs"
                             >
                               {language === 'ko' ? '상세보기' : 'View'}

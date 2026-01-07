@@ -50,12 +50,21 @@
       "Bash(git rm:*)",
       "Bash(tail:*)",
       "Bash(venvScriptsalembic revision -m \"create_saved_jobs_table\")",
+      "Bash(Select-String -Pattern \"error|compiled\")",
+      "Bash(Select-Object -First 20)",
+      "Bash(cmd.exe /c \"taskkill /F /PID 16892\")",
+      "Bash(venvScriptspython --version)",
+      "Bash(python3:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\" -m venv venv)",
+      "Bash(venvScriptspip install -r requirements.txt)",
+      "Bash(cmd.exe /c \"taskkill /F /PID 39524\")",
+      "Bash(Select-Object -First 50)",
+      "Bash(Select-Object -First 100)",
+      "Bash(cd:*)",
+      "Bash(find . -name \"page.tsx\" -exec echo \"=== {} ===\" ; -exec head -50 {} ;)",
       "Bash(git pull:*)",
-      "Bash(git stash:*)",
-      "Bash(git stash pop:*)",
-      "Bash(venv/Scripts/pip install:*)",
-      "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(git stash:*)"
     ]
   }
 }
