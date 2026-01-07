@@ -1,13 +1,13 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import DesignHeader from "@/components/ui/DesignHeader";
 import DesignFooter from "@/components/ui/DesignFooter";
 
-function PaymentSuccessContent() {
+function PaymentSuccessContent({ consultationId }: { consultationId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { language } = useLanguage();
@@ -185,6 +185,13 @@ function PaymentSuccessContent() {
             {/* Action Buttons */}
             <div className="px-6 md:px-10 pb-10 flex flex-col gap-3">
               <Link
+                href={`/consultations/${consultationId}/chat`}
+                className="w-full h-12 flex items-center justify-center rounded-lg bg-green-600 hover:bg-green-700 text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-sm gap-2"
+              >
+                <span className="material-symbols-outlined text-[20px]">chat</span>
+                {language === "ko" ? "상담 시작하기" : "Start Consultation"}
+              </Link>
+              <Link
                 href="/consultations/my"
                 className="w-full h-12 flex items-center justify-center rounded-lg bg-primary hover:bg-[#164a85] text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-sm gap-2"
               >
@@ -228,9 +235,12 @@ function LoadingFallback() {
 }
 
 export default function PaymentSuccessPage() {
+  const params = useParams();
+  const consultationId = params.id as string;
+
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <PaymentSuccessContent />
+      <PaymentSuccessContent consultationId={consultationId} />
     </Suspense>
   );
 }

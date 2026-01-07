@@ -133,8 +133,8 @@ export default function ConsultantConsultationDetailPage() {
     try {
       // 샘플 ID인 경우 UI만 업데이트
       if (consultation.id.startsWith('sample-')) {
-        alert(language === 'ko' ? '상담 요청을 수락했습니다. 의뢰인과 채팅방이 개설되었습니다.' : 'Consultation accepted. Chat room has been created.');
-        router.push('/consultant/dashboard');
+        alert(language === 'ko' ? '상담 요청을 수락했습니다. 채팅방으로 이동합니다.' : 'Consultation accepted. Moving to chat room.');
+        router.push(`/consultant/consultations/${consultation.id}/chat`);
         return;
       }
 
@@ -149,7 +149,7 @@ export default function ConsultantConsultationDetailPage() {
 
       if (response.ok) {
         alert(language === 'ko' ? '상담 요청을 수락했습니다.' : 'Consultation accepted.');
-        router.push('/consultant/dashboard');
+        router.push(`/consultant/consultations/${consultation.id}/chat`);
       } else {
         const errorData = await response.json();
         alert(errorData.message || (language === 'ko' ? '상담 수락에 실패했습니다.' : 'Failed to accept consultation.'));
@@ -491,32 +491,56 @@ export default function ConsultantConsultationDetailPage() {
 
             {/* Action Panel */}
             <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800 sticky top-24">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
-                {language === 'ko' ? '검토 결정' : 'Review Decision'}
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-                {language === 'ko'
-                  ? '이 사건을 수임하시겠습니까? 수락 시 의뢰인과 채팅방이 개설됩니다.'
-                  : 'Would you like to accept this case? A chat room will be created upon acceptance.'}
-              </p>
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={handleAccept}
-                  className="flex w-full items-center justify-center rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all"
-                >
-                  {language === 'ko' ? '상담 수락' : 'Accept Consultation'}
-                </button>
-                <button
-                  onClick={() => setShowRejectModal(true)}
-                  className="flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:border-slate-600 dark:bg-transparent dark:text-slate-200 dark:hover:bg-slate-700 transition-all"
-                >
-                  {language === 'ko' ? '상담 거절' : 'Reject Consultation'}
-                </button>
-                <button className="mt-2 flex w-full items-center justify-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
-                  <span className="material-symbols-outlined text-[18px]">schedule</span>
-                  {language === 'ko' ? '나중에 다시 검토 (보류)' : 'Review Later (Hold)'}
-                </button>
-              </div>
+              {(consultation.status === 'scheduled' || consultation.status === 'in_progress') ? (
+                <>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
+                    {language === 'ko' ? '상담 진행' : 'Consultation in Progress'}
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                    {language === 'ko'
+                      ? '상담이 진행 중입니다. 채팅방에서 의뢰인과 소통하세요.'
+                      : 'Consultation is in progress. Communicate with the client in the chat room.'}
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <Link
+                      href={`/consultant/consultations/${consultation.id}/chat`}
+                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[20px]">chat</span>
+                      {language === 'ko' ? '채팅방 입장' : 'Enter Chat Room'}
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
+                    {language === 'ko' ? '검토 결정' : 'Review Decision'}
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                    {language === 'ko'
+                      ? '이 사건을 수임하시겠습니까? 수락 시 의뢰인과 채팅방이 개설됩니다.'
+                      : 'Would you like to accept this case? A chat room will be created upon acceptance.'}
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={handleAccept}
+                      className="flex w-full items-center justify-center rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all"
+                    >
+                      {language === 'ko' ? '상담 수락' : 'Accept Consultation'}
+                    </button>
+                    <button
+                      onClick={() => setShowRejectModal(true)}
+                      className="flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:border-slate-600 dark:bg-transparent dark:text-slate-200 dark:hover:bg-slate-700 transition-all"
+                    >
+                      {language === 'ko' ? '상담 거절' : 'Reject Consultation'}
+                    </button>
+                    <button className="mt-2 flex w-full items-center justify-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                      <span className="material-symbols-outlined text-[18px]">schedule</span>
+                      {language === 'ko' ? '나중에 다시 검토 (보류)' : 'Review Later (Hold)'}
+                    </button>
+                  </div>
+                </>
+              )}
             </section>
           </div>
         </div>

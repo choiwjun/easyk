@@ -524,15 +524,47 @@ export default function ConsultationDetailPage() {
                   <span className="material-symbols-outlined text-primary">chat</span>
                   <h3 className="text-lg font-bold">{language === "ko" ? "상담 메시지" : "Messages"}</h3>
                 </div>
+                {(consultation.status === "matched" || consultation.status === "scheduled" || consultation.status === "in_progress") && consultation.consultant_name && (
+                  <Link
+                    href={`/consultations/${consultation.id}/chat`}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-lg transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">chat</span>
+                    {language === "ko" ? "채팅방 입장" : "Enter Chat"}
+                  </Link>
+                )}
               </div>
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <span className="material-symbols-outlined text-gray-300 text-5xl mb-4">chat_bubble_outline</span>
-                <p className="text-text-sub text-sm">
-                  {language === "ko"
-                    ? "아직 메시지가 없습니다. 변호사 배정 후 메시지를 주고받을 수 있습니다."
-                    : "No messages yet. You can exchange messages after lawyer assignment."}
-                </p>
-              </div>
+              {(consultation.status === "matched" || consultation.status === "scheduled" || consultation.status === "in_progress") && consultation.consultant_name ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="size-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
+                    <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-3xl">chat</span>
+                  </div>
+                  <p className="text-text-main font-bold mb-2">
+                    {language === "ko" ? "채팅방이 개설되었습니다!" : "Chat room is ready!"}
+                  </p>
+                  <p className="text-text-sub text-sm mb-4">
+                    {language === "ko"
+                      ? "담당 변호사와 실시간으로 상담을 진행할 수 있습니다."
+                      : "You can now chat with your assigned lawyer in real-time."}
+                  </p>
+                  <Link
+                    href={`/consultations/${consultation.id}/chat`}
+                    className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors"
+                  >
+                    <span className="material-symbols-outlined">chat</span>
+                    {language === "ko" ? "상담 시작하기" : "Start Consultation"}
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <span className="material-symbols-outlined text-gray-300 text-5xl mb-4">chat_bubble_outline</span>
+                  <p className="text-text-sub text-sm">
+                    {language === "ko"
+                      ? "아직 메시지가 없습니다. 변호사 배정 후 메시지를 주고받을 수 있습니다."
+                      : "No messages yet. You can exchange messages after lawyer assignment."}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
