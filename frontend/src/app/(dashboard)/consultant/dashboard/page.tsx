@@ -209,6 +209,9 @@ export default function ConsultantDashboardPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [profileBio, setProfileBio] = useState('');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // Handle tab parameter from URL
   useEffect(() => {
@@ -343,6 +346,66 @@ export default function ConsultantDashboardPage() {
     } catch {
       alert(language === 'ko' ? '네트워크 오류가 발생했습니다' : 'Network error occurred');
     }
+  };
+
+  // Profile handlers
+  const handleSaveProfile = async () => {
+    setIsSavingProfile(true);
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        alert(language === 'ko' ? '로그인이 필요합니다.' : 'Please login first.');
+        return;
+      }
+
+      const response = await fetch('/api/users/me', {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bio: profileBio,
+          is_available: isAvailable,
+        }),
+      });
+
+      if (response.ok) {
+        alert(language === 'ko' ? '프로필이 저장되었습니다.' : 'Profile saved successfully.');
+        fetchUserProfile();
+      } else {
+        alert(language === 'ko' ? '프로필 저장에 실패했습니다.' : 'Failed to save profile.');
+      }
+    } catch {
+      alert(language === 'ko' ? '네트워크 오류가 발생했습니다.' : 'Network error occurred.');
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleCancelProfile = () => {
+    setProfileBio(userProfile?.bio || '');
+    setActiveMenu('dashboard');
+  };
+
+  // Calendar navigation handlers
+  const handlePrevMonth = () => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
+
+  const handleToday = () => {
+    setCurrentMonth(new Date());
+  };
+
+  const getMonthName = () => {
+    return currentMonth.toLocaleDateString(language === 'ko' ? 'ko-KR' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+    });
   };
 
   const formatDate = (dateString: string) => {
@@ -1178,21 +1241,30 @@ export default function ConsultantDashboardPage() {
             <section className="flex flex-col gap-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                  <button
+                    onClick={handlePrevMonth}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
                     <span className="material-symbols-outlined">chevron_left</span>
                   </button>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                    {new Date().toLocaleDateString(language === 'ko' ? 'ko-KR' : 'en-US', {
+                    {currentMonth.toLocaleDateString(language === 'ko' ? 'ko-KR' : 'en-US', {
                       year: 'numeric',
                       month: 'long',
                     })}
                   </h3>
-                  <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                  <button
+                    onClick={handleNextMonth}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
                     <span className="material-symbols-outlined">chevron_right</span>
                   </button>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/10 transition-colors">
+                  <button
+                    onClick={handleToday}
+                    className="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/10 transition-colors"
+                  >
                     {language === 'ko' ? '오늘' : 'Today'}
                   </button>
                 </div>
@@ -1721,17 +1793,27 @@ export default function ConsultantDashboardPage() {
                       rows={4}
                       placeholder={language === 'ko' ? '자기소개를 입력하세요...' : 'Enter your bio...'}
                       className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-primary focus:border-primary"
-                      defaultValue={userProfile?.bio || ''}
+                      value={profileBio}
+                      onChange={(e) => setProfileBio(e.target.value)}
                     />
                   </div>
 
                   {/* Save Button */}
                   <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <button className="px-6 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <button
+                      onClick={handleCancelProfile}
+                      className="px-6 py-2.5 rounded-lg border border-gray-200 dark:border-gray-600 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
                       {language === 'ko' ? '취소' : 'Cancel'}
                     </button>
-                    <button className="px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors">
-                      {language === 'ko' ? '저장' : 'Save Changes'}
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={isSavingProfile}
+                      className="px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSavingProfile
+                        ? (language === 'ko' ? '저장 중...' : 'Saving...')
+                        : (language === 'ko' ? '저장' : 'Save Changes')}
                     </button>
                   </div>
                 </div>

@@ -161,6 +161,42 @@ export default function ConsultantConsultationDetailPage() {
     }
   };
 
+  // Print handler
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Share handler
+  const handleShare = async () => {
+    const shareData = {
+      title: language === 'ko' ? '상담 요청 공유' : 'Consultation Request',
+      text: consultation ? `${language === 'ko' ? '상담 요청' : 'Consultation'}: ${consultation.title || consultation.consultation_type}` : '',
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        alert(language === 'ko' ? '링크가 클립보드에 복사되었습니다.' : 'Link copied to clipboard.');
+      }
+    } catch {
+      // User cancelled or error
+    }
+  };
+
+  // Notification handler
+  const handleNotifications = () => {
+    router.push('/consultant/dashboard?tab=requests');
+  };
+
+  // Settings handler
+  const handleSettings = () => {
+    router.push('/consultant/dashboard?tab=profile');
+  };
+
   const handleReject = async () => {
     if (!consultation) return;
 
@@ -282,11 +318,19 @@ export default function ConsultantConsultationDetailPage() {
             </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <button className="relative rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+            <button
+              onClick={handleNotifications}
+              className="relative rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+              title={language === 'ko' ? '알림' : 'Notifications'}
+            >
               <span className="material-symbols-outlined">notifications</span>
               <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500"></span>
             </button>
-            <button className="rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800">
+            <button
+              onClick={handleSettings}
+              className="rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+              title={language === 'ko' ? '설정' : 'Settings'}
+            >
               <span className="material-symbols-outlined">settings</span>
             </button>
             <div className="h-9 w-9 overflow-hidden rounded-full border border-slate-200 dark:border-slate-700 bg-primary/20 flex items-center justify-center text-primary font-bold">
@@ -329,11 +373,17 @@ export default function ConsultantConsultationDetailPage() {
             </p>
           </div>
           <div className="flex gap-3 mt-4 sm:mt-0">
-            <button className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+            <button
+              onClick={handlePrint}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            >
               <span className="material-symbols-outlined text-[20px]">print</span>
               {language === 'ko' ? '인쇄' : 'Print'}
             </button>
-            <button className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+            <button
+              onClick={handleShare}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            >
               <span className="material-symbols-outlined text-[20px]">share</span>
               {language === 'ko' ? '공유' : 'Share'}
             </button>
@@ -553,13 +603,13 @@ export default function ConsultantConsultationDetailPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500 dark:text-slate-400">© 2024 easyK. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link href="#" className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            <Link href="/terms" className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
               {language === 'ko' ? '이용약관' : 'Terms'}
             </Link>
-            <Link href="#" className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            <Link href="/privacy" className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
               {language === 'ko' ? '개인정보처리방침' : 'Privacy'}
             </Link>
-            <Link href="#" className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            <Link href="/support" className="text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
               {language === 'ko' ? '고객센터' : 'Support'}
             </Link>
           </div>
