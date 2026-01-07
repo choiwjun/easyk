@@ -185,6 +185,13 @@ export default function AgencyDashboard() {
   const [userName, setUserName] = useState("김지자 관리자");
   const [userDept, setUserDept] = useState("서울시 외국인지원팀");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageForm, setMessageForm] = useState({
+    subject: "",
+    content: "",
+  });
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
 
   const [jobForm, setJobForm] = useState({
     position: "",
@@ -470,6 +477,56 @@ export default function AgencyDashboard() {
       setError(language === "ko" ? "네트워크 오류가 발생했습니다." : "Network error occurred.");
     } finally {
       setIsUpdatingApplicant(false);
+    }
+  };
+
+  const handleOpenMessageModal = () => {
+    if (selectedApplicant) {
+      setMessageForm({
+        subject: language === "ko"
+          ? `[${selectedApplicant.job_title || "채용공고"}] 지원 관련 안내`
+          : `[${selectedApplicant.job_title || "Job Posting"}] Application Update`,
+        content: "",
+      });
+      setMessageSent(false);
+      setShowMessageModal(true);
+    }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedApplicant) return;
+
+    setIsSendingMessage(true);
+    try {
+      // Simulate API call for sending message
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // In real implementation, this would call the API
+      // const token = authStorage.getToken();
+      // const response = await fetch('/api/messages', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      //   body: JSON.stringify({
+      //     recipient_id: selectedApplicant.user_id,
+      //     subject: messageForm.subject,
+      //     content: messageForm.content,
+      //   }),
+      // });
+
+      setMessageSent(true);
+      setTimeout(() => {
+        setShowMessageModal(false);
+        setMessageForm({ subject: "", content: "" });
+        setMessageSent(false);
+      }, 2000);
+    } catch {
+      setError(language === "ko" ? "메시지 발송에 실패했습니다." : "Failed to send message.");
+    } finally {
+      setIsSendingMessage(false);
     }
   };
 
@@ -2727,7 +2784,10 @@ Example:
                             )}
                             {language === "ko" ? "거절" : "Reject"}
                           </button>
-                          <button className="col-span-2 flex items-center justify-center gap-2 h-10 bg-white dark:bg-transparent border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-bold transition-colors shadow-sm">
+                          <button
+                            onClick={handleOpenMessageModal}
+                            className="col-span-2 flex items-center justify-center gap-2 h-10 bg-white dark:bg-transparent border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-bold transition-colors shadow-sm"
+                          >
                             <span className="material-symbols-outlined text-[18px]">mail</span>
                             {language === "ko" ? "메시지 발송" : "Send Message"}
                           </button>
@@ -2907,6 +2967,183 @@ Example:
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Message Modal */}
+      {showMessageModal && selectedApplicant && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+          <div className="bg-white dark:bg-[#201a2d] rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-primary to-blue-600 p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <span className="material-symbols-outlined text-white">mail</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">
+                      {language === "ko" ? "메시지 발송" : "Send Message"}
+                    </h3>
+                    <p className="text-sm text-white/80">
+                      {language === "ko" ? "지원자에게 메시지를 보냅니다" : "Send a message to the applicant"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowMessageModal(false);
+                    setMessageForm({ subject: "", content: "" });
+                  }}
+                  className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+                >
+                  <span className="material-symbols-outlined text-white text-[20px]">close</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Recipient Info */}
+            <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                  {selectedApplicant.first_name.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-white">
+                    {selectedApplicant.first_name} {selectedApplicant.last_name}
+                  </p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{selectedApplicant.email}</p>
+                </div>
+              </div>
+            </div>
+
+            {messageSent ? (
+              /* Success State */
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-[32px]">check_circle</span>
+                </div>
+                <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                  {language === "ko" ? "메시지가 발송되었습니다!" : "Message Sent!"}
+                </h4>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  {language === "ko"
+                    ? `${selectedApplicant.first_name}님에게 메시지가 성공적으로 전달되었습니다.`
+                    : `Your message has been successfully sent to ${selectedApplicant.first_name}.`
+                  }
+                </p>
+              </div>
+            ) : (
+              /* Message Form */
+              <form onSubmit={handleSendMessage} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    {language === "ko" ? "제목" : "Subject"}
+                  </label>
+                  <input
+                    type="text"
+                    value={messageForm.subject}
+                    onChange={(e) => setMessageForm({ ...messageForm, subject: e.target.value })}
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder={language === "ko" ? "메시지 제목을 입력하세요" : "Enter message subject"}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    {language === "ko" ? "내용" : "Content"}
+                  </label>
+                  <textarea
+                    value={messageForm.content}
+                    onChange={(e) => setMessageForm({ ...messageForm, content: e.target.value })}
+                    rows={6}
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                    placeholder={language === "ko"
+                      ? "지원자에게 전달할 메시지를 입력하세요...\n\n예시:\n안녕하세요, 지원해 주셔서 감사합니다.\n서류 검토 후 면접 일정을 안내드리겠습니다."
+                      : "Enter your message to the applicant...\n\nExample:\nHello, thank you for your application.\nWe will contact you regarding the interview schedule after reviewing your documents."
+                    }
+                    required
+                  />
+                </div>
+
+                {/* Quick Templates */}
+                <div>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
+                    {language === "ko" ? "빠른 템플릿" : "Quick Templates"}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMessageForm({
+                        ...messageForm,
+                        content: language === "ko"
+                          ? "안녕하세요, 지원해 주셔서 감사합니다.\n서류 검토 후 면접 일정을 별도로 안내드리겠습니다.\n감사합니다."
+                          : "Hello, thank you for your application.\nWe will contact you separately regarding the interview schedule after reviewing your documents.\nThank you."
+                      })}
+                      className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      {language === "ko" ? "면접 안내" : "Interview Notice"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMessageForm({
+                        ...messageForm,
+                        content: language === "ko"
+                          ? "안녕하세요, 추가 서류가 필요하여 연락드립니다.\n아래 서류를 준비해서 제출해 주시기 바랍니다.\n- \n감사합니다."
+                          : "Hello, we are contacting you because additional documents are required.\nPlease prepare and submit the following documents:\n- \nThank you."
+                      })}
+                      className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      {language === "ko" ? "서류 요청" : "Document Request"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMessageForm({
+                        ...messageForm,
+                        content: language === "ko"
+                          ? "안녕하세요, 궁금한 점이 있어 연락드립니다.\n지원서에 기재하신 내용 중 확인이 필요한 부분이 있습니다.\n\n회신 부탁드립니다.\n감사합니다."
+                          : "Hello, we are contacting you with some questions.\nWe need to verify some information in your application.\n\nPlease respond at your earliest convenience.\nThank you."
+                      })}
+                      className="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      {language === "ko" ? "확인 요청" : "Confirmation Request"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowMessageModal(false);
+                      setMessageForm({ subject: "", content: "" });
+                    }}
+                    className="flex-1 px-4 py-3 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    {language === "ko" ? "취소" : "Cancel"}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSendingMessage || !messageForm.content.trim()}
+                    className="flex-1 px-4 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isSendingMessage ? (
+                      <>
+                        <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                        {language === "ko" ? "발송 중..." : "Sending..."}
+                      </>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined text-[18px]">send</span>
+                        {language === "ko" ? "발송하기" : "Send"}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
