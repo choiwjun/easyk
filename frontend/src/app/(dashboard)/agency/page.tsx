@@ -279,6 +279,8 @@ export default function AgencyDashboard() {
 
     try {
       const token = localStorage.getItem("access_token");
+      // Exclude job_type and work_hours as they are not in the backend schema
+      const { job_type, work_hours, ...jobData } = jobForm;
       const response = await fetch("/api/jobs", {
         method: "POST",
         headers: {
@@ -286,7 +288,7 @@ export default function AgencyDashboard() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...jobForm,
+          ...jobData,
           deadline: jobForm.deadline || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         }),
       });
@@ -323,13 +325,15 @@ export default function AgencyDashboard() {
 
     try {
       const token = localStorage.getItem("access_token");
+      // Exclude job_type and work_hours as they are not in the backend schema
+      const { job_type, work_hours, ...jobData } = jobForm;
       const response = await fetch(`/api/jobs/${editingJob.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(jobForm),
+        body: JSON.stringify(jobData),
       });
 
       if (response.ok) {
