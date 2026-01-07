@@ -273,20 +273,19 @@ export default function Home() {
                   {t('home.cta.description')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button
+                  <button
                     onClick={() => router.push('/signup')}
-                    className="h-12 px-8 rounded-xl bg-white hover:bg-gray-100 text-primary font-bold text-[15px] shadow-lg transition-all hover:-translate-y-0.5 active:scale-95"
+                    className="h-12 px-8 rounded-xl bg-white hover:bg-gray-100 text-primary font-bold text-[15px] shadow-lg transition-all hover:-translate-y-0.5 active:scale-95 inline-flex items-center justify-center gap-2"
                   >
                     {t('home.cta.signup')}
-                    <span className="material-symbols-outlined text-[18px] ml-1">person_add</span>
-                  </Button>
-                  <Button
+                    <span className="material-symbols-outlined text-[18px]">person_add</span>
+                  </button>
+                  <button
                     onClick={() => router.push('/login')}
-                    variant="secondary"
-                    className="h-12 px-8 rounded-xl bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-[15px] transition-all"
+                    className="h-12 px-8 rounded-xl bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-[15px] transition-all inline-flex items-center justify-center"
                   >
                     {t('home.cta.login')}
-                  </Button>
+                  </button>
                 </div>
               </div>
             </section>
