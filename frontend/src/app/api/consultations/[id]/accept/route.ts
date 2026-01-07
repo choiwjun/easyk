@@ -43,6 +43,7 @@ export async function POST(
         'Forbidden': '접근 권한이 없습니다',
         'Consultation not found': '상담을 찾을 수 없습니다',
         'Only consultants can accept consultations': '전문가만 상담을 수락할 수 있습니다',
+        'Already accepted': '이미 수락된 상담입니다',
       };
 
       const message = errorMessages[data.detail] || data.message || '상담 수락 실패';
