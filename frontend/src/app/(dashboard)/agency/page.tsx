@@ -51,6 +51,32 @@ interface Support {
   created_at: string;
 }
 
+interface Member {
+  id: number;
+  name: string;
+  email: string;
+  type: "foreign" | "consultant" | "company";
+  nationality: string;
+  visa: string;
+  joined: string;
+  status: "active" | "pending" | "inactive";
+  phone?: string;
+  address?: string;
+  registrationNumber?: string;
+}
+
+// Sample members data
+const SAMPLE_MEMBERS: Member[] = [
+  { id: 1, name: "Nguyen Van A", email: "nguyen.a@email.com", type: "foreign", nationality: "베트남", visa: "E-9", joined: "2024-10-15", status: "active", phone: "010-1234-5678", address: "서울시 구로구 디지털로 123" },
+  { id: 2, name: "김변호사", email: "lawyer.kim@email.com", type: "consultant", nationality: "한국", visa: "-", joined: "2024-09-20", status: "active", phone: "02-555-1234", address: "서울시 강남구 테헤란로 456", registrationNumber: "법무사 제12345호" },
+  { id: 3, name: "Zhang Wei", email: "zhang.wei@email.com", type: "foreign", nationality: "중국", visa: "D-2", joined: "2024-11-01", status: "pending", phone: "010-9876-5432", address: "서울시 관악구 봉천로 789" },
+  { id: 4, name: "(주)미래테크", email: "hr@miraetech.com", type: "company", nationality: "-", visa: "-", joined: "2024-08-10", status: "active", phone: "031-123-4567", address: "경기도 화성시 동탄산단로 101", registrationNumber: "사업자 123-45-67890" },
+  { id: 5, name: "Elena Petrova", email: "elena.p@email.com", type: "foreign", nationality: "러시아", visa: "F-6", joined: "2024-10-28", status: "active", phone: "010-2222-3333", address: "서울시 용산구 이태원로 234" },
+  { id: 6, name: "박전문가", email: "expert.park@email.com", type: "consultant", nationality: "한국", visa: "-", joined: "2024-07-15", status: "inactive", phone: "02-777-8888", address: "서울시 서초구 서초대로 567", registrationNumber: "노무사 제67890호" },
+  { id: 7, name: "Michael Singh", email: "michael.s@email.com", type: "foreign", nationality: "인도", visa: "E-7", joined: "2024-11-10", status: "active", phone: "010-4444-5555", address: "서울시 마포구 상암동 890" },
+  { id: 8, name: "CJ대한통운", email: "recruit@cjlogistics.com", type: "company", nationality: "-", visa: "-", joined: "2024-06-01", status: "active", phone: "1588-1234", address: "서울시 중구 통일로 100", registrationNumber: "사업자 987-65-43210" },
+];
+
 const EMPLOYMENT_TYPES: Record<string, { ko: string; en: string }> = {
   "full-time": { ko: "정규직", en: "Full-time" },
   "part-time": { ko: "파트타임", en: "Part-time" },
@@ -192,6 +218,9 @@ export default function AgencyDashboard() {
   });
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [members, setMembers] = useState<Member[]>(SAMPLE_MEMBERS);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [showMemberModal, setShowMemberModal] = useState(false);
 
   const [jobForm, setJobForm] = useState({
     position: "",
@@ -528,6 +557,16 @@ export default function AgencyDashboard() {
     } finally {
       setIsSendingMessage(false);
     }
+  };
+
+  const handleViewMember = (member: Member) => {
+    setSelectedMember(member);
+    setShowMemberModal(true);
+  };
+
+  const handleCloseMemberModal = () => {
+    setShowMemberModal(false);
+    setSelectedMember(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -2118,13 +2157,7 @@ Example:
                 <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                   {/* Mobile Card View */}
                   <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
-                    {[
-                      { id: 1, name: "Nguyen Van A", email: "nguyen.a@email.com", type: "foreign", nationality: "베트남", visa: "E-9", joined: "2024-10-15", status: "active" },
-                      { id: 2, name: "김변호사", email: "lawyer.kim@email.com", type: "consultant", nationality: "한국", visa: "-", joined: "2024-09-20", status: "active" },
-                      { id: 3, name: "Zhang Wei", email: "zhang.wei@email.com", type: "foreign", nationality: "중국", visa: "D-2", joined: "2024-11-01", status: "pending" },
-                      { id: 4, name: "(주)미래테크", email: "hr@miraetech.com", type: "company", nationality: "-", visa: "-", joined: "2024-08-10", status: "active" },
-                      { id: 5, name: "Elena Petrova", email: "elena.p@email.com", type: "foreign", nationality: "러시아", visa: "F-6", joined: "2024-10-28", status: "active" },
-                    ].map((member) => (
+                    {members.slice(0, 5).map((member) => (
                       <div key={member.id} className="p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -2165,7 +2198,10 @@ Example:
                         <div className="mt-3 flex items-center justify-between">
                           <span className="text-xs text-slate-400">{member.joined}</span>
                           <div className="flex items-center gap-1">
-                            <button className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors">
+                            <button
+                              onClick={() => handleViewMember(member)}
+                              className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
+                            >
                               <span className="material-symbols-outlined text-[16px]">visibility</span>
                             </button>
                             <button className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors">
@@ -2194,16 +2230,7 @@ Example:
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                        {[
-                          { id: 1, name: "Nguyen Van A", email: "nguyen.a@email.com", type: "foreign", nationality: "베트남", visa: "E-9", joined: "2024-10-15", status: "active" },
-                          { id: 2, name: "김변호사", email: "lawyer.kim@email.com", type: "consultant", nationality: "한국", visa: "-", joined: "2024-09-20", status: "active" },
-                          { id: 3, name: "Zhang Wei", email: "zhang.wei@email.com", type: "foreign", nationality: "중국", visa: "D-2", joined: "2024-11-01", status: "pending" },
-                          { id: 4, name: "(주)미래테크", email: "hr@miraetech.com", type: "company", nationality: "-", visa: "-", joined: "2024-08-10", status: "active" },
-                          { id: 5, name: "Elena Petrova", email: "elena.p@email.com", type: "foreign", nationality: "러시아", visa: "F-6", joined: "2024-10-28", status: "active" },
-                          { id: 6, name: "박전문가", email: "expert.park@email.com", type: "consultant", nationality: "한국", visa: "-", joined: "2024-07-15", status: "inactive" },
-                          { id: 7, name: "Michael Singh", email: "michael.s@email.com", type: "foreign", nationality: "인도", visa: "E-7", joined: "2024-11-10", status: "active" },
-                          { id: 8, name: "CJ대한통운", email: "recruit@cjlogistics.com", type: "company", nationality: "-", visa: "-", joined: "2024-06-01", status: "active" },
-                        ].map((member) => (
+                        {members.map((member) => (
                           <tr key={member.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
@@ -2248,7 +2275,11 @@ Example:
                             </td>
                             <td className="px-6 py-4 text-center">
                               <div className="flex items-center justify-center gap-1">
-                                <button className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors" title={language === "ko" ? "상세보기" : "View"}>
+                                <button
+                                  onClick={() => handleViewMember(member)}
+                                  className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
+                                  title={language === "ko" ? "상세보기" : "View"}
+                                >
                                   <span className="material-symbols-outlined text-[18px]">visibility</span>
                                 </button>
                                 <button className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors" title={language === "ko" ? "수정" : "Edit"}>
@@ -3253,6 +3284,224 @@ Example:
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Member Detail Modal */}
+      {showMemberModal && selectedMember && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+          <div className="bg-white dark:bg-[#201a2d] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Modal Header */}
+            <div className={`p-6 ${
+              selectedMember.type === "foreign" ? "bg-gradient-to-r from-blue-500 to-blue-600" :
+              selectedMember.type === "consultant" ? "bg-gradient-to-r from-teal-500 to-teal-600" :
+              "bg-gradient-to-r from-purple-500 to-purple-600"
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                    {selectedMember.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">{selectedMember.name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs text-white">
+                        {selectedMember.type === "foreign" ? (language === "ko" ? "외국인 주민" : "Foreign Resident") :
+                         selectedMember.type === "consultant" ? (language === "ko" ? "전문 상담사" : "Consultant") :
+                         (language === "ko" ? "협력 기업" : "Partner Company")}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs ${
+                        selectedMember.status === "active" ? "bg-green-400/20 text-green-100" :
+                        selectedMember.status === "pending" ? "bg-yellow-400/20 text-yellow-100" :
+                        "bg-gray-400/20 text-gray-100"
+                      }`}>
+                        {selectedMember.status === "active" ? (language === "ko" ? "활성" : "Active") :
+                         selectedMember.status === "pending" ? (language === "ko" ? "대기" : "Pending") :
+                         (language === "ko" ? "비활성" : "Inactive")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={handleCloseMemberModal}
+                  className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+                >
+                  <span className="material-symbols-outlined text-white">close</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Basic Info Section */}
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5">
+                <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">person</span>
+                  {language === "ko" ? "기본 정보" : "Basic Information"}
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "이메일" : "Email"}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedMember.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "전화번호" : "Phone"}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedMember.phone || "-"}</p>
+                  </div>
+                  {selectedMember.type === "foreign" && (
+                    <>
+                      <div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "국적" : "Nationality"}</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedMember.nationality}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "비자 유형" : "Visa Type"}</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedMember.visa}</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedMember.registrationNumber && (
+                    <div className="md:col-span-2">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {selectedMember.type === "consultant" ? (language === "ko" ? "자격 번호" : "Registration Number") : (language === "ko" ? "사업자 번호" : "Business Number")}
+                      </p>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedMember.registrationNumber}</p>
+                    </div>
+                  )}
+                  <div className="md:col-span-2">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "주소" : "Address"}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedMember.address || "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "가입일" : "Joined Date"}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedMember.joined}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Activity Summary Section */}
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5">
+                <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">analytics</span>
+                  {language === "ko" ? "활동 요약" : "Activity Summary"}
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {selectedMember.type === "foreign" && (
+                    <>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-blue-600">3</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "상담 신청" : "Consultations"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-green-600">5</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "지원 내역" : "Applications"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-purple-600">12</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "방문 횟수" : "Visits"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-orange-600">2</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "혜택 신청" : "Benefits"}</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedMember.type === "consultant" && (
+                    <>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-teal-600">47</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "상담 완료" : "Consultations"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-yellow-600">4.8</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "평균 평점" : "Avg Rating"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-green-600">96%</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "응답률" : "Response Rate"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-blue-600">15h</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "평균 응답" : "Avg Response"}</p>
+                      </div>
+                    </>
+                  )}
+                  {selectedMember.type === "company" && (
+                    <>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-purple-600">12</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "공고 등록" : "Job Posts"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-blue-600">156</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "지원 접수" : "Applications"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-green-600">23</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "채용 완료" : "Hired"}</p>
+                      </div>
+                      <div className="bg-white dark:bg-slate-700 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-orange-600">4</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "진행중" : "Active"}</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Recent Activity Section */}
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5">
+                <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">history</span>
+                  {language === "ko" ? "최근 활동" : "Recent Activity"}
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-3 bg-white dark:bg-slate-700 rounded-lg">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-blue-600 text-[16px]">login</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">{language === "ko" ? "로그인" : "Login"}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "오늘 오전 10:30" : "Today 10:30 AM"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-white dark:bg-slate-700 rounded-lg">
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-green-600 text-[16px]">check_circle</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">{language === "ko" ? "프로필 업데이트" : "Profile Updated"}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{language === "ko" ? "어제 오후 3:45" : "Yesterday 3:45 PM"}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  onClick={handleCloseMemberModal}
+                  className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                >
+                  {language === "ko" ? "닫기" : "Close"}
+                </button>
+                <button
+                  className="flex-1 px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">mail</span>
+                  {language === "ko" ? "메시지 보내기" : "Send Message"}
+                </button>
+                <button
+                  className="flex-1 px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                  {language === "ko" ? "정보 수정" : "Edit Info"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
