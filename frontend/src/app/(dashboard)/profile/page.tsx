@@ -7,6 +7,7 @@ import { Input, Button } from "@/components/ui";
 import { useLanguage } from "@/contexts/LanguageContext";
 import DesignHeader from "@/components/ui/DesignHeader";
 import DesignFooter from "@/components/ui/DesignFooter";
+import authStorage from "@/utils/authStorage";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function ProfilePage() {
 
   // Check authentication
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
+    const token = authStorage.getToken();
     if (!token) {
       router.push('/login');
       return;
@@ -39,7 +40,7 @@ export default function ProfilePage() {
   }, []);
 
   const loadProfile = async () => {
-    const token = localStorage.getItem('access_token');
+    const token = authStorage.getToken();
     setLoading(true);
     try {
       const response = await fetch("/api/users/me", {
@@ -70,7 +71,7 @@ export default function ProfilePage() {
     setErrors({});
     setLoading(true);
 
-    const token = localStorage.getItem('access_token');
+    const token = authStorage.getToken();
     try {
       const response = await fetch("/api/users/me", {
         method: "PUT",

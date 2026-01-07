@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useConsultantGuard } from '@/hooks/useRoleGuard';
+import authStorage from '@/utils/authStorage';
 
 interface Consultation {
   id: string;
@@ -104,7 +105,7 @@ export default function ConsultantConsultationDetailPage() {
         return;
       }
 
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
       if (!token) {
         setConsultation({ ...SAMPLE_CONSULTATION, id: consultationId });
         setIsLoading(false);
@@ -140,7 +141,7 @@ export default function ConsultantConsultationDetailPage() {
         return;
       }
 
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
       const response = await fetch(`/api/consultations/${consultation.id}/accept`, {
         method: 'POST',
         headers: {
@@ -209,7 +210,7 @@ export default function ConsultantConsultationDetailPage() {
         return;
       }
 
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
       const response = await fetch(`/api/consultations/${consultation.id}/reject`, {
         method: 'POST',
         headers: {

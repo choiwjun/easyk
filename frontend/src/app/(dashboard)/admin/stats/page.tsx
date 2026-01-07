@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRoleGuard } from '@/hooks/useRoleGuard';
+import authStorage from '@/utils/authStorage';
 
 interface DashboardStats {
   users: {
@@ -46,7 +47,7 @@ export default function AdminStatsPage() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
 
       if (!token) {
         router.push('/login');

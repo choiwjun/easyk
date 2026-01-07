@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import authStorage from '@/utils/authStorage';
 
 interface User {
   id: string;
@@ -39,14 +40,13 @@ export function useAuth(): UseAuthReturn {
     isAuthenticated: false,
   });
 
-  // Initialize auth state from localStorage
+  // Initialize auth state from sessionStorage
   useEffect(() => {
     try {
-      const token = localStorage.getItem('access_token');
-      const userStr = localStorage.getItem('user');
+      const token = authStorage.getToken();
+      const user = authStorage.getUser<User>();
 
-      if (token && userStr) {
-        const user = JSON.parse(userStr);
+      if (token && user) {
         setAuthState({
           user,
           token,
@@ -74,8 +74,7 @@ export function useAuth(): UseAuthReturn {
 
   // Login function
   const login = useCallback((token: string, user: User) => {
-    localStorage.setItem('access_token', token);
-    localStorage.setItem('user', JSON.stringify(user));
+    authStorage.login(token, user);
     setAuthState({
       user,
       token,
@@ -84,10 +83,9 @@ export function useAuth(): UseAuthReturn {
     });
   }, []);
 
-  // Logout function
+  // Logout function - 모든 인증 데이터 초기화
   const logout = useCallback(() => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
+    authStorage.clearAll(); // 완전 초기화
     setAuthState({
       user: null,
       token: null,
@@ -206,8 +204,7 @@ export function useAuthFetch() {
 
       // Handle 401 Unauthorized
       if (response.status === 401) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
+        authStorage.clearAll();
         window.location.href = '/login';
         throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
       }

@@ -7,6 +7,7 @@ import Input from "@/components/ui/Input";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Link from "next/link";
+import authStorage from "@/utils/authStorage";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -70,12 +71,9 @@ export default function LoginPage() {
         return;
       }
 
-      // Store token and user info in localStorage
-      if (data.access_token) {
-        localStorage.setItem('access_token', data.access_token);
-      }
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
+      // Store token and user info in sessionStorage (브라우저 닫으면 자동 로그아웃)
+      if (data.access_token && data.user) {
+        authStorage.login(data.access_token, data.user);
       }
 
       // Role-based redirect according to UserFlow

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import authStorage from '@/utils/authStorage';
 
 /**
  * Role-based route protection hook
@@ -24,32 +25,36 @@ export function useRoleGuard(allowedRoles: string[], redirectTo?: string): boole
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        const userStr = localStorage.getItem('user');
+        const token = authStorage.getToken();
+        let user = authStorage.getUser<{ role: string }>();
 
         if (!token) {
           router.push('/login');
           return;
         }
 
-        // First check localStorage for faster response
-        let user = userStr ? JSON.parse(userStr) : null;
-
-        // Verify with API if no user in localStorage
+        // Verify with API if no user in sessionStorage
         if (!user) {
           const response = await fetch('/api/users/me', {
             headers: { Authorization: `Bearer ${token}` },
           });
 
           if (!response.ok) {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('user');
+            authStorage.clearAll();
             router.push('/login');
             return;
           }
 
-          user = await response.json();
-          localStorage.setItem('user', JSON.stringify(user));
+          const userData = await response.json();
+          if (userData) {
+            user = userData;
+            authStorage.setUser(userData);
+          }
+        }
+
+        if (!user) {
+          router.push('/login');
+          return;
         }
 
         if (!allowedRoles.includes(user.role)) {

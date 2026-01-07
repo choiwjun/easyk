@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useConsultantGuard } from '@/hooks/useRoleGuard';
+import authStorage from '@/utils/authStorage';
 
 interface Consultation {
   id: string;
@@ -228,7 +229,7 @@ export default function ConsultantDashboardPage() {
 
   const fetchUserProfile = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
       if (!token) return;
 
       const response = await fetch('/api/users/me', {
@@ -246,7 +247,7 @@ export default function ConsultantDashboardPage() {
 
   const fetchConsultations = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
 
       if (!token) {
         // 토큰이 없어도 샘플 데이터 표시
@@ -293,7 +294,7 @@ export default function ConsultantDashboardPage() {
         return;
       }
 
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
       const response = await fetch(`/api/consultations/${consultationId}/accept`, {
         method: 'POST',
         headers: {
@@ -327,7 +328,7 @@ export default function ConsultantDashboardPage() {
         return;
       }
 
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
       const response = await fetch(`/api/consultations/${consultationId}/reject`, {
         method: 'POST',
         headers: {
@@ -352,7 +353,7 @@ export default function ConsultantDashboardPage() {
   const handleSaveProfile = async () => {
     setIsSavingProfile(true);
     try {
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
       if (!token) {
         alert(language === 'ko' ? '로그인이 필요합니다.' : 'Please login first.');
         return;

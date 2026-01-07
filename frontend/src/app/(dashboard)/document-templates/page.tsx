@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import authStorage from '@/utils/authStorage';
 
 interface DocumentTemplate {
   id: string;
@@ -44,7 +45,7 @@ export default function DocumentTemplatesPage() {
 
   const fetchTemplates = async (category?: string) => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = authStorage.getToken();
 
       if (!token) {
         router.push('/login');
