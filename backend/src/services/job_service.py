@@ -262,8 +262,18 @@ def create_job(
     )
 
     db.add(new_job)
-    db.commit()
-    db.refresh(new_job)
+    try:
+        db.commit()
+        db.refresh(new_job)
+    except Exception as e:
+        db.rollback()
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to create job: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create job: {str(e)}"
+        )
 
     return new_job
 
