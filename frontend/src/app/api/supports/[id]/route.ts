@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SAMPLE_SUPPORTS } from '@/lib/sampleData';
 
-const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'https://easyk-production.up.railway.app';
 
 export async function GET(
   request: NextRequest,

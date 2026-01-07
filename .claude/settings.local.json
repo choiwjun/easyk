@@ -66,7 +66,16 @@
       "Bash(git pull:*)",
       "Bash(git stash:*)",
       "Bash(find:*)",
-      "Bash(layout \")"
+      "Bash(layout \")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\User\\\\Downloads\\\\easyk\\\\frontend''; npm run build\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\User\\\\Downloads\\\\easyk''; git diff --stat\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\User\\\\Downloads\\\\easyk''; git log --oneline -3\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\User\\\\Downloads\\\\easyk''; git add ''frontend/src/app/\\(dashboard\\)/agency/page.tsx''; git commit -m ''feat: add job posting preview modal and enhance form design\n\n- Redesign job creation form with design.html styling\n- Add 3 sections: Basic Info, Detailed Conditions, Job Details\n- Add job_type \\(직종\\) field with 8 categories\n- Implement preview modal before publishing \\(UserFlow requirement\\)\n- Add draft save button functionality\n- Form now follows JobForm -> Preview -> Publish flow\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>''\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\User\\\\Downloads\\\\easyk''; git push origin main\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\User\\\\Downloads\\\\easyk''; git status\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\User\\\\Downloads\\\\easyk''; git diff --stat ''frontend/src/app/\\(dashboard\\)/agency/page.tsx''\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\User\\\\Downloads\\\\easyk''; git add ''frontend/src/app/\\(dashboard\\)/agency/page.tsx''; git commit -m ''feat: enhance agency job form with design.html styling\n\n- Add job preview modal with design.html layout \\(D-day tags, info grid\\)\n- Add job publish success modal with summary card\n- Add work_hours field to job form\n- Add job status toggle \\(active/closed\\) for editing\n- Update form actions: Preview for new, Save Changes for edit\n- Apply responsive button layout \\(mobile-first\\)\n- Section icons: domain, work, description\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>''\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: redesign applicant detail modal with 2-column layout\n\n- Add full-screen modal with design.html styling\n- Implement 2-column grid: profile sidebar + documents content\n- Add profile card with gradient header and status badge\n- Add basic info card \\(email, phone, visa, nationality, TOPIK level\\)\n- Add applied job info card with company details\n- Add resume section with preview/download buttons and document simulation\n- Add cover letter section with motivation and work plan\n- Add action buttons: hire, reject, send message\n- Support dark mode and Korean/English languages\n- Extend Applicant interface with phone, topik_level, job_title, company_name\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

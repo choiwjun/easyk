@@ -3,494 +3,297 @@
 <html class="light" lang="ko"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>easyK 지자체 관리자 대시보드</title>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<title>easyK - 지원자 상세 조회</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;family=Noto+Sans+KR:wght@300;400;500;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            // Using the requested primary color #1E5BA0 from the prompt description as the primary action color,
-            // but respecting the "primary" key for Tailwind logic. 
-            // I will use a custom color mapping to satisfy the specific "blue" request while keeping the structure.
-            "primary": "#1E5BA0", 
-            "secondary": "#5a1e9f", // Keeping the original theme primary as secondary if needed
-            "background-light": "#f7f6f8",
-            "background-dark": "#191220",
-          },
-          fontFamily: {
-            "display": ["Public Sans", "Noto Sans KR", "sans-serif"],
-            "body": ["Public Sans", "Noto Sans KR", "sans-serif"],
-          },
-          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-        },
-      },
-    }
-  </script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e5a9f",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#121920",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "Noto Sans KR", "sans-serif"],
+                        "sans": ["Public Sans", "Noto Sans KR", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
 <style>
-    body {
-      font-family: 'Public Sans', 'Noto Sans KR', sans-serif;
-    }
-    .material-symbols-outlined {
-      font-variation-settings:
-      'FILL' 0,
-      'wght' 400,
-      'GRAD' 0,
-      'opsz' 24
-    }
-    /* Custom scrollbar for webkit */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #CBD5E1;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94A3B8;
-    }
-  </style>
+        body {
+            font-family: 'Public Sans', 'Noto Sans KR', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex overflow-hidden">
-<!-- Sidebar -->
-<aside class="w-64 bg-white dark:bg-[#201a2d] border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen fixed left-0 top-0 z-20 transition-all duration-300">
-<div class="p-6 flex items-center gap-3">
-<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
-        eK
-      </div>
-<span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">easyK</span>
-</div>
-<div class="px-4 pb-4">
-<div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center gap-3 border border-slate-100 dark:border-slate-700">
-<div class="bg-cover bg-center rounded-full w-10 h-10 border-2 border-white dark:border-slate-600 shadow-sm" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD2F452nXFQGbx_UvNe63av3OqwNjCZC0r0krDNidbDdKjm718JUFyiHKA6xlOwQFgyxYwStG-voij5TcQap7QDxAV6OMndrMAMm-nGbeEI6cjlusQ2405RT81JyIzceGxZWZR1nONf1PMqG1QFO_oPHjpl20xEJtGbfJalfaVsI0PTfhhgsJtV-rS7aOSfED-8lK0KkyvZB9AeZQbmH50523M8fenbel5TucELMCapV7FC5jdyd9Fb6uKsYxDSM-OL1JF1cqqXTLuF");'></div>
-<div class="flex flex-col overflow-hidden">
-<span class="text-sm font-bold text-slate-900 dark:text-white truncate">김지자 관리자</span>
-<span class="text-xs text-slate-500 dark:text-slate-400 truncate">서울시 외국인지원팀</span>
-</div>
-</div>
-</div>
-<nav class="flex-1 overflow-y-auto px-4 space-y-1">
-<p class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-2">메인</p>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium transition-colors" href="#">
-<span class="material-symbols-outlined">dashboard</span>
-<span>대시보드</span>
-</a>
-<p class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider mt-4">관리</p>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors group" href="#">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">work_outline</span>
-<span>일자리 관리</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors group" href="#">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">people_outline</span>
-<span>지원자 목록</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors group" href="#">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">bar_chart</span>
-<span>통계 대시보드</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors group" href="#">
-<span class="material-symbols-outlined group-hover:text-primary transition-colors">manage_accounts</span>
-<span>회원 관리</span>
-</a>
-</nav>
-<div class="p-4 border-t border-slate-200 dark:border-slate-800">
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
-<span class="material-symbols-outlined">settings</span>
-<span>설정</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
-<span class="material-symbols-outlined">logout</span>
-<span>로그아웃</span>
-</a>
-</div>
-</aside>
-<!-- Main Content -->
-<main class="flex-1 ml-64 flex flex-col h-screen overflow-hidden bg-background-light dark:bg-background-dark">
-<!-- Top Header -->
-<header class="h-16 bg-white dark:bg-[#201a2d] border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 sticky top-0 z-10 shrink-0">
-<!-- Breadcrumbs -->
-<nav class="flex items-center text-sm font-medium text-slate-500">
-<a class="hover:text-primary transition-colors" href="#">홈</a>
-<span class="mx-2 text-slate-300">/</span>
-<span class="text-slate-900 dark:text-white">대시보드</span>
-</nav>
-<!-- Right Actions -->
+<body class="bg-background-light dark:bg-background-dark text-[#121417] min-h-screen flex flex-col font-display">
+<!-- Top Navbar -->
+<header class="bg-white border-b border-[#f0f2f4] px-4 md:px-10 py-3 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
 <div class="flex items-center gap-4">
-<button class="relative p-2 text-slate-500 hover:text-primary transition-colors rounded-full hover:bg-slate-50 dark:hover:bg-slate-800">
+<div class="flex items-center gap-2 text-primary cursor-pointer">
+<span class="material-symbols-outlined text-3xl">diversity_3</span>
+<h2 class="text-[#121417] text-xl font-bold tracking-tight">easyK</h2>
+</div>
+</div>
+<nav class="hidden md:flex flex-1 justify-center gap-8">
+<a class="text-[#657486] hover:text-primary text-sm font-medium transition-colors" href="#">홈</a>
+<a class="text-[#657486] hover:text-primary text-sm font-medium transition-colors" href="#">공고 관리</a>
+<a class="text-primary text-sm font-bold transition-colors" href="#">지원자 관리</a>
+<a class="text-[#657486] hover:text-primary text-sm font-medium transition-colors" href="#">통계</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 text-[#657486] hover:bg-gray-100 rounded-full">
 <span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#201a2d]"></span>
 </button>
-<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm shadow-blue-500/30 text-sm font-medium">
-<span class="material-symbols-outlined text-[20px]">add</span>
-<span>새 공고 등록</span>
-</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 cursor-pointer border border-gray-200" data-alt="User profile picture placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA1SGbHXBSkzxw2qYEGPdlu0hscMLGoEL4maTp3XQRvMp51XGXAoWBNwR6UNAjlCkZ3wkKSQ33qO7bivII5iHa88cXeiYdF4J4bc5owmkPf1UbqAzX0fpCqp0YBRrrXJ_Jf8GtFBavijkznPswN1BLoi83DCD81Y_iSpzv2Rk9ZkibHT4S5SGgFhhw4BWhzVIox0_2iEjWENBZMWRTTuo82fvHvIbVoC7huBMWj7VxDtwPdpGIC2zpQaoJDgFoZ6wO-6-X2qNIuXudU");'>
+</div>
+</div>
 </div>
 </header>
-<!-- Scrollable Content Area -->
-<div class="flex-1 overflow-y-auto p-8">
-<div class="max-w-[1280px] mx-auto flex flex-col gap-8">
-<!-- Welcome Section -->
-<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-<div>
-<h1 class="text-2xl font-bold text-slate-900 dark:text-white">안녕하세요, 김지자 관리자님 👋</h1>
-<p class="text-slate-500 dark:text-slate-400 mt-1">오늘의 외국인 정착 지원 현황을 확인하세요.</p>
+<!-- Main Content -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-10 py-8">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 mb-6 text-sm">
+<a class="text-[#657486] hover:text-primary" href="#">홈</a>
+<span class="text-[#657486] material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="text-[#657486] hover:text-primary" href="#">지원자 관리</a>
+<span class="text-[#657486] material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="font-medium text-primary">김철수 상세 정보</span>
 </div>
-<div class="flex gap-3">
-<button class="px-4 py-2 bg-white dark:bg-[#251e33] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
-<span class="material-symbols-outlined text-[18px]">download</span>
-              보고서 다운로드
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h1 class="text-2xl md:text-3xl font-black text-[#121417] mb-2 tracking-tight">지원자 상세 조회</h1>
+<p class="text-[#657486] text-sm md:text-base">지원자 ID: #2023-4821 | 신청일: 2023.10.25</p>
+</div>
+<button class="flex items-center justify-center gap-2 h-10 px-4 bg-white border border-[#dce0e5] text-[#121417] rounded-lg text-sm font-bold hover:bg-gray-50 transition-colors shadow-sm w-fit">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                목록으로 돌아가기
             </button>
-<button class="px-4 py-2 bg-white dark:bg-[#251e33] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
-<span class="material-symbols-outlined text-[18px]">calendar_month</span>
-              기간 설정
-            </button>
 </div>
+<!-- Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Sidebar (Profile & Basic Info) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Profile Card -->
+<div class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] overflow-hidden">
+<div class="h-24 bg-gradient-to-r from-primary/10 to-primary/30 relative"></div>
+<div class="px-6 pb-6 relative">
+<div class="flex justify-between items-end -mt-10 mb-4">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-24 border-4 border-white shadow-md" data-alt="Applicant profile photo of a young asian man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBihn2oAmjrWydzr_7pNNt_MVtD3oLlfYcvdbf3wiLqnShZ0idBTSeRf23hTSxiZRAmWaefEE5SZrJ_y6IgbjrxllhC97jSRVlRUbFRsBKHv-yPid2-ZV_mCziRMD7-cUPzlkVZo2SKycLDhLiVaH8oPkAq27vsTQhRHirBN6MaPOI5Pv4qaEwa09JBUldgZ76Z_YbsA7SGYHu6p2KW3B2_-g0pQvH80OJpzQRZjAMyOotKY_VikS47Tciu08KN9m66Glf0_mBc6vCo");'>
 </div>
-<!-- KPI Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-<!-- Card 1 -->
-<div class="bg-white dark:bg-[#201a2d] p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-<div class="flex justify-between items-start mb-4">
-<div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg text-primary">
-<span class="material-symbols-outlined">campaign</span>
+<span class="px-3 py-1 bg-blue-50 text-primary text-xs font-bold rounded-full border border-blue-100 uppercase tracking-wide">
+                                서류 검토중
+                            </span>
 </div>
-<span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded-full">+12%</span>
+<h3 class="text-xl font-bold text-[#121417] mb-1">김철수 (Kim Chul-soo)</h3>
+<div class="flex items-center gap-2 text-[#657486] text-sm mb-4">
+<span class="material-symbols-outlined text-[18px]">public</span>
+<span>베트남 (Vietnam)</span>
+<span class="w-1 h-1 rounded-full bg-gray-300"></span>
+<span>F-5 (영주권)</span>
 </div>
-<p class="text-slate-500 text-sm font-medium">진행 중인 공고</p>
-<h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">24건</h3>
-</div>
-<!-- Card 2 -->
-<div class="bg-white dark:bg-[#201a2d] p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-<div class="flex justify-between items-start mb-4">
-<div class="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg text-purple-600">
-<span class="material-symbols-outlined">group_add</span>
-</div>
-<span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded-full">+8%</span>
-</div>
-<p class="text-slate-500 text-sm font-medium">이번 주 신규 지원자</p>
-<h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">156명</h3>
-</div>
-<!-- Card 3 -->
-<div class="bg-white dark:bg-[#201a2d] p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-<div class="flex justify-between items-start mb-4">
-<div class="bg-orange-50 dark:bg-orange-900/20 p-3 rounded-lg text-orange-600">
-<span class="material-symbols-outlined">handshake</span>
-</div>
-<span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded-full">0%</span>
-</div>
-<p class="text-slate-500 text-sm font-medium">매칭 성공률</p>
-<h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">78.5%</h3>
-</div>
-<!-- Card 4 -->
-<div class="bg-white dark:bg-[#201a2d] p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-<div class="flex justify-between items-start mb-4">
-<div class="bg-teal-50 dark:bg-teal-900/20 p-3 rounded-lg text-teal-600">
-<span class="material-symbols-outlined">verified</span>
-</div>
-<span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded-full">+4%</span>
-</div>
-<p class="text-slate-500 text-sm font-medium">정착 성공</p>
-<h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-1">892명</h3>
-</div>
-</div>
-<!-- Main Dashboard Layout -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-<!-- Left Column (Job & Stats) -->
-<div class="lg:col-span-2 flex flex-col gap-8">
-<!-- Statistics Chart Section -->
-<div class="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-<div class="flex items-center justify-between mb-6">
-<div>
-<h2 class="text-lg font-bold text-slate-900 dark:text-white">월별 지원 및 채용 추이</h2>
-<p class="text-sm text-slate-500 dark:text-slate-400">최근 6개월간의 일자리 매칭 현황입니다.</p>
-</div>
-<button class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-<span class="material-symbols-outlined">more_vert</span>
-</button>
-</div>
-<!-- Placeholder for Chart -->
-<div class="w-full h-64 bg-slate-50 dark:bg-slate-800 rounded-lg flex items-end justify-between px-6 pb-4 pt-10 gap-4 relative overflow-hidden">
-<!-- Grid lines visual only -->
-<div class="absolute inset-0 pointer-events-none border-b border-slate-200 dark:border-slate-700 top-1/4"></div>
-<div class="absolute inset-0 pointer-events-none border-b border-slate-200 dark:border-slate-700 top-2/4"></div>
-<div class="absolute inset-0 pointer-events-none border-b border-slate-200 dark:border-slate-700 top-3/4"></div>
-<!-- Bars -->
-<div class="w-full flex items-end justify-between h-full z-10">
-<div class="w-8 bg-blue-200 dark:bg-blue-900/40 rounded-t-sm h-[40%] relative group">
-<div class="absolute bottom-0 w-full bg-primary rounded-t-sm h-[60%]"></div>
-<div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded transition-opacity">1월</div>
-</div>
-<div class="w-8 bg-blue-200 dark:bg-blue-900/40 rounded-t-sm h-[55%] relative group">
-<div class="absolute bottom-0 w-full bg-primary rounded-t-sm h-[50%]"></div>
-<div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded transition-opacity">2월</div>
-</div>
-<div class="w-8 bg-blue-200 dark:bg-blue-900/40 rounded-t-sm h-[45%] relative group">
-<div class="absolute bottom-0 w-full bg-primary rounded-t-sm h-[70%]"></div>
-<div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded transition-opacity">3월</div>
-</div>
-<div class="w-8 bg-blue-200 dark:bg-blue-900/40 rounded-t-sm h-[70%] relative group">
-<div class="absolute bottom-0 w-full bg-primary rounded-t-sm h-[55%]"></div>
-<div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded transition-opacity">4월</div>
-</div>
-<div class="w-8 bg-blue-200 dark:bg-blue-900/40 rounded-t-sm h-[60%] relative group">
-<div class="absolute bottom-0 w-full bg-primary rounded-t-sm h-[65%]"></div>
-<div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded transition-opacity">5월</div>
-</div>
-<div class="w-8 bg-blue-200 dark:bg-blue-900/40 rounded-t-sm h-[85%] relative group">
-<div class="absolute bottom-0 w-full bg-primary rounded-t-sm h-[75%]"></div>
-<div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded transition-opacity">6월</div>
+<div class="grid grid-cols-2 gap-2 mt-4">
+<button class="flex flex-1 items-center justify-center gap-2 h-10 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-bold transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">check</span>
+                                채용
+                            </button>
+<button class="flex flex-1 items-center justify-center gap-2 h-10 bg-white border border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-sm font-bold transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">close</span>
+                                거절
+                            </button>
+<button class="col-span-2 flex items-center justify-center gap-2 h-10 bg-white border border-[#dce0e5] text-[#121417] hover:bg-gray-50 rounded-lg text-sm font-bold transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+                                메시지 발송
+                            </button>
 </div>
 </div>
 </div>
-<div class="flex items-center justify-center gap-6 mt-4 text-sm">
+<!-- Basic Info Card -->
+<div class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] p-6">
+<h4 class="text-base font-bold text-[#121417] mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">person</span>
+                        지원자 기본 정보
+                    </h4>
+<div class="space-y-4">
+<div class="flex flex-col border-b border-gray-100 pb-3">
+<span class="text-xs text-[#657486] font-medium mb-1">이메일</span>
+<span class="text-sm text-[#121417] font-medium">chulsoo.kim@example.com</span>
+</div>
+<div class="flex flex-col border-b border-gray-100 pb-3">
+<span class="text-xs text-[#657486] font-medium mb-1">연락처</span>
+<span class="text-sm text-[#121417] font-medium">010-1234-5678</span>
+</div>
+<div class="flex flex-col border-b border-gray-100 pb-3">
+<span class="text-xs text-[#657486] font-medium mb-1">생년월일</span>
+<span class="text-sm text-[#121417] font-medium">1990.05.15 (만 33세)</span>
+</div>
+<div class="flex flex-col border-b border-gray-100 pb-3">
+<span class="text-xs text-[#657486] font-medium mb-1">거주지</span>
+<span class="text-sm text-[#121417] font-medium">서울시 영등포구 여의대로 123</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-[#657486] font-medium mb-1">한국어 능력</span>
 <div class="flex items-center gap-2">
-<span class="w-3 h-3 rounded-full bg-blue-200 dark:bg-blue-900/40"></span>
-<span class="text-slate-600 dark:text-slate-400">전체 지원자</span>
+<span class="text-sm text-[#121417] font-medium">TOPIK 6급</span>
+<span class="material-symbols-outlined text-green-500 text-[16px]" title="인증됨">verified</span>
 </div>
+</div>
+</div>
+</div>
+<!-- Applied Job Card -->
+<div class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] p-6">
+<h4 class="text-base font-bold text-[#121417] mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">work</span>
+                        지원한 공고 정보
+                    </h4>
+<div class="flex flex-col gap-3">
+<div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+<p class="text-xs text-[#657486] mb-1">공고명</p>
+<p class="text-sm font-bold text-[#121417] mb-2 leading-snug">외국인 주민 지원 센터 행정 보조 (영어/베트남어)</p>
 <div class="flex items-center gap-2">
-<span class="w-3 h-3 rounded-full bg-primary"></span>
-<span class="text-slate-600 dark:text-slate-400">채용 완료</span>
+<div class="bg-white p-1 rounded border border-gray-200">
+<span class="material-symbols-outlined text-gray-400 text-[16px]">domain</span>
 </div>
-</div>
-</div>
-<!-- Job Management List -->
-<div class="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-<div class="flex items-center justify-between mb-6">
 <div>
-<h2 class="text-lg font-bold text-slate-900 dark:text-white">최근 등록 일자리</h2>
+<p class="text-xs font-medium text-[#121417]">서울시청 (Seoul City Hall)</p>
 </div>
-<a class="text-sm font-medium text-primary hover:text-blue-700 flex items-center gap-1" href="#">
-                  전체보기 <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+<a class="text-primary text-xs font-bold hover:underline flex items-center justify-end gap-1" href="#">
+                            공고 원문 보기 <span class="material-symbols-outlined text-[14px]">open_in_new</span>
 </a>
 </div>
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="border-b border-slate-100 dark:border-slate-800 text-slate-500 text-xs uppercase tracking-wider">
-<th class="pb-3 font-medium pl-2">공고명</th>
-<th class="pb-3 font-medium">기업명</th>
-<th class="pb-3 font-medium">지역</th>
-<th class="pb-3 font-medium">마감일</th>
-<th class="pb-3 font-medium text-center">상태</th>
-</tr>
-</thead>
-<tbody class="text-sm">
-<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-50 dark:border-slate-800/50">
-<td class="py-4 pl-2 font-medium text-slate-900 dark:text-white">외국인 상담 통역사 모집</td>
-<td class="py-4 text-slate-600 dark:text-slate-300">서울글로벌센터</td>
-<td class="py-4 text-slate-500">서울 종로구</td>
-<td class="py-4 text-slate-500">2023.11.30</td>
-<td class="py-4 text-center">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          모집중
-                        </span>
-</td>
-</tr>
-<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-50 dark:border-slate-800/50">
-<td class="py-4 pl-2 font-medium text-slate-900 dark:text-white">제조업 현장 생산직 (비자지원)</td>
-<td class="py-4 text-slate-600 dark:text-slate-300">(주)미래테크</td>
-<td class="py-4 text-slate-500">경기 화성시</td>
-<td class="py-4 text-slate-500">2023.12.15</td>
-<td class="py-4 text-center">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          검토중
-                        </span>
-</td>
-</tr>
-<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-<td class="py-4 pl-2 font-medium text-slate-900 dark:text-white">물류센터 관리 보조</td>
-<td class="py-4 text-slate-600 dark:text-slate-300">CJ대한통운</td>
-<td class="py-4 text-slate-500">인천 중구</td>
-<td class="py-4 text-slate-500">2023.11.20</td>
-<td class="py-4 text-center">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          마감
-                        </span>
-</td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
-</div>
-<!-- Right Column (Applicants & Transparency) -->
-<div class="flex flex-col gap-8">
-<!-- Transparency Widget -->
-<div class="bg-primary text-white rounded-xl shadow-lg p-6 relative overflow-hidden">
-<!-- Decorative Pattern -->
-<div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-<div class="absolute -left-10 -bottom-10 w-40 h-40 bg-black/10 rounded-full blur-xl"></div>
-<h2 class="text-lg font-bold relative z-10">데이터 투명성 리포트</h2>
-<p class="text-white/80 text-sm mt-1 mb-6 relative z-10">신원 인증 및 비자 검증 현황</p>
-<div class="flex items-center justify-center relative z-10 my-4">
-<div class="relative w-32 h-32">
-<svg class="w-full h-full transform -rotate-90">
-<circle class="text-white/20" cx="64" cy="64" fill="transparent" r="56" stroke="currentColor" stroke-width="12"></circle>
-<circle class="text-white" cx="64" cy="64" fill="transparent" r="56" stroke="currentColor" stroke-dasharray="351.86" stroke-dashoffset="35" stroke-width="12"></circle>
-</svg>
-<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-<span class="text-3xl font-bold">92%</span>
-<span class="text-xs text-white/80">검증 완료</span>
-</div>
-</div>
-</div>
-<div class="space-y-3 relative z-10 mt-4">
-<div class="flex justify-between text-sm">
-<span class="text-white/80">신원 인증</span>
-<span class="font-bold">1,240명</span>
-</div>
-<div class="w-full bg-black/20 rounded-full h-1.5">
-<div class="bg-white h-1.5 rounded-full" style="width: 95%"></div>
-</div>
-<div class="flex justify-between text-sm mt-2">
-<span class="text-white/80">비자 만료 임박</span>
-<span class="font-bold">45명</span>
-</div>
-<div class="w-full bg-black/20 rounded-full h-1.5">
-<div class="bg-yellow-400 h-1.5 rounded-full" style="width: 25%"></div>
-</div>
-</div>
-</div>
-<!-- Recent Applicants List -->
-<div class="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 flex-1">
-<div class="flex items-center justify-between mb-4">
-<h2 class="text-lg font-bold text-slate-900 dark:text-white">최근 지원자</h2>
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">refresh</span>
-</button>
-</div>
-<div class="space-y-4">
-<!-- Applicant Item -->
-<div class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-700 cursor-pointer group">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-cover bg-center" data-alt="Portrait of applicant Nguyen Van A" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMX3CA_BbeeS4qUeQ7mPQxo7uMT03blz9eanxzpDk1zSzh7imexgDRFfLYNhkJBEKxndsulu8m_AybP6KCuqfXBS-Tk9XRR_dbrvUoDQ3jo2gi78SHPn5JtraqBMaS5I6EUQ4UYQb9WCTT3Pa27reXu-BvWaCgtLpv_tv8eKZYHpFs7bCAsrKeQgjOy3khc92pq_E4ZuQe8UlKeLQxwOxscSKG7LBKRwmKTkkaBJLrsK2swEkVvsDw4AvvfeVA-R3U3rxwDcmoRHkr");'></div>
-<div>
-<h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Nguyen Van A</h4>
-<p class="text-xs text-slate-500">E-9 (비전문취업)</p>
-</div>
-</div>
-<div class="text-right">
-<span class="block text-xs font-semibold text-slate-900 dark:text-white">2시간 전</span>
-<span class="text-[10px] text-slate-400">제조업 지원</span>
-</div>
-</div>
-<!-- Applicant Item -->
-<div class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-700 cursor-pointer group">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-cover bg-center" data-alt="Portrait of applicant Elena Petrova" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC9r6OFLQ2mHAnPm0PnS-Zsc1ZyL_VeT95duuqej3boyEVUUIDKMGYgHE_S0MU_OW-T182MJ9w80xc6kLCMMnsSYWL0T982zAC1W-g0ueLZHLXPQPkSXQc6dncudjtRE7vJqLmK_qiQmGpk1gH00oHGsQcTHloabpk1f_hsqvPxLvvfKpo9XC1uuFgZ3GAv9702Ka3J-ymmxYfPZVDiT8jYmoOkR5rdRL_BBi6sakq1QmdDpNs9OHZuWIigBMXFgGVG1yqBn8QeUKV1");'></div>
-<div>
-<h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Elena Petrova</h4>
-<p class="text-xs text-slate-500">F-6 (결혼이민)</p>
-</div>
-</div>
-<div class="text-right">
-<span class="block text-xs font-semibold text-slate-900 dark:text-white">5시간 전</span>
-<span class="text-[10px] text-slate-400">통역 지원</span>
-</div>
-</div>
-<!-- Applicant Item -->
-<div class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-700 cursor-pointer group">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-cover bg-center" data-alt="Portrait of applicant Zhang Wei" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDnXlYTcYZlOXwC47eUrdDidQupnaKxcDGfYIeEW09MW-aKFCDd5IjfvCVr4SJ7a0BDWGUEhOMVOIqVrHIPylxi9CCF4V2ODeRejvbjt9z6-rNO51tGQov54FaulSTbxvGGf_7yYl6KyD4nWR00CbV2w_4xuczodB8mfwlaWxVA3ZUh3rsJW0_Mfas6nphtbVSDxpgmEsybS_Dh6izi7HJMZ2Zv6ijjSFB483DUiBuFQq-z30-EFisVoDBjHMEyjmAg2Q4dUcIqCuNl");'></div>
-<div>
-<h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Zhang Wei</h4>
-<p class="text-xs text-slate-500">D-2 (유학)</p>
-</div>
-</div>
-<div class="text-right">
-<span class="block text-xs font-semibold text-slate-900 dark:text-white">1일 전</span>
-<span class="text-[10px] text-slate-400">인턴 지원</span>
-</div>
-</div>
-<!-- Applicant Item -->
-<div class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-700 cursor-pointer group">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-cover bg-center" data-alt="Portrait of applicant Michael Singh" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDV8BcYKFcPaU4apvHFqwB1LNXTPakZ2URgNoiycSnDS-vA_SA7xpfaKAPq6UqT2duxae4jQpGByrX2eJfmGEW3qL0PFOdgIdei1HINJCweUThjgc3LNJqPlQ7wlEDDJ1GU8g7Tu1ziXgbeUMPh8CcYjiO6v_uAYUW7iruDwbCBuSVFgc_jBTNsrOVGblb5jLUIbsMLuR89oLKY4K1h_l1jYTEzcwMhoxhb0COL_pbLQA4II6TewSRt9BrFvh0wY84Or27r5tppuIe8");'></div>
-<div>
-<h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Michael Singh</h4>
-<p class="text-xs text-slate-500">E-7 (특정활동)</p>
-</div>
-</div>
-<div class="text-right">
-<span class="block text-xs font-semibold text-slate-900 dark:text-white">1일 전</span>
-<span class="text-[10px] text-slate-400">엔지니어 지원</span>
-</div>
-</div>
-</div>
-<button class="w-full mt-4 py-2 text-sm text-slate-500 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors border border-dashed border-slate-300 dark:border-slate-700">
-                더 보기
-              </button>
-</div>
-</div>
-</div>
-<!-- User Management Summary Section -->
-<div class="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-<div class="flex items-center justify-between mb-6">
-<div class="flex items-center gap-3">
-<h2 class="text-lg font-bold text-slate-900 dark:text-white">회원 현황 요약</h2>
-<span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400">Total: 12,402</span>
-</div>
+<!-- Right Main Content (Documents & Details) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Resume Section -->
+<div class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] overflow-hidden">
+<div class="p-6 border-b border-[#f0f2f4] flex flex-wrap justify-between items-center gap-4">
+<h4 class="text-lg font-bold text-[#121417] flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">description</span>
+                            이력서 (Resume)
+                        </h4>
 <div class="flex gap-2">
-<button class="p-2 text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">filter_list</span>
-</button>
-<button class="p-2 text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">download</span>
-</button>
+<button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#657486] bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition-colors">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                                미리보기
+                            </button>
+<button class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg border border-transparent transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                                다운로드
+                            </button>
 </div>
 </div>
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-<div class="p-4 rounded-lg bg-background-light dark:bg-background-dark border border-slate-200 dark:border-slate-800 flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-<span class="material-symbols-outlined">public</span>
-</div>
+<div class="p-6 bg-gray-50/50">
+<!-- Resume Layout Simulation -->
+<div class="max-w-3xl mx-auto bg-white shadow-sm border border-gray-200 p-8 min-h-[400px] rounded">
+<div class="flex justify-between border-b border-gray-100 pb-6 mb-6">
 <div>
-<p class="text-sm text-slate-500 dark:text-slate-400">외국인 주민</p>
-<p class="text-xl font-bold text-slate-900 dark:text-white">11,204</p>
+<h2 class="text-2xl font-bold mb-1">김 철 수</h2>
+<p class="text-gray-500 text-sm">Seoul National University | Business Administration</p>
+</div>
+<div class="text-right text-sm text-gray-500">
+<p>010-1234-5678</p>
+<p>chulsoo.kim@email.com</p>
 </div>
 </div>
-<div class="p-4 rounded-lg bg-background-light dark:bg-background-dark border border-slate-200 dark:border-slate-800 flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
-<span class="material-symbols-outlined">support_agent</span>
+<div class="mb-6">
+<h3 class="text-primary font-bold text-sm uppercase tracking-wider mb-3 border-b border-gray-100 pb-1">Education</h3>
+<div class="mb-3">
+<div class="flex justify-between mb-1">
+<p class="font-bold text-sm">서울대학교 (Seoul National University)</p>
+<p class="text-xs text-gray-500">2015.03 - 2019.02</p>
 </div>
-<div>
-<p class="text-sm text-slate-500 dark:text-slate-400">정착 전문가</p>
-<p class="text-xl font-bold text-slate-900 dark:text-white">356</p>
-</div>
-</div>
-<div class="p-4 rounded-lg bg-background-light dark:bg-background-dark border border-slate-200 dark:border-slate-800 flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
-<span class="material-symbols-outlined">business</span>
-</div>
-<div>
-<p class="text-sm text-slate-500 dark:text-slate-400">협력 기업</p>
-<p class="text-xl font-bold text-slate-900 dark:text-white">842</p>
+<p class="text-sm text-gray-600">경영학 학사 (Bachelor of Business Administration)</p>
 </div>
 </div>
-<div class="p-4 rounded-lg bg-background-light dark:bg-background-dark border border-slate-200 dark:border-slate-800 flex items-center gap-4">
-<div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
+<div class="mb-6">
+<h3 class="text-primary font-bold text-sm uppercase tracking-wider mb-3 border-b border-gray-100 pb-1">Experience</h3>
+<div class="mb-4">
+<div class="flex justify-between mb-1">
+<p class="font-bold text-sm">ABC Global Trading</p>
+<p class="text-xs text-gray-500">2019.05 - 2022.08</p>
+</div>
+<p class="text-sm font-medium text-gray-700 mb-1">해외 영업 매니저 (Overseas Sales Manager)</p>
+<ul class="list-disc list-inside text-sm text-gray-600 space-y-1 ml-1">
+<li>베트남 및 동남아 시장 신규 바이어 발굴</li>
+<li>연간 매출 목표 120% 달성 및 우수 사원 표창</li>
+<li>한국 본사와 현지 지사 간의 커뮤니케이션 담당</li>
+</ul>
+</div>
+</div>
+<div class="flex justify-center mt-8">
+<span class="text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded">2페이지 중 1페이지</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Cover Letter Section -->
+<div class="bg-white rounded-xl shadow-sm border border-[#e5e7eb] overflow-hidden">
+<div class="p-6 border-b border-[#f0f2f4]">
+<h4 class="text-lg font-bold text-[#121417] flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">edit_note</span>
+                            자기소개서 (Cover Letter)
+                        </h4>
+</div>
+<div class="p-6 md:p-8">
+<div class="prose prose-sm max-w-none text-[#121417]">
+<h5 class="font-bold text-base mb-2">지원 동기</h5>
+<p class="leading-relaxed mb-6 text-[#4a5568]">
+                                안녕하세요. 저는 한국에서 5년째 거주하며 한국 사회의 일원으로 살아가고 있는 김철수입니다. 
+                                서울대학교에서 경영학을 전공하며 한국의 기업 문화와 행정 시스템에 대해 깊이 있게 공부하였고, 
+                                졸업 후에는 무역 회사에서 근무하며 실무 경험을 쌓았습니다. 
+                                <br/><br/>
+                                제가 이번 외국인 주민 지원 센터의 행정 보조 직무에 지원하게 된 것은, 
+                                제가 한국에 정착하면서 겪었던 다양한 경험들을 바탕으로 다른 외국인 주민들에게 실질적인 도움을 주고 싶기 때문입니다. 
+                                특히 초기 정착 과정에서 겪는 언어 장벽과 행정 절차의 어려움을 누구보다 잘 이해하고 있습니다.
+                            </p>
+<h5 class="font-bold text-base mb-2">직무 수행 계획</h5>
+<p class="leading-relaxed text-[#4a5568]">
+                                저의 모국어인 베트남어와 유창한 한국어, 그리고 비즈니스 영어 능력을 활용하여 
+                                센터를 방문하는 외국인 주민들에게 정확하고 친절한 통번역 서비스를 제공하겠습니다.
+                                또한 꼼꼼한 성격과 엑셀 및 문서 작성 능력을 바탕으로 행정 업무를 효율적으로 처리하여 센터의 원활한 운영에 기여하겠습니다.
+                                감사합니다.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Rejection Reason Input (Visible only conceptually to show layout completeness) -->
+<div class="bg-red-50 rounded-xl border border-red-100 p-6 hidden">
+<h4 class="text-red-700 font-bold mb-2 flex items-center gap-2">
 <span class="material-symbols-outlined">warning</span>
+                       채용 거절 사유
+                   </h4>
+<textarea class="w-full border-red-200 rounded-lg p-3 text-sm focus:ring-red-500 focus:border-red-500" placeholder="거절 사유를 입력하세요 (선택 사항)" rows="3"></textarea>
+<div class="flex justify-end mt-3 gap-2">
+<button class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium">취소</button>
+<button class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold shadow-sm">거절 확정</button>
 </div>
-<div>
-<p class="text-sm text-slate-500 dark:text-slate-400">신고 접수</p>
-<p class="text-xl font-bold text-slate-900 dark:text-white">12</p>
 </div>
 </div>
-</div>
-</div>
-</div>
-<!-- Footer -->
-<footer class="mt-12 text-center text-xs text-slate-400 pb-4">
-<p>© 2024 easyK Platform. All rights reserved. | <a class="hover:text-slate-600 dark:hover:text-slate-200" href="#">개인정보처리방침</a> | <a class="hover:text-slate-600 dark:hover:text-slate-200" href="#">이용약관</a></p>
-</footer>
 </div>
 </main>
+<!-- Simple Footer -->
+<footer class="bg-white border-t border-[#f0f2f4] py-8 mt-auto">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<p class="text-[#657486] text-sm">© 2023 easyK. All rights reserved.</p>
+</div>
+</footer>
 </body></html>

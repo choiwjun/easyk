@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // 서버 사이드에서는 BACKEND_URL, 클라이언트에서는 NEXT_PUBLIC_BACKEND_URL 사용
-const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'https://easyk-production.up.railway.app';
 
 export async function GET(request: NextRequest) {
   try {
