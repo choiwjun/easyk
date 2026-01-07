@@ -263,25 +263,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* 통계 & 신뢰도 */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft text-center">
-                  <p className="text-3xl font-extrabold text-primary mb-1">15,000+</p>
-                  <p className="text-sm text-text-muted dark:text-gray-400">{t('home.trust.users')}</p>
-                </div>
-                <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft text-center">
-                  <p className="text-3xl font-extrabold text-green-600 mb-1">98%</p>
-                  <p className="text-sm text-text-muted dark:text-gray-400">{t('home.trust.satisfaction')}</p>
-                </div>
-                <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft text-center">
-                  <p className="text-3xl font-extrabold text-purple-600 mb-1">500+</p>
-                  <p className="text-sm text-text-muted dark:text-gray-400">{t('home.trust.experts')}</p>
-                </div>
-                <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-soft text-center">
-                  <p className="text-3xl font-extrabold text-orange-600 mb-1">24h</p>
-                  <p className="text-sm text-text-muted dark:text-gray-400">{t('home.trust.response')}</p>
-                </div>
-              </div>
 
               {/* 회원가입 유도 CTA */}
               <div className="bg-gradient-to-r from-primary to-[#16447a] rounded-3xl p-8 md:p-10 text-center text-white">
