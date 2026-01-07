@@ -850,7 +850,14 @@ export default function AgencyDashboard() {
                                 key={job.id}
                                 className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-50 dark:border-slate-800/50"
                               >
-                                <td className="py-4 pl-2 font-medium text-slate-900 dark:text-white">{job.position}</td>
+                                <td className="py-4 pl-2 font-medium">
+                                  <Link
+                                    href={`/jobs/${job.id}`}
+                                    className="text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors"
+                                  >
+                                    {job.position}
+                                  </Link>
+                                </td>
                                 <td className="py-4 text-slate-600 dark:text-slate-300">{job.company_name}</td>
                                 <td className="py-4 text-slate-500">{job.location}</td>
                                 <td className="py-4 text-slate-500">{formatDate(job.deadline)}</td>
@@ -1424,7 +1431,14 @@ Example:
                         <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                           {jobs.map((job) => (
                             <tr key={job.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                              <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{job.position}</td>
+                              <td className="px-6 py-4 font-medium">
+                                <Link
+                                  href={`/jobs/${job.id}`}
+                                  className="text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors"
+                                >
+                                  {job.position}
+                                </Link>
+                              </td>
                               <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{job.company_name}</td>
                               <td className="px-6 py-4 text-slate-500">{job.location}</td>
                               <td className="px-6 py-4 text-slate-500">{formatDate(job.deadline)}</td>
@@ -1738,7 +1752,14 @@ Example:
                       <tbody className="text-sm">
                         {jobs.slice(0, 5).map((job, i) => (
                           <tr key={job.id} className="border-b border-slate-50 dark:border-slate-800">
-                            <td className="py-3 font-medium text-slate-900 dark:text-white">{job.position}</td>
+                            <td className="py-3 font-medium">
+                              <Link
+                                href={`/jobs/${job.id}`}
+                                className="text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors"
+                              >
+                                {job.position}
+                              </Link>
+                            </td>
                             <td className="py-3 text-center text-slate-600 dark:text-slate-300">{Math.floor(Math.random() * 500) + 100}</td>
                             <td className="py-3 text-center text-slate-600 dark:text-slate-300">{job.applicant_count || Math.floor(Math.random() * 50) + 5}</td>
                             <td className="py-3 text-center text-green-600">{Math.floor(Math.random() * 10) + 1}</td>
