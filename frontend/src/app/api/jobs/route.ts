@@ -73,6 +73,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const url = `${BACKEND_URL}/api/jobs`;
 
+    console.log('[API Route] Jobs POST - Request body:', JSON.stringify(body, null, 2));
+    console.log('[API Route] Jobs POST - Backend URL:', url);
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -82,9 +85,31 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    const data = await response.json();
+    const responseText = await response.text();
+    console.log('[API Route] Jobs POST - Response status:', response.status);
+    console.log('[API Route] Jobs POST - Response body:', responseText);
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      return NextResponse.json(
+        { message: `Backend error: ${responseText}` },
+        { status: response.status }
+      );
+    }
 
     if (!response.ok) {
+      // Handle Pydantic validation errors
+      if (data.detail && Array.isArray(data.detail)) {
+        const errorMessages = data.detail.map((err: { loc?: string[]; msg?: string }) =>
+          `${err.loc?.join('.')}: ${err.msg}`
+        ).join(', ');
+        return NextResponse.json(
+          { message: errorMessages || '일자리 생성 실패' },
+          { status: response.status }
+        );
+      }
       return NextResponse.json(
         { message: data.detail || data.message || '일자리 생성 실패' },
         { status: response.status }
