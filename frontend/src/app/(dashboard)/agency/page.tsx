@@ -174,6 +174,7 @@ export default function AgencyDashboard() {
   const [selectedApplicant, setSelectedApplicant] = useState<Applicant | null>(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
   const [isUpdatingApplicant, setIsUpdatingApplicant] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [userName, setUserName] = useState("김지자 관리자");
   const [userDept, setUserDept] = useState("서울시 외국인지원팀");
 
@@ -182,6 +183,7 @@ export default function AgencyDashboard() {
     company_name: "",
     location: "",
     employment_type: "full-time",
+    job_type: "", // 직종
     salary_range: "",
     description: "",
     requirements: "",
@@ -189,6 +191,18 @@ export default function AgencyDashboard() {
     benefits: "",
     deadline: "",
   });
+
+  // 직종 목록
+  const JOB_TYPES: Record<string, { ko: string; en: string }> = {
+    manufacturing: { ko: "제조/생산", en: "Manufacturing" },
+    service: { ko: "서비스/식음료", en: "Service/F&B" },
+    construction: { ko: "건설/건축", en: "Construction" },
+    it: { ko: "IT/정보통신", en: "IT/Tech" },
+    office: { ko: "사무/경영지원", en: "Office/Admin" },
+    marketing: { ko: "마케팅/영업", en: "Marketing/Sales" },
+    logistics: { ko: "물류/운송", en: "Logistics" },
+    other: { ko: "기타", en: "Other" },
+  };
 
   useEffect(() => {
     checkAuth();
@@ -374,6 +388,7 @@ export default function AgencyDashboard() {
       company_name: job.company_name,
       location: job.location,
       employment_type: job.employment_type,
+      job_type: (job as Job & { job_type?: string }).job_type || "",
       salary_range: job.salary_range || "",
       description: job.description,
       requirements: job.requirements || "",
@@ -390,6 +405,7 @@ export default function AgencyDashboard() {
       company_name: "",
       location: "",
       employment_type: "full-time",
+      job_type: "",
       salary_range: "",
       description: "",
       requirements: "",
@@ -1026,151 +1042,242 @@ export default function AgencyDashboard() {
             {activeMenu === "jobs" && (
               <div className="space-y-6">
                 {showJobForm ? (
-                  /* Job Form */
-                  <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                        {editingJob ? (language === "ko" ? "공고 수정" : "Edit Job Posting") : language === "ko" ? "새 공고 등록" : "Create Job Posting"}
-                      </h3>
+                  /* Enhanced Job Form - design.html style */
+                  <div className="bg-white dark:bg-[#201a2d] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    {/* Decorative Header */}
+                    <div className="h-24 w-full bg-gradient-to-r from-primary/10 to-blue-50 dark:from-primary/20 dark:to-slate-800 relative overflow-hidden">
+                      <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.1\" fill-rule=\"evenodd\"%3E%3Cpath d=\"M0 40L40 0H20L0 20M40 40V20L20 40\"/%3E%3C/g%3E%3C/svg%3E')" }}></div>
+                      <div className="absolute bottom-4 left-6 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-primary">edit_document</span>
+                        <span className="text-primary font-bold text-sm uppercase tracking-wider">
+                          {editingJob ? (language === "ko" ? "공고 수정" : "Edit Posting") : (language === "ko" ? "채용 공고 작성" : "Create Job Posting")}
+                        </span>
+                      </div>
                       <button
                         onClick={() => {
                           setShowJobForm(false);
                           setEditingJob(null);
                           resetJobForm();
                         }}
-                        className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-white/50 dark:hover:bg-slate-700 transition-colors"
                       >
                         <span className="material-symbols-outlined">close</span>
                       </button>
                     </div>
 
-                    <form onSubmit={editingJob ? handleUpdateJob : handleCreateJob} className="p-6 space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            {language === "ko" ? "직종" : "Position"} *
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            value={jobForm.position}
-                            onChange={(e) => setJobForm({ ...jobForm, position: e.target.value })}
-                            placeholder={language === "ko" ? "예: 외국인 고용 담당자" : "e.g., Foreign Employment Officer"}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-                          />
+                    <form onSubmit={(e) => { e.preventDefault(); setShowPreviewModal(true); }} className="p-6 md:p-8 flex flex-col gap-8">
+                      {/* Section 1: Basic Info */}
+                      <section className="flex flex-col gap-6">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-700">
+                          <span className="material-symbols-outlined text-primary text-xl">domain</span>
+                          {language === "ko" ? "기본 정보" : "Basic Information"}
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Job Title */}
+                          <div className="md:col-span-2">
+                            <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                              {language === "ko" ? "공고 제목" : "Job Title"} <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={jobForm.position}
+                              onChange={(e) => setJobForm({ ...jobForm, position: e.target.value })}
+                              placeholder={language === "ko" ? "예: [서울] 해외 마케팅 담당자 모집 (신입/경력)" : "e.g., [Seoul] Marketing Manager Recruitment"}
+                              className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm"
+                            />
+                          </div>
+                          {/* Company Name */}
+                          <div>
+                            <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                              {language === "ko" ? "회사명" : "Company"} <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                required
+                                value={jobForm.company_name}
+                                onChange={(e) => setJobForm({ ...jobForm, company_name: e.target.value })}
+                                placeholder={language === "ko" ? "회사 이름을 입력하세요" : "Enter company name"}
+                                className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 pl-10 pr-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm"
+                              />
+                              <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-lg">business</span>
+                            </div>
+                          </div>
+                          {/* Employment Type */}
+                          <div>
+                            <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                              {language === "ko" ? "고용형태" : "Employment Type"} <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <select
+                                required
+                                value={jobForm.employment_type}
+                                onChange={(e) => setJobForm({ ...jobForm, employment_type: e.target.value })}
+                                className="w-full appearance-none rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 pl-10 pr-10 py-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm cursor-pointer"
+                              >
+                                {Object.entries(EMPLOYMENT_TYPES).map(([value, label]) => (
+                                  <option key={value} value={value}>
+                                    {label[language as "ko" | "en"]}
+                                  </option>
+                                ))}
+                              </select>
+                              <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-lg">badge</span>
+                              <span className="material-symbols-outlined absolute right-3 top-3 text-slate-400 text-lg pointer-events-none">expand_more</span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            {language === "ko" ? "회사/기관명" : "Company/Agency"} *
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            value={jobForm.company_name}
-                            onChange={(e) => setJobForm({ ...jobForm, company_name: e.target.value })}
-                            placeholder={language === "ko" ? "예: 서울글로벌센터" : "e.g., Seoul Global Center"}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-                          />
-                        </div>
-                      </div>
+                      </section>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            {language === "ko" ? "근무 지역" : "Location"} *
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            value={jobForm.location}
-                            onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })}
-                            placeholder={language === "ko" ? "예: 서울 종로구" : "e.g., Jongno-gu, Seoul"}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-                          />
+                      {/* Section 2: Detailed Conditions */}
+                      <section className="flex flex-col gap-6">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-700">
+                          <span className="material-symbols-outlined text-primary text-xl">fact_check</span>
+                          {language === "ko" ? "상세 조건" : "Detailed Conditions"}
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Job Type */}
+                          <div>
+                            <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                              {language === "ko" ? "직종" : "Job Category"} <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <select
+                                required
+                                value={jobForm.job_type}
+                                onChange={(e) => setJobForm({ ...jobForm, job_type: e.target.value })}
+                                className="w-full appearance-none rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 pl-10 pr-10 py-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm cursor-pointer"
+                              >
+                                <option value="" disabled>{language === "ko" ? "직종을 선택해주세요" : "Select job category"}</option>
+                                {Object.entries(JOB_TYPES).map(([value, label]) => (
+                                  <option key={value} value={value}>
+                                    {label[language as "ko" | "en"]}
+                                  </option>
+                                ))}
+                              </select>
+                              <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-lg">category</span>
+                              <span className="material-symbols-outlined absolute right-3 top-3 text-slate-400 text-lg pointer-events-none">expand_more</span>
+                            </div>
+                          </div>
+                          {/* Deadline */}
+                          <div>
+                            <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                              {language === "ko" ? "모집 마감일" : "Application Deadline"} <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="date"
+                                required
+                                value={jobForm.deadline}
+                                onChange={(e) => setJobForm({ ...jobForm, deadline: e.target.value })}
+                                className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 pl-10 pr-4 py-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm"
+                              />
+                              <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-lg">calendar_month</span>
+                            </div>
+                          </div>
+                          {/* Work Location */}
+                          <div>
+                            <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                              {language === "ko" ? "근무지" : "Work Location"} <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                required
+                                value={jobForm.location}
+                                onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })}
+                                placeholder={language === "ko" ? "예: 서울시 강남구 테헤란로 123" : "e.g., 123 Teheran-ro, Gangnam-gu, Seoul"}
+                                className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 pl-10 pr-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm"
+                              />
+                              <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-lg">location_on</span>
+                            </div>
+                          </div>
+                          {/* Salary */}
+                          <div>
+                            <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                              {language === "ko" ? "급여" : "Salary"} <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                required
+                                value={jobForm.salary_range}
+                                onChange={(e) => setJobForm({ ...jobForm, salary_range: e.target.value })}
+                                placeholder={language === "ko" ? "예: 월 250만원 (면접 후 협의 가능)" : "e.g., $2,500/month (negotiable)"}
+                                className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 pl-10 pr-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm"
+                              />
+                              <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-lg">attach_money</span>
+                            </div>
+                          </div>
+                          {/* Qualifications */}
+                          <div className="md:col-span-2">
+                            <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                              {language === "ko" ? "자격 요건" : "Qualifications"} <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                required
+                                value={jobForm.requirements}
+                                onChange={(e) => setJobForm({ ...jobForm, requirements: e.target.value })}
+                                placeholder={language === "ko" ? "예: TOPIK 3급 이상, 관련 경력 1년 이상 우대" : "e.g., TOPIK Level 3+, 1+ years experience preferred"}
+                                className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 pl-10 pr-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm"
+                              />
+                              <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400 text-lg">school</span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            {language === "ko" ? "고용 형태" : "Employment Type"} *
-                          </label>
-                          <select
-                            required
-                            value={jobForm.employment_type}
-                            onChange={(e) => setJobForm({ ...jobForm, employment_type: e.target.value })}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-                          >
-                            {Object.entries(EMPLOYMENT_TYPES).map(([value, label]) => (
-                              <option key={value} value={value}>
-                                {label[language as "ko" | "en"]}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            {language === "ko" ? "마감일" : "Deadline"}
-                          </label>
-                          <input
-                            type="date"
-                            value={jobForm.deadline}
-                            onChange={(e) => setJobForm({ ...jobForm, deadline: e.target.value })}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-                          />
-                        </div>
-                      </div>
+                      </section>
 
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                          {language === "ko" ? "급여 범위" : "Salary Range"}
-                        </label>
-                        <input
-                          type="text"
-                          value={jobForm.salary_range}
-                          onChange={(e) => setJobForm({ ...jobForm, salary_range: e.target.value })}
-                          placeholder={language === "ko" ? "예: 연봉 3,500만원~4,000만원" : "e.g., $35,000~$40,000/year"}
-                          className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                          {language === "ko" ? "업무 설명" : "Job Description"} *
-                        </label>
-                        <textarea
-                          required
-                          value={jobForm.description}
-                          onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })}
-                          rows={4}
-                          placeholder={language === "ko" ? "담당 업무에 대해 상세히 작성해주세요." : "Describe the job responsibilities in detail."}
-                          className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Section 3: Job Description */}
+                      <section className="flex flex-col gap-6">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-700">
+                          <span className="material-symbols-outlined text-primary text-xl">description</span>
+                          {language === "ko" ? "상세 내용" : "Job Details"}
+                        </h3>
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            {language === "ko" ? "자격 요건" : "Requirements"}
+                          <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                            {language === "ko" ? "상세 업무 내용" : "Detailed Job Description"} <span className="text-red-500">*</span>
                           </label>
                           <textarea
-                            value={jobForm.requirements}
-                            onChange={(e) => setJobForm({ ...jobForm, requirements: e.target.value })}
-                            rows={3}
-                            placeholder={language === "ko" ? "필수 자격 요건을 작성해주세요." : "List the required qualifications."}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"
+                            required
+                            value={jobForm.description}
+                            onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })}
+                            rows={8}
+                            placeholder={language === "ko"
+                              ? `주요 업무, 근무 조건, 복리후생 등 상세한 채용 정보를 입력해주세요.
+
+예시:
+- 담당 업무: 해외 고객 응대 및 문서 번역
+- 우대 사항: 영어 가능자 우대
+- 복리후생: 4대 보험, 중식 제공`
+                              : `Enter detailed job information including responsibilities, conditions, benefits.
+
+Example:
+- Responsibilities: Customer support and document translation
+- Preferred: English proficiency
+- Benefits: Insurance, lunch provided`}
+                            className="w-full min-h-[200px] rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 p-4 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm resize-y leading-relaxed"
                           />
+                          <p className="text-right text-xs text-slate-500 mt-2">
+                            {language === "ko" ? "최소 50자 이상 입력해주세요." : "Minimum 50 characters required."}
+                          </p>
                         </div>
+
+                        {/* Benefits (optional) */}
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            {language === "ko" ? "복지 혜택" : "Benefits"}
+                          <label className="block text-slate-900 dark:text-white text-sm font-bold mb-2">
+                            {language === "ko" ? "복리후생 (선택)" : "Benefits (Optional)"}
                           </label>
                           <textarea
                             value={jobForm.benefits}
                             onChange={(e) => setJobForm({ ...jobForm, benefits: e.target.value })}
                             rows={3}
-                            placeholder={language === "ko" ? "복지 혜택을 작성해주세요." : "List the benefits."}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"
+                            placeholder={language === "ko" ? "예: 4대보험, 연차, 식비지원, 기숙사 제공" : "e.g., Insurance, vacation, meal allowance, housing"}
+                            className="w-full rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 p-4 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm text-sm resize-y"
                           />
                         </div>
-                      </div>
+                      </section>
 
                       {error && (
                         <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -1178,7 +1285,8 @@ export default function AgencyDashboard() {
                         </div>
                       )}
 
-                      <div className="flex gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                      {/* Actions */}
+                      <div className="flex items-center justify-end gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
                         <button
                           type="button"
                           onClick={() => {
@@ -1186,27 +1294,24 @@ export default function AgencyDashboard() {
                             setEditingJob(null);
                             resetJobForm();
                           }}
-                          className="flex-1 px-6 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                          className="px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-sm font-bold transition-all shadow-sm"
                         >
                           {language === "ko" ? "취소" : "Cancel"}
                         </button>
                         <button
+                          type="button"
+                          onClick={() => alert(language === "ko" ? "임시 저장되었습니다." : "Draft saved.")}
+                          className="px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-sm font-bold transition-all shadow-sm"
+                        >
+                          {language === "ko" ? "임시 저장" : "Save Draft"}
+                        </button>
+                        <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                          className="px-8 py-3 rounded-lg bg-primary hover:bg-blue-700 text-white text-sm font-bold transition-all shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {isSubmitting ? (
-                            <>
-                              <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                              {language === "ko" ? "처리 중..." : "Processing..."}
-                            </>
-                          ) : editingJob ? (
-                            language === "ko" ? "저장" : "Save"
-                          ) : language === "ko" ? (
-                            "공고 등록"
-                          ) : (
-                            "Create Posting"
-                          )}
+                          <span className="material-symbols-outlined text-lg">visibility</span>
+                          {language === "ko" ? "미리보기" : "Preview"}
                         </button>
                       </div>
                     </form>
@@ -1946,6 +2051,161 @@ export default function AgencyDashboard() {
           </footer>
         </div>
       </main>
+
+      {/* Job Preview Modal */}
+      {showPreviewModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-[#201a2d] rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center sticky top-0 bg-white dark:bg-[#201a2d] z-10">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary">visibility</span>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  {language === "ko" ? "공고 미리보기" : "Job Posting Preview"}
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowPreviewModal(false)}
+                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Preview Content */}
+            <div className="p-6 space-y-6">
+              {/* Job Title & Company */}
+              <div className="border-b border-slate-200 dark:border-slate-700 pb-6">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                  {jobForm.position || (language === "ko" ? "(제목 없음)" : "(No title)")}
+                </h2>
+                <div className="flex flex-wrap items-center gap-4 text-slate-600 dark:text-slate-300">
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-lg">business</span>
+                    {jobForm.company_name || (language === "ko" ? "(회사명 없음)" : "(No company)")}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-lg">location_on</span>
+                    {jobForm.location || (language === "ko" ? "(위치 없음)" : "(No location)")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Tags Row */}
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-primary/10 text-primary">
+                  {EMPLOYMENT_TYPES[jobForm.employment_type]?.[language as "ko" | "en"] || jobForm.employment_type}
+                </span>
+                {jobForm.job_type && (
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                    {JOB_TYPES[jobForm.job_type]?.[language as "ko" | "en"] || jobForm.job_type}
+                  </span>
+                )}
+                {jobForm.deadline && (
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300">
+                    <span className="material-symbols-outlined text-sm mr-1">schedule</span>
+                    {language === "ko" ? "마감: " : "Deadline: "}{jobForm.deadline}
+                  </span>
+                )}
+              </div>
+
+              {/* Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                  <p className="text-xs text-slate-500 mb-1 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">attach_money</span>
+                    {language === "ko" ? "급여" : "Salary"}
+                  </p>
+                  <p className="font-medium text-slate-900 dark:text-white">
+                    {jobForm.salary_range || (language === "ko" ? "미정" : "TBD")}
+                  </p>
+                </div>
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                  <p className="text-xs text-slate-500 mb-1 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">school</span>
+                    {language === "ko" ? "자격 요건" : "Qualifications"}
+                  </p>
+                  <p className="font-medium text-slate-900 dark:text-white">
+                    {jobForm.requirements || (language === "ko" ? "미정" : "TBD")}
+                  </p>
+                </div>
+              </div>
+
+              {/* Job Description */}
+              <div>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">description</span>
+                  {language === "ko" ? "상세 업무 내용" : "Job Description"}
+                </h4>
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                  <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                    {jobForm.description || (language === "ko" ? "(내용 없음)" : "(No description)")}
+                  </p>
+                </div>
+              </div>
+
+              {/* Benefits */}
+              {jobForm.benefits && (
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary">redeem</span>
+                    {language === "ko" ? "복리후생" : "Benefits"}
+                  </h4>
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <p className="text-green-700 dark:text-green-300 whitespace-pre-wrap">
+                      {jobForm.benefits}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Notice */}
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-start gap-3">
+                <span className="material-symbols-outlined text-blue-500">info</span>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  {language === "ko"
+                    ? "위 내용으로 공고가 등록됩니다. 등록 후에도 수정이 가능합니다."
+                    : "This is how your job posting will appear. You can edit it after publishing."}
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="p-6 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-[#201a2d]">
+              <button
+                onClick={() => setShowPreviewModal(false)}
+                className="px-6 py-3 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-sm font-bold transition-all"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">edit</span>
+                  {language === "ko" ? "수정하기" : "Edit"}
+                </span>
+              </button>
+              <button
+                onClick={(e) => {
+                  setShowPreviewModal(false);
+                  if (editingJob) {
+                    handleUpdateJob(e as unknown as React.FormEvent);
+                  } else {
+                    handleCreateJob(e as unknown as React.FormEvent);
+                  }
+                }}
+                disabled={isSubmitting}
+                className="px-8 py-3 rounded-lg bg-primary hover:bg-blue-700 text-white text-sm font-bold transition-all shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (
+                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                ) : (
+                  <span className="material-symbols-outlined text-lg">publish</span>
+                )}
+                {editingJob
+                  ? (language === "ko" ? "수정 완료" : "Update")
+                  : (language === "ko" ? "공고 등록" : "Publish")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Applicant Detail Modal */}
       {showApplicantModal && selectedApplicant && (
