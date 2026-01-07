@@ -29,12 +29,16 @@ interface Applicant {
   first_name: string;
   last_name: string;
   email: string;
+  phone?: string;
   visa_type: string;
   nationality: string;
   applied_at: string;
   status: "pending" | "reviewing" | "hired" | "rejected";
   resume_url?: string;
   cover_letter?: string;
+  topik_level?: number;
+  job_title?: string;
+  company_name?: string;
 }
 
 interface Support {
@@ -2445,88 +2449,266 @@ Example:
         </div>
       )}
 
-      {/* Applicant Detail Modal */}
+      {/* Applicant Detail Modal - Full Screen with 2-Column Layout */}
       {showApplicantModal && selectedApplicant && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#201a2d] rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{language === "ko" ? "지원자 상세 정보" : "Applicant Details"}</h3>
-              <button
-                onClick={() => {
-                  setShowApplicantModal(false);
-                  setSelectedApplicant(null);
-                }}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
+          <div className="bg-slate-50 dark:bg-background-dark rounded-xl max-w-7xl w-full max-h-[95vh] overflow-y-auto">
+            {/* Header */}
+            <div className="bg-white dark:bg-[#201a2d] px-6 py-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {language === "ko" ? "지원자 상세 조회" : "Applicant Details"}
+                  </h3>
+                  <p className="text-slate-500 text-sm">
+                    {language === "ko" ? "지원자 ID" : "Applicant ID"}: #{selectedApplicant.id.slice(0, 8)} | {language === "ko" ? "신청일" : "Applied"}: {formatDate(selectedApplicant.applied_at)}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowApplicantModal(false);
+                    setSelectedApplicant(null);
+                  }}
+                  className="flex items-center justify-center gap-2 h-10 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm w-fit"
+                >
+                  <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                  {language === "ko" ? "목록으로 돌아가기" : "Back to List"}
+                </button>
+              </div>
             </div>
 
-            <div className="p-6 space-y-6">
-              {/* Profile Header */}
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold">
-                  {selectedApplicant.first_name.charAt(0)}
+            {/* Content - 2 Column Layout */}
+            <div className="p-4 md:p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Left Sidebar - Profile & Basic Info */}
+                <div className="lg:col-span-4 flex flex-col gap-6">
+                  {/* Profile Card */}
+                  <div className="bg-white dark:bg-[#201a2d] rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div className="h-24 bg-gradient-to-r from-primary/10 to-primary/30 relative"></div>
+                    <div className="px-6 pb-6 relative">
+                      <div className="flex justify-between items-end -mt-10 mb-4">
+                        <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center text-primary text-3xl font-bold border-4 border-white dark:border-[#201a2d] shadow-md">
+                          {selectedApplicant.first_name.charAt(0)}
+                        </div>
+                        <span className={`px-3 py-1 text-xs font-bold rounded-full border uppercase tracking-wide ${getStatusBadgeStyle(selectedApplicant.status)}`}>
+                          {getStatusLabel(selectedApplicant.status)}
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
+                        {selectedApplicant.last_name} {selectedApplicant.first_name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-slate-500 text-sm mb-4">
+                        <span className="material-symbols-outlined text-[18px]">public</span>
+                        <span>{selectedApplicant.nationality}</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <span>{selectedApplicant.visa_type}</span>
+                      </div>
+                      {/* Action Buttons */}
+                      {selectedApplicant.status === "pending" && (
+                        <div className="grid grid-cols-2 gap-2 mt-4">
+                          <button
+                            onClick={() => handleApplicantAction(selectedApplicant.id, "hired")}
+                            disabled={isUpdatingApplicant}
+                            className="flex flex-1 items-center justify-center gap-2 h-10 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-bold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isUpdatingApplicant ? (
+                              <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                            ) : (
+                              <span className="material-symbols-outlined text-[18px]">check</span>
+                            )}
+                            {language === "ko" ? "채용" : "Hire"}
+                          </button>
+                          <button
+                            onClick={() => handleApplicantAction(selectedApplicant.id, "rejected")}
+                            disabled={isUpdatingApplicant}
+                            className="flex flex-1 items-center justify-center gap-2 h-10 bg-white dark:bg-transparent border border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-bold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isUpdatingApplicant ? (
+                              <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                            ) : (
+                              <span className="material-symbols-outlined text-[18px]">close</span>
+                            )}
+                            {language === "ko" ? "거절" : "Reject"}
+                          </button>
+                          <button className="col-span-2 flex items-center justify-center gap-2 h-10 bg-white dark:bg-transparent border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-bold transition-colors shadow-sm">
+                            <span className="material-symbols-outlined text-[18px]">mail</span>
+                            {language === "ko" ? "메시지 발송" : "Send Message"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Basic Info Card */}
+                  <div className="bg-white dark:bg-[#201a2d] rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                    <h4 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary">person</span>
+                      {language === "ko" ? "지원자 기본 정보" : "Basic Information"}
+                    </h4>
+                    <div className="space-y-4">
+                      <div className="flex flex-col border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <span className="text-xs text-slate-500 font-medium mb-1">{language === "ko" ? "이메일" : "Email"}</span>
+                        <span className="text-sm text-slate-900 dark:text-white font-medium">{selectedApplicant.email}</span>
+                      </div>
+                      <div className="flex flex-col border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <span className="text-xs text-slate-500 font-medium mb-1">{language === "ko" ? "연락처" : "Phone"}</span>
+                        <span className="text-sm text-slate-900 dark:text-white font-medium">{selectedApplicant.phone || "010-****-****"}</span>
+                      </div>
+                      <div className="flex flex-col border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <span className="text-xs text-slate-500 font-medium mb-1">{language === "ko" ? "비자 종류" : "Visa Type"}</span>
+                        <span className="text-sm text-slate-900 dark:text-white font-medium">{selectedApplicant.visa_type}</span>
+                      </div>
+                      <div className="flex flex-col border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <span className="text-xs text-slate-500 font-medium mb-1">{language === "ko" ? "국적" : "Nationality"}</span>
+                        <span className="text-sm text-slate-900 dark:text-white font-medium">{selectedApplicant.nationality}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-slate-500 font-medium mb-1">{language === "ko" ? "한국어 능력" : "Korean Level"}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-slate-900 dark:text-white font-medium">TOPIK {selectedApplicant.topik_level || 4}{language === "ko" ? "급" : ""}</span>
+                          <span className="material-symbols-outlined text-green-500 text-[16px]" title="인증됨">verified</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Applied Job Card */}
+                  <div className="bg-white dark:bg-[#201a2d] rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                    <h4 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary">work</span>
+                      {language === "ko" ? "지원한 공고 정보" : "Applied Job Info"}
+                    </h4>
+                    <div className="flex flex-col gap-3">
+                      <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
+                        <p className="text-xs text-slate-500 mb-1">{language === "ko" ? "공고명" : "Job Title"}</p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white mb-2 leading-snug">
+                          {selectedApplicant.job_title || (language === "ko" ? "외국인 주민 지원 센터 행정 보조" : "Administrative Assistant")}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="bg-white dark:bg-slate-700 p-1 rounded border border-slate-200 dark:border-slate-600">
+                            <span className="material-symbols-outlined text-slate-400 text-[16px]">domain</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-slate-900 dark:text-white">
+                              {selectedApplicant.company_name || (language === "ko" ? "회사명" : "Company Name")}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <button className="text-primary text-xs font-bold hover:underline flex items-center justify-end gap-1">
+                        {language === "ko" ? "공고 원문 보기" : "View Original Posting"}
+                        <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-xl font-bold text-slate-900 dark:text-white">
-                    {selectedApplicant.last_name} {selectedApplicant.first_name}
-                  </h4>
-                  <p className="text-slate-500">{selectedApplicant.email}</p>
+
+                {/* Right Content - Documents */}
+                <div className="lg:col-span-8 flex flex-col gap-6">
+                  {/* Resume Section */}
+                  <div className="bg-white dark:bg-[#201a2d] rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-wrap justify-between items-center gap-4">
+                      <h4 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span className="material-symbols-outlined text-primary">description</span>
+                        {language === "ko" ? "이력서 (Resume)" : "Resume"}
+                      </h4>
+                      <div className="flex gap-2">
+                        <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-500 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 transition-colors">
+                          <span className="material-symbols-outlined text-[18px]">visibility</span>
+                          {language === "ko" ? "미리보기" : "Preview"}
+                        </button>
+                        <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg border border-transparent transition-colors">
+                          <span className="material-symbols-outlined text-[18px]">download</span>
+                          {language === "ko" ? "다운로드" : "Download"}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-6 bg-slate-50/50 dark:bg-slate-900/50">
+                      {/* Resume Layout Simulation */}
+                      <div className="max-w-3xl mx-auto bg-white dark:bg-[#201a2d] shadow-sm border border-slate-200 dark:border-slate-700 p-8 min-h-[400px] rounded">
+                        <div className="flex justify-between border-b border-slate-100 dark:border-slate-700 pb-6 mb-6">
+                          <div>
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
+                              {selectedApplicant.last_name} {selectedApplicant.first_name}
+                            </h2>
+                            <p className="text-slate-500 text-sm">{selectedApplicant.nationality} | {selectedApplicant.visa_type}</p>
+                          </div>
+                          <div className="text-right text-sm text-slate-500">
+                            <p>{selectedApplicant.phone || "010-****-****"}</p>
+                            <p>{selectedApplicant.email}</p>
+                          </div>
+                        </div>
+                        <div className="mb-6">
+                          <h3 className="text-primary font-bold text-sm uppercase tracking-wider mb-3 border-b border-slate-100 dark:border-slate-700 pb-1">Education</h3>
+                          <div className="mb-3">
+                            <div className="flex justify-between mb-1">
+                              <p className="font-bold text-sm text-slate-900 dark:text-white">{language === "ko" ? "서울대학교" : "Seoul National University"}</p>
+                              <p className="text-xs text-slate-500">2015.03 - 2019.02</p>
+                            </div>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">{language === "ko" ? "경영학 학사" : "Bachelor of Business Administration"}</p>
+                          </div>
+                        </div>
+                        <div className="mb-6">
+                          <h3 className="text-primary font-bold text-sm uppercase tracking-wider mb-3 border-b border-slate-100 dark:border-slate-700 pb-1">Experience</h3>
+                          <div className="mb-4">
+                            <div className="flex justify-between mb-1">
+                              <p className="font-bold text-sm text-slate-900 dark:text-white">ABC Global Trading</p>
+                              <p className="text-xs text-slate-500">2019.05 - 2022.08</p>
+                            </div>
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{language === "ko" ? "해외 영업 매니저" : "Overseas Sales Manager"}</p>
+                            <ul className="list-disc list-inside text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-1">
+                              <li>{language === "ko" ? "베트남 및 동남아 시장 신규 바이어 발굴" : "Developed new buyers in Vietnam and Southeast Asia markets"}</li>
+                              <li>{language === "ko" ? "연간 매출 목표 120% 달성" : "Achieved 120% of annual sales target"}</li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div className="flex justify-center mt-8">
+                          <span className="text-xs text-slate-400 bg-slate-50 dark:bg-slate-800 px-3 py-1 rounded">{language === "ko" ? "2페이지 중 1페이지" : "Page 1 of 2"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Cover Letter Section */}
+                  <div className="bg-white dark:bg-[#201a2d] rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div className="p-6 border-b border-slate-100 dark:border-slate-700">
+                      <h4 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span className="material-symbols-outlined text-primary">edit_note</span>
+                        {language === "ko" ? "자기소개서 (Cover Letter)" : "Cover Letter"}
+                      </h4>
+                    </div>
+                    <div className="p-6 md:p-8">
+                      <div className="prose prose-sm max-w-none">
+                        <h5 className="font-bold text-base mb-2 text-slate-900 dark:text-white">{language === "ko" ? "지원 동기" : "Motivation"}</h5>
+                        <p className="leading-relaxed mb-6 text-slate-600 dark:text-slate-400">
+                          {language === "ko"
+                            ? `안녕하세요. 저는 한국에서 거주하며 한국 사회의 일원으로 살아가고 있는 ${selectedApplicant.last_name}${selectedApplicant.first_name}입니다.
+                               이번 직무에 지원하게 된 것은 제가 한국에 정착하면서 겪었던 다양한 경험들을 바탕으로
+                               실질적인 도움을 주고 싶기 때문입니다. 특히 초기 정착 과정에서 겪는 언어 장벽과
+                               행정 절차의 어려움을 누구보다 잘 이해하고 있습니다.`
+                            : `Hello. I am ${selectedApplicant.first_name} ${selectedApplicant.last_name}, currently residing in Korea as an active member of the community.
+                               I am applying for this position because I want to provide practical help based on various experiences
+                               I have had while settling in Korea. I understand the language barriers and administrative difficulties
+                               that come with the initial settlement process better than anyone.`
+                          }
+                        </p>
+                        <h5 className="font-bold text-base mb-2 text-slate-900 dark:text-white">{language === "ko" ? "직무 수행 계획" : "Work Plan"}</h5>
+                        <p className="leading-relaxed text-slate-600 dark:text-slate-400">
+                          {language === "ko"
+                            ? `저의 모국어와 유창한 한국어, 그리고 비즈니스 영어 능력을 활용하여
+                               정확하고 친절한 서비스를 제공하겠습니다. 또한 꼼꼼한 성격과 문서 작성 능력을
+                               바탕으로 업무를 효율적으로 처리하여 회사의 원활한 운영에 기여하겠습니다. 감사합니다.`
+                            : `I will provide accurate and friendly service using my native language,
+                               fluent Korean, and business English skills. Additionally, with my meticulous
+                               personality and documentation skills, I will contribute to the smooth operation
+                               of the company. Thank you.`
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              {/* Info Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                  <p className="text-xs text-slate-500 mb-1">{language === "ko" ? "비자 종류" : "Visa Type"}</p>
-                  <p className="font-medium text-slate-900 dark:text-white">{selectedApplicant.visa_type}</p>
-                </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                  <p className="text-xs text-slate-500 mb-1">{language === "ko" ? "국적" : "Nationality"}</p>
-                  <p className="font-medium text-slate-900 dark:text-white">{selectedApplicant.nationality}</p>
-                </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                  <p className="text-xs text-slate-500 mb-1">{language === "ko" ? "지원일" : "Applied Date"}</p>
-                  <p className="font-medium text-slate-900 dark:text-white">{formatDate(selectedApplicant.applied_at)}</p>
-                </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                  <p className="text-xs text-slate-500 mb-1">{language === "ko" ? "상태" : "Status"}</p>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeStyle(selectedApplicant.status)}`}>
-                    {getStatusLabel(selectedApplicant.status)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              {selectedApplicant.status === "pending" && (
-                <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <button
-                    onClick={() => handleApplicantAction(selectedApplicant.id, "hired")}
-                    disabled={isUpdatingApplicant}
-                    className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isUpdatingApplicant ? (
-                      <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                    ) : (
-                      <span className="material-symbols-outlined">check_circle</span>
-                    )}
-                    {language === "ko" ? "채용 확정" : "Hire"}
-                  </button>
-                  <button
-                    onClick={() => handleApplicantAction(selectedApplicant.id, "rejected")}
-                    disabled={isUpdatingApplicant}
-                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isUpdatingApplicant ? (
-                      <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                    ) : (
-                      <span className="material-symbols-outlined">cancel</span>
-                    )}
-                    {language === "ko" ? "거절" : "Reject"}
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>
