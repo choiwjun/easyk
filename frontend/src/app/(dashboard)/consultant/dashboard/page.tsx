@@ -459,7 +459,7 @@ export default function ConsultantDashboardPage() {
       >
         <div className="flex h-16 items-center justify-between px-6 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center">
-            <Link href="/" className="text-primary text-xl font-extrabold leading-normal tracking-tight">
+            <Link href="/consultant/dashboard" className="text-primary text-xl font-extrabold leading-normal tracking-tight">
               easyK
             </Link>
             <span className="ml-2 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
@@ -535,7 +535,7 @@ export default function ConsultantDashboardPage() {
       {/* Desktop Side Navigation */}
       <aside className="hidden lg:flex w-64 flex-col border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 fixed h-full z-20">
         <div className="flex h-16 items-center px-6 border-b border-gray-100 dark:border-gray-700">
-          <Link href="/" className="text-primary text-xl font-extrabold leading-normal tracking-tight">
+          <Link href="/consultant/dashboard" className="text-primary text-xl font-extrabold leading-normal tracking-tight">
             easyK
           </Link>
           <span className="ml-2 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
@@ -609,7 +609,7 @@ export default function ConsultantDashboardPage() {
             >
               <span className="material-symbols-outlined">menu</span>
             </button>
-            <Link href="/" className="text-primary text-lg font-bold">easyK</Link>
+            <Link href="/consultant/dashboard" className="text-primary text-lg font-bold">easyK</Link>
           </div>
 
           <div className="hidden lg:flex flex-col">
