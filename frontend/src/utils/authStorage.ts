@@ -1,15 +1,15 @@
 /**
  * Auth Storage Utility
  *
- * 브라우저 닫으면 자동 로그아웃 (sessionStorage 사용)
- * 로그아웃 시 모든 인증 데이터 초기화
+ * localStorage 사용 - 브라우저 닫아도 로그인 유지
+ * 로그아웃 시 인증 데이터 삭제
  */
 
 const TOKEN_KEY = 'access_token';
 const USER_KEY = 'user';
 
-// sessionStorage 사용 - 브라우저/탭 닫으면 자동 삭제
-const storage = typeof window !== 'undefined' ? window.sessionStorage : null;
+// localStorage 사용 - 기존 코드와 호환성 유지
+const storage = typeof window !== 'undefined' ? window.localStorage : null;
 
 export const authStorage = {
   // 토큰 저장

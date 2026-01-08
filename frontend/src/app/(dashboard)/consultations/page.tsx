@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
+import authStorage from "@/utils/authStorage";
 import DesignHeader from "@/components/ui/DesignHeader";
 import DesignFooter from "@/components/ui/DesignFooter";
 
@@ -36,7 +37,7 @@ export default function ConsultationsPage() {
 
   const fetchConsultations = async () => {
     try {
-      const token = localStorage.getItem("access_token");
+      const token = authStorage.getToken();
 
       if (!token) {
         router.push("/login");
@@ -54,8 +55,7 @@ export default function ConsultationsPage() {
         setConsultations(data);
       } else if (response.status === 401 || response.status === 403) {
         // 인증 실패 시 로그인 페이지로 리다이렉트
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("user");
+        authStorage.logout();
         router.push("/login");
       } else {
         setError(language === 'ko' ? '데이터를 불러오는데 실패했습니다.' : 'Failed to load data.');
